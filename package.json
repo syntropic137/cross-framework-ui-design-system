@@ -9,8 +9,11 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "format": "pnpm -r format",
-    "qa": "pnpm lint && pnpm typecheck && pnpm test",
-    "check": "pnpm qa"
+    "qa": "pnpm lint && pnpm typecheck && pnpm test && pnpm storybook:test",
+    "check": "pnpm qa",
+    "storybook": "pnpm --filter @design-system/react-v18 storybook",
+    "storybook:build": "pnpm --filter @design-system/react-v18 storybook:build",
+    "storybook:test": "pnpm --filter @design-system/react-v18 storybook:test"
   },
   "engines": {
     "node": ">=18.18.0",

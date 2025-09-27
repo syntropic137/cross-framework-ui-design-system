@@ -1,0 +1,52 @@
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: calc(var(--space-2) + 2px) var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.04s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .btn:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn--primary {
+    background: var(--accent);
+    border-color: color-mix(in oklab, var(--accent), black 12%);
+    color: var(--accent-contrast);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    border-color: var(--border);
+  }
+
+  .btn--danger {
+    --danger: #e5484d;
+    --danger-contrast: #ffffff;
+    background: var(--danger);
+    color: var(--danger-contrast);
+    border-color: color-mix(in oklab, var(--danger), black 15%);
+  }
+
+  .btn--sm {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .btn--lg {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-lg);
+  }
+}
