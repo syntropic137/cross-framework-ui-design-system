@@ -17,6 +17,16 @@
 @layer base {
   :root {
     color-scheme: light dark;
+    
+    /* Confetti color palette */
+    --confetti-color-1: #ff6b6b;
+    --confetti-color-2: #4ecdc4;
+    --confetti-color-3: #45b7d1;
+    --confetti-color-4: #f9ca24;
+    --confetti-color-5: #f0932b;
+    --confetti-color-6: #eb4d4b;
+    --confetti-color-7: #6c5ce7;
+    --confetti-color-8: #a29bfe;
   }
 
   body {
