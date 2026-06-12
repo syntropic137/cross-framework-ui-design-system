@@ -9,7 +9,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "format": "pnpm -r format",
-    "build": "pnpm -r build",
+    "build": "pnpm --filter @design-system/design-tokens tokens:build && pnpm -r build",
     "qa": "pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm storybook:test",
     "check": "pnpm qa",
     "storybook": "pnpm --filter @design-system/react-v18 storybook",
