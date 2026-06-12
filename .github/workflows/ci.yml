@@ -25,10 +25,14 @@ jobs:
           cache: "pnpm"
       # --frozen-lockfile enforces exact pnpm-lock.yaml versions and fails if the
       # lock file is stale — prevents silently picking up newly published (possibly
-      # malicious) versions. The onlyBuiltDependencies allowlist in package.json
-      # restricts which packages may run install scripts.
+      # malicious) versions.
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # Install scripts are blocked globally (.npmrc ignore-scripts=true) as a
+      # supply-chain defense, so Playwright's browser is not auto-downloaded.
+      # Provision it explicitly — the Storybook test-runner drives chromium.
+      - name: Install Playwright browser
+        run: pnpm --filter @design-system/react-v18 exec playwright install --with-deps chromium
       - name: Run monorepo QA
         run: pnpm qa
 
@@ -40,9 +44,12 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       # OSV checks pnpm-lock.yaml against the OSV vulnerability database.
+      # osv-scanner.toml documents the dev-only test-runner advisories that are
+      # acknowledged; the scan still blocks on anything else.
       - uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
         with:
           scan-args: |-
+            --config=osv-scanner.toml
             --lockfile=pnpm-lock.yaml
 
   dependency-review:
@@ -57,3 +64,7 @@ jobs:
       - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           fail-on-severity: high
+          # esbuild Deno-loader RCE — not applicable (used via vite/Node at build
+          # time, not Deno). Pinned to ^0.25 by vite 6 / Storybook 10. Mirrors the
+          # acknowledgement in osv-scanner.toml.
+          allow-ghsas: GHSA-gv7w-rqvm-qjhr
