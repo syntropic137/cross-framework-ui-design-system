@@ -64,3 +64,7 @@ jobs:
       - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           fail-on-severity: high
+          # esbuild Deno-loader RCE — not applicable (used via vite/Node at build
+          # time, not Deno). Pinned to ^0.25 by vite 6 / Storybook 10. Mirrors the
+          # acknowledgement in osv-scanner.toml.
+          allow-ghsas: GHSA-gv7w-rqvm-qjhr
