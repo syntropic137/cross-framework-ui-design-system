@@ -25,10 +25,14 @@ jobs:
           cache: "pnpm"
       # --frozen-lockfile enforces exact pnpm-lock.yaml versions and fails if the
       # lock file is stale — prevents silently picking up newly published (possibly
-      # malicious) versions. The onlyBuiltDependencies allowlist in package.json
-      # restricts which packages may run install scripts.
+      # malicious) versions.
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # Install scripts are blocked globally (.npmrc ignore-scripts=true) as a
+      # supply-chain defense, so Playwright's browser is not auto-downloaded.
+      # Provision it explicitly — the Storybook test-runner drives chromium.
+      - name: Install Playwright browser
+        run: pnpm --filter @design-system/react-v18 exec playwright install --with-deps chromium
       - name: Run monorepo QA
         run: pnpm qa
 
