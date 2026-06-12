@@ -3,17 +3,17 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--fg);
-    box-shadow: var(--shadow-sm);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    box-shadow: var(--ds-shadow-sm);
   }
 
 
   .badge:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--ds-shadow-md);
   }
 
   .badge:active {
@@ -21,21 +21,21 @@
   }
 
   .badge--primary {
-    background: var(--accent);
-    border-color: color-mix(in oklab, var(--accent), black 12%);
-    color: var(--accent-contrast);
+    background: var(--ds-color-accent);
+    border-color: color-mix(in oklab, var(--ds-color-accent), black 12%);
+    color: var(--ds-color-accent-contrast);
   }
 
   .badge--secondary {
-    background: var(--surface);
-    border-color: var(--border);
-    color: var(--fg);
+    background: var(--ds-color-surface);
+    border-color: var(--ds-color-border);
+    color: var(--ds-color-fg);
   }
 
   .badge--ghost {
     background: transparent;
     border-color: transparent;
-    color: var(--fg);
+    color: var(--ds-color-fg);
   }
 
   .badge--danger {
@@ -47,18 +47,18 @@
   }
 
   .badge--sm {
-    padding: var(--space-1) var(--space-3);
-    font-size: var(--text-sm);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
   }
 
   .badge--md {
-    padding: var(--space-2) var(--space-4);
-    font-size: var(--text-md);
+    padding: var(--ds-space-2) var(--ds-space-4);
+    font-size: var(--ds-text-md);
   }
 
   .badge--lg {
-    padding: var(--space-3) var(--space-6);
-    font-size: var(--text-lg);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    font-size: var(--ds-text-lg);
   }
 
 }

@@ -1,20 +1,20 @@
 @layer components {
   .input {
     width: 100%;
-    padding: var(--space-2) var(--space-3);
-    background: var(--surface);
-    color: var(--fg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-sm);
     outline: none;
   }
 
   .input::placeholder {
-    color: var(--muted);
+    color: var(--ds-color-text-muted);
   }
 
   .input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 80%);
+    border-color: var(--ds-color-accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ds-color-accent), transparent 80%);
   }
 }

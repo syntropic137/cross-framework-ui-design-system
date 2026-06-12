@@ -1,11 +1,11 @@
 @layer components {
   .card {
-    background: var(--surface);
-    color: var(--fg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    padding: var(--space-4);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    padding: var(--ds-space-4);
   }
 
   .card--interactive {
@@ -13,6 +13,6 @@
   }
 
   .card--interactive:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--ds-shadow-md);
   }
 }
