@@ -24,6 +24,7 @@ export const baseTokens: TokenCategories = {
   color: {
     "ds-color-brand-hue": "222",
     "ds-color-brand-sat": "85%",
+    // var() composition below is intentional — these values resolve at CSS runtime in the browser
     "ds-color-brand":     "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 50%)",
     "ds-color-brand-600": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 40%)",
     "ds-color-brand-700": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 32%)",
