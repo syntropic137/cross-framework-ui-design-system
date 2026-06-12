@@ -1,0 +1,50 @@
+import { forwardRef } from "react";
+import type { {{#if isFormComponent}}{{capitalize type}}HTMLAttributes{{else}}HTMLAttributes{{/if}} } from "react";
+import clsx from "clsx";
+import "../design-system/components/{{componentNameKebab}}.css";
+
+{{#if hasVariants}}
+{{#each variants}}
+export type {{../componentName}}{{capitalize name}} = {{#each values}}"{{this}}"{{#unless @last}} | {{/unless}}{{/each}};
+{{/each}}
+{{/if}}
+
+{{#if hasProps}}
+export interface {{componentName}}Props extends {{#if isFormComponent}}{{capitalize type}}HTMLAttributes<HTML{{capitalize type}}Element>{{else}}HTMLAttributes<HTMLDivElement>{{/if}} {
+{{#each props}}
+  {{name}}{{#if optional}}?{{/if}}: {{type}};
+{{/each}}
+{{#if hasVariants}}
+{{#each variants}}
+  {{name}}?: {{../componentName}}{{capitalize name}};
+{{/each}}
+{{/if}}
+}
+{{else}}
+export interface {{componentName}}Props extends {{#if isFormComponent}}{{capitalize type}}HTMLAttributes<HTML{{capitalize type}}Element>{{else}}HTMLAttributes<HTMLDivElement>{{/if}} {
+{{#if hasVariants}}
+{{#each variants}}
+  {{name}}?: {{../componentName}}{{capitalize name}};
+{{/each}}
+{{/if}}
+}
+{{/if}}
+
+export const {{componentName}} = forwardRef<HTML{{#if isFormComponent}}{{capitalize type}}{{else}}Div{{/if}}Element, {{componentName}}Props>(function {{componentName}}(
+  { {{#if hasVariants}}{{#each variants}}{{name}}{{#if defaultValue}} = "{{defaultValue}}"{{/if}}, {{/each}}{{/if}}className, ...rest },
+  ref
+) {
+  return (
+    <{{#if isFormComponent}}{{type}}{{else}}div{{/if}}
+      ref={ref}
+      className={clsx(
+        "{{componentNameKebab}}"{{#if hasVariants}},
+        {{#each variants}}
+        {{name}} && `{{../componentNameKebab}}--$\{{{name}}}`{{#unless @last}},{{/unless}}
+        {{/each}}{{/if}},
+        className
+      )}
+      {...rest}
+    />
+  );
+});
