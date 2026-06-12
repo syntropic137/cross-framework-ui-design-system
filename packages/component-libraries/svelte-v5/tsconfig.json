@@ -9,7 +9,11 @@
     "sourceMap":            true,
     "esModuleInterop":      true,
     "skipLibCheck":         true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@design-system/contracts": ["../../contracts/src/index.ts"],
+      "@design-system/contracts/*": ["../../contracts/src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts"],
   "exclude": ["node_modules", "dist"]
