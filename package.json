@@ -15,6 +15,8 @@
     "storybook": "pnpm --filter @design-system/react-v18 storybook",
     "storybook:build": "pnpm --filter @design-system/react-v18 storybook:build",
     "storybook:test": "pnpm --filter @design-system/react-v18 storybook:test",
+    "storybook:svelte": "pnpm --filter @design-system/svelte-v5 storybook",
+    "test:svelte": "pnpm --filter @design-system/svelte-v5 test",
     "generate:component": "pnpm --filter @design-system/component-generator build && node packages/dev-tools/component-generator/dist/cli.js"
   },
   "engines": {
