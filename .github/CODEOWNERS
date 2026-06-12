@@ -1,0 +1,12 @@
+# CI/CD workflows — arbitrary code execution risk. Any change here can exfiltrate
+# secrets or backdoor the pipeline. Require maintainer review.
+/.github/                       @NeuralEmpowerment
+
+# Dependency manifests and lock file — supply chain entry points. Changes here
+# alter what code runs in CI and in consumers' builds.
+/package.json                   @NeuralEmpowerment
+/pnpm-lock.yaml                 @NeuralEmpowerment
+/packages/**/package.json       @NeuralEmpowerment
+
+# Component generator — runs on developer machines and scaffolds source files.
+/packages/dev-tools/            @NeuralEmpowerment
