@@ -14,7 +14,8 @@ describe("design token generation", () => {
     expect(outputs.css).toContain("[data-theme=\"dark\"]");
     expect(outputs.css).toContain("--ds-color-bg: #0c0f14;");
     expect(outputs.css).toContain("[data-theme=\"rose\"]");
-    expect(outputs.css).toContain("--ds-font-sans: ui-serif");
+    expect(outputs.css).toContain("[data-theme=\"serif\"]");
+    expect(outputs.css).toContain("--ds-font-sans: ui-serif, Georgia");
   });
 
   it("includes new semantic tokens", () => {
