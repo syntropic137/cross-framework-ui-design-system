@@ -1,8 +1,0 @@
-version: 2
-
-# Dependabot version updates are disabled — version bumps are handled manually.
-#
-# Dependabot *security* updates (CVE-triggered PRs) are enabled separately via:
-#   Settings > Security > Dependabot security updates
-# That feature is independent of this file and requires no config here.
-updates: []
