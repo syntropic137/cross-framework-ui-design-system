@@ -1,0 +1,36 @@
+# OSV Scanner ignore configuration.
+#
+# These three packages are transitive dependencies of @storybook/test-runner,
+# used ONLY to run Storybook stories as browser tests in CI. They are never
+# imported by the published component library and never execute at runtime —
+# `pnpm audit --prod` reports zero vulnerabilities.
+#
+# They cannot currently be removed: the modern replacement
+# (@storybook/addon-vitest, which drops this dependency tree) is unstable under
+# pnpm strict isolation as of vitest 4 / addon-vitest 10.4 — it fails with
+# "Vitest failed to find the runner" and the only reliable workaround weakens
+# pnpm's supply-chain isolation. Revisit the migration after that stabilizes.
+#
+# The scan stays BLOCKING for every other package and for any new advisory
+# outside these three. Review by the effectiveUntil date below.
+
+[[PackageOverrides]]
+name = "axios"
+ecosystem = "npm"
+vulnerability.ignore = true
+effectiveUntil = 2026-09-01
+reason = "dev-only via @storybook/test-runner (wait-on); not in prod/runtime. Remove when migrating off @storybook/test-runner."
+
+[[PackageOverrides]]
+name = "joi"
+ecosystem = "npm"
+vulnerability.ignore = true
+effectiveUntil = 2026-09-01
+reason = "dev-only via @storybook/test-runner; not in prod/runtime. Remove when migrating off @storybook/test-runner."
+
+[[PackageOverrides]]
+name = "uuid"
+ecosystem = "npm"
+vulnerability.ignore = true
+effectiveUntil = 2026-09-01
+reason = "dev-only via @storybook/test-runner; not in prod/runtime. Remove when migrating off @storybook/test-runner."
