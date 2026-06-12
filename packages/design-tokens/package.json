@@ -10,7 +10,7 @@
     "generated"
   ],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json",
+    "build": "tsc --build tsconfig.build.json && node ./dist/cli.js",
     "clean": "rimraf dist generated",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
     "test": "vitest run",

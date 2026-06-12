@@ -121,20 +121,20 @@ const controllerStyles: CSSProperties = {
   position: "fixed",
   inset: "auto 16px 16px auto",
   zIndex: 9999,
-  background: "var(--surface)",
-  border: "1px solid var(--border)",
-  borderRadius: "var(--radius-sm)",
-  boxShadow: "var(--shadow-sm)",
+  background: "var(--ds-color-surface)",
+  border: "1px solid var(--ds-color-border)",
+  borderRadius: "var(--ds-radius-sm)",
+  boxShadow: "var(--ds-shadow-sm)",
   padding: "4px",
   display: "flex"
 };
 
 const selectStyles: CSSProperties = {
   padding: "6px 10px",
-  borderRadius: "var(--radius-sm)",
-  border: "1px solid var(--border)",
-  background: "var(--surface)",
-  color: "var(--fg)",
+  borderRadius: "var(--ds-radius-sm)",
+  border: "1px solid var(--ds-color-border)",
+  background: "var(--ds-color-surface)",
+  color: "var(--ds-color-fg)",
   fontFamily: "inherit"
 };
 
