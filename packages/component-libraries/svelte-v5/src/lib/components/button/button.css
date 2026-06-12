@@ -1,0 +1,85 @@
+/* Button base styles */
+.button,
+button[data-variant] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-2);
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-sm);
+  font-weight: 500;
+  border-radius: var(--ds-radius-md);
+  border: 1px solid transparent;
+  padding: var(--ds-space-2) var(--ds-space-4);
+  transition:
+    background-color var(--ds-duration-base) var(--ds-ease),
+    color var(--ds-duration-base) var(--ds-ease),
+    border-color var(--ds-duration-base) var(--ds-ease);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+}
+
+button[data-variant]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --- Variants --- */
+
+button[data-variant="primary"] {
+  background-color: var(--ds-color-accent);
+  color: var(--ds-color-accent-contrast);
+}
+
+button[data-variant="primary"]:hover:not(:disabled) {
+  background-color: var(--ds-color-brand-600);
+}
+
+button[data-variant="secondary"] {
+  background-color: var(--ds-color-surface);
+  color: var(--ds-color-fg);
+  border-color: var(--ds-color-border);
+}
+
+button[data-variant="secondary"]:hover:not(:disabled) {
+  background-color: var(--ds-color-surface-raised);
+}
+
+button[data-variant="ghost"] {
+  background-color: transparent;
+  color: var(--ds-color-fg);
+}
+
+button[data-variant="ghost"]:hover:not(:disabled) {
+  background-color: var(--ds-color-surface);
+}
+
+button[data-variant="danger"] {
+  background-color: hsl(0 85% 50%);
+  color: #fff;
+}
+
+button[data-variant="danger"]:hover:not(:disabled) {
+  background-color: hsl(0 85% 40%);
+}
+
+/* --- Sizes --- */
+
+button[data-size="sm"] {
+  padding: var(--ds-space-1) var(--ds-space-3);
+  font-size: var(--ds-text-xs);
+}
+
+button[data-size="md"] {
+  padding: var(--ds-space-2) var(--ds-space-4);
+  font-size: var(--ds-text-sm);
+}
+
+button[data-size="lg"] {
+  padding: var(--ds-space-3) var(--ds-space-6);
+  font-size: var(--ds-text-md);
+}
