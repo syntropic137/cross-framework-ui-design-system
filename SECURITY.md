@@ -31,9 +31,35 @@ This repository enforces several supply-chain and code-security controls in CI:
 - **Least-privilege workflow permissions** — `contents: read` by default.
 - **Frozen lock file installs** (`pnpm install --frozen-lockfile`) — reproducible
   builds; the committed `pnpm-lock.yaml` is the source of truth.
-- **Install-script allowlist** (`pnpm.onlyBuiltDependencies`) — only vetted native
-  packages may run install scripts.
-- **OSV Scanner** — dependency vulnerability scanning on every push and PR.
+- **All install scripts blocked** (`.npmrc` `ignore-scripts=true`) — no
+  dependency's preinstall/install/postinstall can execute, the strongest defense
+  against postinstall-hook supply-chain attacks.
+- **OSV Scanner** (blocking) — dependency vulnerability scanning on every push
+  and PR. Acknowledged, non-applicable advisories are documented with reasons
+  and a review date in `osv-scanner.toml`; the scan still fails on anything else.
 - **Dependency Review** — blocks PRs that introduce high-severity vulnerabilities.
-- **CodeQL** — static analysis (SAST) for JavaScript/TypeScript.
-- **Dependabot** — automated updates for Actions and npm dependencies.
+- **Dependabot security updates** — opens PRs only for actual CVEs (version-bump
+  PRs are disabled to avoid noise).
+
+## Dependency Security Status
+
+_Last reviewed: 2026-06-12._
+
+- **Production dependencies: clean.** `pnpm audit --prod` reports zero known
+  vulnerabilities. Nothing vulnerable ships in the published packages.
+- A major-upgrade pass (PR #26) moved the toolchain to ESLint 9 (flat config),
+  Storybook 10, vite 6, and vitest 4, reducing unique vulnerable packages from
+  19 to 3 and eliminating all critical advisories.
+- The **3 remaining advisories are dev-only** transitive dependencies of
+  `@storybook/test-runner` (`axios`, `joi`, `uuid`) — used to run Storybook
+  stories as browser tests in CI, never imported by the library or run at
+  runtime. They cannot currently be removed: the modern replacement
+  (`@storybook/addon-vitest`) is unstable under pnpm strict isolation with
+  vitest 4, and the only reliable workaround would weaken supply-chain
+  isolation. These are acknowledged in `osv-scanner.toml`.
+- One additional acknowledged item, `GHSA-gv7w-rqvm-qjhr` (esbuild Deno-loader
+  RCE), **does not apply** — esbuild is used via vite/Node at build time, never
+  through the Deno loader.
+- **Open follow-up (review by 2026-09-01):** retry the
+  `@storybook/test-runner` → `@storybook/addon-vitest` migration to clear the
+  last 3, and re-evaluate the `osv-scanner.toml` acknowledgements.
