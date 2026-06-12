@@ -40,9 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       # OSV checks pnpm-lock.yaml against the OSV vulnerability database.
-      # continue-on-error during rollout — flip to false after a clean baseline.
       - uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
-        continue-on-error: true # TODO: flip to blocking after clean baseline
         with:
           scan-args: |-
             --lockfile=pnpm-lock.yaml
