@@ -27,7 +27,8 @@
     "@types/inquirer": "^9.0.7",
     "@types/node": "^20.8.0",
     "typescript": "^5.2.2",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.8",
+    "eslint": "^9.39.4"
   },
   "files": [
     "dist",
