@@ -44,9 +44,12 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       # OSV checks pnpm-lock.yaml against the OSV vulnerability database.
+      # osv-scanner.toml documents the dev-only test-runner advisories that are
+      # acknowledged; the scan still blocks on anything else.
       - uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
         with:
           scan-args: |-
+            --config=osv-scanner.toml
             --lockfile=pnpm-lock.yaml
 
   dependency-review:
@@ -61,3 +64,7 @@ jobs:
       - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           fail-on-severity: high
+          # esbuild Deno-loader RCE — not applicable (used via vite/Node at build
+          # time, not Deno). Pinned to ^0.25 by vite 6 / Storybook 10. Mirrors the
+          # acknowledgement in osv-scanner.toml.
+          allow-ghsas: GHSA-gv7w-rqvm-qjhr
