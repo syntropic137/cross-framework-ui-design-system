@@ -1,0 +1,105 @@
+import { render, screen } from "@testing-library/react";
+{{#if isFormComponent}}
+import { userEvent } from "@testing-library/user-event";
+{{/if}}
+import { {{componentName}} } from "../../src/components/{{componentName}}.js";
+
+describe("{{componentName}}", () => {
+  it("renders with base class and content", () => {
+    render(<{{componentName}}{{#unless isFormComponent}}>Test content</{{componentName}}{{else}} aria-label="Test {{componentNameKebab}}" /{{/unless}}>);
+
+    {{#if isFormComponent}}
+    const element = screen.getByRole("{{#if_eq type 'input'}}textbox{{/if_eq}}{{#if_eq type 'textarea'}}textbox{{/if_eq}}{{#if_eq type 'select'}}combobox{{/if_eq}}{{#if_eq type 'button'}}button{{/if_eq}}", { name: /test {{componentNameKebab}}/i });
+    {{else}}
+    const element = screen.getByText("Test content");
+    {{/if}}
+    expect(element).toHaveClass("{{componentNameKebab}}");
+  });
+
+  {{#if hasVariants}}
+  {{#each variants}}
+  it("applies {{name}} variant classes", () => {
+    {{#each values}}
+    render(<{{../../componentName}} {{../name}}="{{this}}"{{#unless ../../isFormComponent}}>{{capitalize this}} content</{{../../componentName}}{{else}} aria-label="{{capitalize this}} {{../../componentNameKebab}}" /{{/unless}}>);
+    
+    {{#if ../../isFormComponent}}
+    const element = screen.getByRole("{{#if_eq ../../type 'input'}}textbox{{/if_eq}}{{#if_eq ../../type 'textarea'}}textbox{{/if_eq}}{{#if_eq ../../type 'select'}}combobox{{/if_eq}}{{#if_eq ../../type 'button'}}button{{/if_eq}}", { name: /{{this}} {{../../componentNameKebab}}/i });
+    {{else}}
+    const element = screen.getByText("{{capitalize this}} content");
+    {{/if}}
+    expect(element).toHaveClass("{{../../componentNameKebab}}--{{this}}");
+    {{/each}}
+  });
+
+  {{/each}}
+  {{/if}}
+
+  it("merges custom className", () => {
+    render(<{{componentName}} className="custom-class"{{#unless isFormComponent}}>Custom content</{{componentName}}{{else}} aria-label="Custom {{componentNameKebab}}" /{{/unless}}>);
+
+    {{#if isFormComponent}}
+    const element = screen.getByRole("{{#if_eq type 'input'}}textbox{{/if_eq}}{{#if_eq type 'textarea'}}textbox{{/if_eq}}{{#if_eq type 'select'}}combobox{{/if_eq}}{{#if_eq type 'button'}}button{{/if_eq}}", { name: /custom {{componentNameKebab}}/i });
+    {{else}}
+    const element = screen.getByText("Custom content");
+    {{/if}}
+    expect(element).toHaveClass("custom-class", "{{componentNameKebab}}");
+  });
+
+  {{#if isFormComponent}}
+  it("handles disabled state", () => {
+    render(<{{componentName}} disabled aria-label="Disabled {{componentNameKebab}}" />);
+
+    const element = screen.getByRole("{{#if_eq type 'input'}}textbox{{/if_eq}}{{#if_eq type 'textarea'}}textbox{{/if_eq}}{{#if_eq type 'select'}}combobox{{/if_eq}}{{#if_eq type 'button'}}button{{/if_eq}}", { name: /disabled {{componentNameKebab}}/i });
+    expect(element).toBeDisabled();
+  });
+
+  {{#if_eq type "input"}}
+  it("handles user input", async () => {
+    const user = userEvent.setup();
+    render(<{{componentName}} aria-label="Test input" />);
+
+    const input = screen.getByRole("textbox", { name: /test input/i });
+    await user.type(input, "Hello World");
+    
+    expect(input).toHaveValue("Hello World");
+  });
+  {{/if_eq}}
+
+  {{#if_eq type "textarea"}}
+  it("handles multiline input", async () => {
+    const user = userEvent.setup();
+    render(<{{componentName}} aria-label="Test textarea" />);
+
+    const textarea = screen.getByRole("textbox", { name: /test textarea/i });
+    await user.type(textarea, "Line 1\nLine 2");
+    
+    expect(textarea).toHaveValue("Line 1\nLine 2");
+  });
+  {{/if_eq}}
+
+  {{#if_eq type "select"}}
+  it("handles option selection", async () => {
+    const user = userEvent.setup();
+    render(
+      <{{componentName}} aria-label="Test select">
+        <option value="">Choose option</option>
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+      </{{componentName}}>
+    );
+
+    const select = screen.getByRole("combobox", { name: /test select/i });
+    await user.selectOptions(select, "option1");
+    
+    expect(select).toHaveValue("option1");
+  });
+  {{/if_eq}}
+  {{/if}}
+
+  it("forwards ref correctly", () => {
+    const ref = { current: null };
+    render(<{{componentName}} ref={ref}{{#unless isFormComponent}}>Ref test</{{componentName}}{{else}} aria-label="Ref test" /{{/unless}}>);
+
+    expect(ref.current).toBeInstanceOf(HTML{{#if isFormComponent}}{{capitalize type}}{{else}}Div{{/if}}Element);
+  });
+});

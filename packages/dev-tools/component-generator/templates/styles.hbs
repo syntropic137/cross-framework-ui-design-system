@@ -1,0 +1,150 @@
+@layer components {
+  .{{componentNameKebab}} {
+    {{#if_eq type "display"}}
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: var(--shadow-sm);
+    {{/if_eq}}
+    {{#if_eq type "form"}}
+    display: block;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: var(--text-md);
+    line-height: 1.5;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    {{/if_eq}}
+    {{#if_eq type "layout"}}
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    {{/if_eq}}
+    {{#if_eq type "utility"}}
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    {{/if_eq}}
+  }
+
+  {{#if_eq type "form"}}
+  .{{componentNameKebab}}:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent), transparent 80%);
+  }
+
+  .{{componentNameKebab}}:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--muted);
+  }
+
+  .{{componentNameKebab}}::placeholder {
+    color: var(--muted);
+  }
+  {{/if_eq}}
+
+  {{#if_eq type "display"}}
+  .{{componentNameKebab}}:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .{{componentNameKebab}}:active {
+    transform: translateY(1px);
+  }
+  {{/if_eq}}
+
+  {{#if hasVariants}}
+  {{#each variants}}
+  {{#each values}}
+  .{{../../componentNameKebab}}--{{this}} {
+    {{#if_eq this "primary"}}
+    background: var(--accent);
+    border-color: color-mix(in oklab, var(--accent), black 12%);
+    color: var(--accent-contrast);
+    {{/if_eq}}
+    {{#if_eq this "secondary"}}
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--fg);
+    {{/if_eq}}
+    {{#if_eq this "ghost"}}
+    background: transparent;
+    border-color: transparent;
+    color: var(--fg);
+    {{/if_eq}}
+    {{#if_eq this "danger"}}
+    --danger: #e5484d;
+    --danger-contrast: #ffffff;
+    background: var(--danger);
+    color: var(--danger-contrast);
+    border-color: color-mix(in oklab, var(--danger), black 15%);
+    {{/if_eq}}
+    {{#if_eq this "success"}}
+    --success: #30a46c;
+    --success-contrast: #ffffff;
+    background: var(--success);
+    color: var(--success-contrast);
+    border-color: color-mix(in oklab, var(--success), black 15%);
+    {{/if_eq}}
+    {{#if_eq this "warning"}}
+    --warning: #f76808;
+    --warning-contrast: #ffffff;
+    background: var(--warning);
+    color: var(--warning-contrast);
+    border-color: color-mix(in oklab, var(--warning), black 15%);
+    {{/if_eq}}
+    {{#if_eq this "disabled"}}
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    {{/if_eq}}
+    {{#if_eq this "error"}}
+    border-color: var(--danger, #e5484d);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--danger, #e5484d), transparent 80%);
+    {{/if_eq}}
+  }
+
+  {{/each}}
+  {{/each}}
+  {{/if}}
+
+  {{#each sizes}}
+  .{{../componentNameKebab}}--{{this}} {
+    {{#if_eq this "xs"}}
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    {{/if_eq}}
+    {{#if_eq this "sm"}}
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-sm);
+    {{/if_eq}}
+    {{#if_eq this "md"}}
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-md);
+    {{/if_eq}}
+    {{#if_eq this "lg"}}
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-lg);
+    {{/if_eq}}
+    {{#if_eq this "xl"}}
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--text-xl);
+    {{/if_eq}}
+  }
+
+  {{/each}}
+}

@@ -1,0 +1,100 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { {{componentName}} } from "./{{componentName}}";
+
+const meta: Meta<typeof {{componentName}}> = {
+  title: "Components/{{componentName}}",
+  component: {{componentName}},
+  args: {
+    {{#if isFormComponent}}
+    {{#if_eq type "input"}}
+    placeholder: "Enter text...",
+    {{/if_eq}}
+    {{#if_eq type "textarea"}}
+    placeholder: "Enter your message...",
+    rows: 4,
+    {{/if_eq}}
+    {{#if_eq type "select"}}
+    children: (
+      <>
+        <option value="">Choose an option</option>
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+      </>
+    ),
+    {{/if_eq}}
+    {{else}}
+    children: "{{componentName}} content",
+    {{/if}}
+    {{#if hasVariants}}
+    {{#each variants}}
+    {{#if defaultValue}}
+    {{name}}: "{{defaultValue}}",
+    {{/if}}
+    {{/each}}
+    {{/if}}
+  },
+  parameters: {
+    layout: "padded"
+  }
+};
+
+export default meta;
+
+type Story = StoryObj<typeof {{componentName}}>;
+
+export const Default: Story = {};
+
+{{#if hasVariants}}
+{{#each variants}}
+{{#each values}}
+export const {{capitalize ../name}}{{capitalize this}}: Story = {
+  args: {
+    {{../name}}: "{{this}}"
+  }
+};
+
+{{/each}}
+{{/each}}
+{{/if}}
+
+{{#if isFormComponent}}
+export const Disabled: Story = {
+  args: {
+    disabled: true
+  }
+};
+
+{{#if_eq type "input"}}
+export const WithError: Story = {
+  args: {
+    "aria-invalid": true,
+    "aria-describedby": "error-message"
+  },
+  render: (args) => (
+    <div>
+      <{{componentName}} {...args} />
+      <div id="error-message" style={{"{{" }} color: "var(--danger, #e5484d)", fontSize: "0.875rem", marginTop: "0.25rem" {{"}}"}}>
+        This field is required
+      </div>
+    </div>
+  )
+};
+{{/if_eq}}
+{{/if}}
+
+{{#if hasVariants}}
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{"{{" }} display: "flex", gap: "1rem", flexWrap: "wrap" {{"}}"}}>
+      {{#each variants}}
+      {{#each values}}
+      <{{../componentName}} {{../name}}="{{this}}">
+        {{capitalize ../name}}: {{this}}
+      </{{../componentName}}>
+      {{/each}}
+      {{/each}}
+    </div>
+  )
+};
+{{/if}}
