@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/svelte";
+import "@design-system/design-tokens/generated/design-tokens.css";
 
 const preview: Preview = {
   parameters: {

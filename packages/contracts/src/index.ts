@@ -4,6 +4,7 @@ export * from "./components/accordion.js";
 export * from "./components/alert-dialog.js";
 export * from "./components/aspect-ratio.js";
 export * from "./components/avatar.js";
+export * from "./components/badge.js";
 export * from "./components/button.js";
 export * from "./components/calendar.js";
 export * from "./components/checkbox.js";
