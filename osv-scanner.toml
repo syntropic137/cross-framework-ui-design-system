@@ -14,6 +14,16 @@
 # The scan stays BLOCKING for every other package and for any new advisory
 # outside these three. Review by the effectiveUntil date below.
 
+# esbuild's Deno module loader is vulnerable to RCE via NPM_CONFIG_REGISTRY
+# (GHSA-gv7w-rqvm-qjhr). This does NOT apply here: esbuild is used via vite and
+# Storybook at BUILD time under Node, never through the Deno loader. The fix
+# (0.28.1) is also unreachable — vite 6 / Storybook 10 pin esbuild to ^0.25.
+# Ignored by specific ID so any *other* esbuild advisory still fails the scan.
+[[IgnoredVulns]]
+id = "GHSA-gv7w-rqvm-qjhr"
+ignoreUntil = 2026-09-01
+reason = "esbuild Deno-loader RCE; not applicable (used via vite/Node at build time, not Deno). Pinned to ^0.25 by vite 6 / Storybook 10."
+
 [[PackageOverrides]]
 name = "axios"
 ecosystem = "npm"
