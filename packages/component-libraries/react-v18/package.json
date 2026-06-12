@@ -52,6 +52,7 @@
     "typescript": "^5.9.2",
     "vite": "^6.4.3",
     "vitest": "^4.1.8",
+    "eslint": "^9.39.4",
     "eslint-plugin-storybook": "^10.4.4",
     "@storybook/addon-docs": "^10.4.4"
   }
