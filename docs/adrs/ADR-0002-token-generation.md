@@ -9,7 +9,7 @@ We need a single source of truth for design tokens that can emit layered CSS var
 ## Decision
 - Maintain canonical tokens in TypeScript (`packages/design-tokens/src/token-data.ts`). The data structure groups tokens by category (color, typography, space, radius, shadow) to keep semantics explicit.
 - Use a lightweight generator (`buildTokenOutputs`) to convert the token map plus theme overrides into:
-  - `tokens.css` – an `@layer tokens` stylesheet with `:root` defaults and additional `[data-theme="x"]` overrides.
+  - `design-tokens.css` – an `@layer tokens` stylesheet with `:root` defaults and additional `[data-theme="x"]` overrides.
   - `tokens.json` – merged tokens per theme for consumption by build tooling and contract tests.
 - Provide `writeGeneratedFiles` plus a CLI entry point so other packages (or release workflows) can regenerate outputs deterministically.
 - Cover the generator with Vitest unit tests to guard against accidental token drift and ensure each theme exposes a complete set of values.
