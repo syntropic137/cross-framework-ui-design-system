@@ -16,7 +16,9 @@ const CATEGORY_ORDER: (keyof TokenCategories)[] = [
   "typography",
   "space",
   "radius",
-  "shadow"
+  "shadow",
+  "motion",
+  "z"
 ];
 
 const INDENT = "  ";
@@ -104,11 +106,13 @@ function mergeTokenCategories(
   overrides: Partial<TokenCategories> = {}
 ): TokenCategories {
   return {
-    color: { ...base.color, ...(overrides.color ?? {}) },
+    color:      { ...base.color,      ...(overrides.color      ?? {}) },
     typography: { ...base.typography, ...(overrides.typography ?? {}) },
-    space: { ...base.space, ...(overrides.space ?? {}) },
-    radius: { ...base.radius, ...(overrides.radius ?? {}) },
-    shadow: { ...base.shadow, ...(overrides.shadow ?? {}) }
+    space:      { ...base.space,      ...(overrides.space      ?? {}) },
+    radius:     { ...base.radius,     ...(overrides.radius     ?? {}) },
+    shadow:     { ...base.shadow,     ...(overrides.shadow     ?? {}) },
+    motion:     { ...base.motion,     ...(overrides.motion     ?? {}) },
+    z:          { ...base.z,          ...(overrides.z          ?? {}) }
   };
 }
 

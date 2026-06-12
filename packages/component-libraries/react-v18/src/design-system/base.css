@@ -17,7 +17,7 @@
 @layer base {
   :root {
     color-scheme: light dark;
-    
+
     /* Confetti color palette */
     --confetti-color-1: #ff6b6b;
     --confetti-color-2: #4ecdc4;
@@ -30,15 +30,15 @@
   }
 
   body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: var(--font-sans);
-    font-size: var(--text-md);
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+    font-family: var(--ds-font-sans);
+    font-size: var(--ds-text-md);
     line-height: 1.5;
   }
 
   a {
-    color: var(--accent);
+    color: var(--ds-color-accent);
     text-decoration: none;
   }
 
@@ -47,7 +47,7 @@
   }
 
   :focus-visible {
-    outline: var(--focus-ring);
+    outline: var(--ds-focus-ring);
     outline-offset: 2px;
   }
 }

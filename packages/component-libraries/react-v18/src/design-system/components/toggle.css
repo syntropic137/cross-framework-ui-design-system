@@ -10,11 +10,11 @@
     border: none;
     background: none;
     cursor: pointer;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--ds-duration-base) var(--ds-ease);
   }
 
   .toggle:focus-visible {
-    outline: 2px solid color-mix(in oklab, var(--accent), transparent 30%);
+    outline: 2px solid color-mix(in oklab, var(--ds-color-accent), transparent 30%);
     outline-offset: 2px;
   }
 
@@ -27,18 +27,18 @@
     position: absolute;
     inset: 0;
     border-radius: 9999px;
-    background: color-mix(in oklab, var(--muted), transparent 40%);
-    border: 1px solid color-mix(in oklab, var(--border), transparent 40%);
+    background: color-mix(in oklab, var(--ds-color-text-muted), transparent 40%);
+    border: 1px solid color-mix(in oklab, var(--ds-color-border), transparent 40%);
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding: 2px;
-    transition: background 0.2s ease, border 0.2s ease;
+    transition: background var(--ds-duration-base) var(--ds-ease), border var(--ds-duration-base) var(--ds-ease);
   }
 
   .toggle--checked .toggle__track {
-    background: var(--accent);
-    border-color: color-mix(in oklab, var(--accent), black 18%);
+    background: var(--ds-color-accent);
+    border-color: color-mix(in oklab, var(--ds-color-accent), black 18%);
     justify-content: flex-end;
   }
 
@@ -46,12 +46,12 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: var(--surface);
-    box-shadow: var(--shadow-sm);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    background: var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-sm);
+    transition: background var(--ds-duration-base) var(--ds-ease), box-shadow var(--ds-duration-base) var(--ds-ease);
   }
 
   .toggle--checked .toggle__thumb {
-    background: var(--accent-contrast);
+    background: var(--ds-color-accent-contrast);
   }
 }

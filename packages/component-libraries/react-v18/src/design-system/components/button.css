@@ -3,18 +3,18 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
-    padding: calc(var(--space-2) + 2px) var(--space-4);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--fg);
-    box-shadow: var(--shadow-sm);
+    padding: calc(var(--ds-space-2) + 2px) var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    box-shadow: var(--ds-shadow-sm);
     cursor: pointer;
-    transition: transform 0.04s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+    transition: transform 0.04s ease, box-shadow var(--ds-duration-base) var(--ds-ease), background var(--ds-duration-base) var(--ds-ease), color var(--ds-duration-base) var(--ds-ease);
   }
 
   .btn:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--ds-shadow-md);
   }
 
   .btn:active {
@@ -22,14 +22,14 @@
   }
 
   .btn--primary {
-    background: var(--accent);
-    border-color: color-mix(in oklab, var(--accent), black 12%);
-    color: var(--accent-contrast);
+    background: var(--ds-color-accent);
+    border-color: color-mix(in oklab, var(--ds-color-accent), black 12%);
+    color: var(--ds-color-accent-contrast);
   }
 
   .btn--ghost {
     background: transparent;
-    border-color: var(--border);
+    border-color: var(--ds-color-border);
   }
 
   .btn--danger {
@@ -41,12 +41,12 @@
   }
 
   .btn--sm {
-    padding: var(--space-1) var(--space-3);
-    font-size: var(--text-sm);
+    padding: var(--ds-space-1) var(--ds-space-3);
+    font-size: var(--ds-text-sm);
   }
 
   .btn--lg {
-    padding: var(--space-3) var(--space-6);
-    font-size: var(--text-lg);
+    padding: var(--ds-space-3) var(--ds-space-6);
+    font-size: var(--ds-text-lg);
   }
 }

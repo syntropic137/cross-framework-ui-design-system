@@ -5,29 +5,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-8) var(--space-4);
-    background-color: color-mix(in oklab, var(--bg), transparent 50%);
+    padding: var(--ds-space-8) var(--ds-space-4);
+    background-color: color-mix(in oklab, var(--ds-color-bg), transparent 50%);
     backdrop-filter: blur(4px);
-    z-index: 1000;
+    z-index: var(--ds-z-modal);
   }
 
   .modal {
     width: min(600px, 100%);
-    background: var(--surface);
-    color: var(--fg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    padding: var(--space-6);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+    padding: var(--ds-space-6);
     outline: none;
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--ds-space-4);
     animation: modal-in 160ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .modal__title {
-    font-size: var(--text-xl);
+    font-size: var(--ds-text-xl);
     font-weight: 600;
     margin: 0;
   }
@@ -35,7 +35,7 @@
   .modal__footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--space-3);
+    gap: var(--ds-space-3);
   }
 
   @keyframes modal-in {
