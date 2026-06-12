@@ -13,7 +13,7 @@ A generated source of truth for design tokens and theme layers used across the c
 
 1. Update token definitions in `src/token-data.ts`. Keep semantic tokens (`bg`, `fg`, `accent`) separated from raw brand values to simplify theming.
 2. Run `pnpm tokens:build` to produce:
-   - `generated/tokens.css` – layered CSS custom properties with `:root` defaults and themed overrides.
+   - `generated/design-tokens.css` – layered CSS custom properties with `:root` defaults and themed overrides.
    - `generated/tokens.json` – machine-readable snapshot consumed by other packages.
 3. Downstream packages import the generated CSS (or JSON) to stay in sync with the canonical tokens.
 

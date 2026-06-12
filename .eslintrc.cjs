@@ -14,7 +14,8 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "prettier",
+    "plugin:storybook/recommended"
   ],
   ignorePatterns: ["dist", "coverage", "node_modules"]
 };

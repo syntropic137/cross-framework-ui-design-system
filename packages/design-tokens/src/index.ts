@@ -38,8 +38,8 @@ export async function writeGeneratedFiles(outputDir: string): Promise<void> {
   const outputs = buildTokenOutputs();
   await mkdir(outputDir, { recursive: true });
 
-  const cssPath = join(outputDir, "tokens.css");
-  const jsonPath = join(outputDir, "tokens.json");
+  const cssPath = join(outputDir, "design-tokens.css");
+  const jsonPath = join(outputDir, "design-tokens.json");
 
   await writeFile(cssPath, `${outputs.css}\n`, "utf8");
   await writeFile(jsonPath, `${JSON.stringify(outputs.json, null, 2)}\n`, "utf8");

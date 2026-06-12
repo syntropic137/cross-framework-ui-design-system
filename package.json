@@ -13,7 +13,8 @@
     "check": "pnpm qa",
     "storybook": "pnpm --filter @design-system/react-v18 storybook",
     "storybook:build": "pnpm --filter @design-system/react-v18 storybook:build",
-    "storybook:test": "pnpm --filter @design-system/react-v18 storybook:test"
+    "storybook:test": "pnpm --filter @design-system/react-v18 storybook:test",
+    "generate:component": "pnpm --filter @design-system/component-generator build && node packages/dev-tools/component-generator/dist/cli.js"
   },
   "engines": {
     "node": ">=18.18.0",

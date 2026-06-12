@@ -28,8 +28,8 @@ describe("design token generation", () => {
   it("writes generated assets to disk", async () => {
     await writeGeneratedFiles(OUTPUT_DIR);
 
-    const cssPath = join(OUTPUT_DIR, "tokens.css");
-    const jsonPath = join(OUTPUT_DIR, "tokens.json");
+    const cssPath = join(OUTPUT_DIR, "design-tokens.css");
+    const jsonPath = join(OUTPUT_DIR, "design-tokens.json");
 
     expect(await fileExists(cssPath)).toBe(true);
     expect(await fileExists(jsonPath)).toBe(true);
