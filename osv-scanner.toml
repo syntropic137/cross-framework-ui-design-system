@@ -1,18 +1,13 @@
 # OSV Scanner ignore configuration.
 #
-# These three packages are transitive dependencies of @storybook/test-runner,
-# used ONLY to run Storybook stories as browser tests in CI. They are never
-# imported by the published component library and never execute at runtime —
-# `pnpm audit --prod` reports zero vulnerabilities.
+# The repo migrated off @storybook/test-runner to @storybook/addon-vitest
+# (Storybook stories run as browser tests via Vitest + Playwright). That removed
+# the wait-on -> axios / joi / uuid dev-dependency tree entirely, so those
+# package overrides are gone: those vulnerabilities are ELIMINATED, not ignored.
 #
-# They cannot currently be removed: the modern replacement
-# (@storybook/addon-vitest, which drops this dependency tree) is unstable under
-# pnpm strict isolation as of vitest 4 / addon-vitest 10.4 — it fails with
-# "Vitest failed to find the runner" and the only reliable workaround weakens
-# pnpm's supply-chain isolation. Revisit the migration after that stabilizes.
-#
-# The scan stays BLOCKING for every other package and for any new advisory
-# outside these three. Review by the effectiveUntil date below.
+# Only esbuild remains below — it ships with vite 6 / Storybook 10 at build time
+# and the advisory does not apply here. The scan stays BLOCKING for every other
+# package and for any new advisory outside this one. Review by the date below.
 
 # esbuild's Deno module loader is vulnerable to RCE via NPM_CONFIG_REGISTRY
 # (GHSA-gv7w-rqvm-qjhr). This does NOT apply here: esbuild is used via vite and
@@ -23,24 +18,3 @@
 id = "GHSA-gv7w-rqvm-qjhr"
 ignoreUntil = 2026-09-01
 reason = "esbuild Deno-loader RCE; not applicable (used via vite/Node at build time, not Deno). Pinned to ^0.25 by vite 6 / Storybook 10."
-
-[[PackageOverrides]]
-name = "axios"
-ecosystem = "npm"
-vulnerability.ignore = true
-effectiveUntil = 2026-09-01
-reason = "dev-only via @storybook/test-runner (wait-on); not in prod/runtime. Remove when migrating off @storybook/test-runner."
-
-[[PackageOverrides]]
-name = "joi"
-ecosystem = "npm"
-vulnerability.ignore = true
-effectiveUntil = 2026-09-01
-reason = "dev-only via @storybook/test-runner; not in prod/runtime. Remove when migrating off @storybook/test-runner."
-
-[[PackageOverrides]]
-name = "uuid"
-ecosystem = "npm"
-vulnerability.ignore = true
-effectiveUntil = 2026-09-01
-reason = "dev-only via @storybook/test-runner; not in prod/runtime. Remove when migrating off @storybook/test-runner."
