@@ -1,156 +1,70 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-# 🔄 RIPER-5 MODE: STRICT OPERATIONAL PROTOCOL
-v2.0.5 - 20250810
+<!--
+  Canonical agent-instructions source of truth (agents.md format — https://agents.md).
+  CLAUDE.md is a SYMLINK to this file: Claude Code reads CLAUDE.md, not AGENTS.md,
+  so the symlink keeps both identical with zero drift. Edit this file only.
+  Windows: symlinks need Developer Mode/Admin. If a clone is missing CLAUDE.md,
+  recreate it with `ln -s AGENTS.md CLAUDE.md`, or make CLAUDE.md a one-line
+  `@AGENTS.md` import instead.
+-->
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│             │     │             │     │             │     │             │     │             │
-│  RESEARCH   │────▶│  INNOVATE   │────▶│    PLAN     │────▶│   EXECUTE   │────▶│   REVIEW    │
-│             │     │             │     │             │     │             │     │             │
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
-       ▲                                       │                  │                    │
-       │                                       │                  │                    │
-       └───────────────────────────────────────┘                  │                    │
-                                                                  │                    │
-                                                                  ▼                    │
-                                                        ┌─────────────────┐            │
-                                                        │  QA CHECKPOINT  │            │
-                                                        │  - Lint/Format  │            │
-                                                        │  - Type Check   │            │
-                                                        │  - Run Tests    │            │
-                                                        │  - Review Files │            │
-                                                        │  - Commit Files │            │
-                                                        └─────────────────┘            │
-                                                                  │                    │
-                                                                  └────────────────────┘
-```
+# React Component Library & Design System
 
-## Mode Transition Signals
-Only transition modes when these exact signals are used:
+A cross-framework component library and design system built as a **pnpm monorepo** (`pnpm@9.1.4`). Design tokens generate layered CSS that per-framework packages (React 18, Svelte 5) consume; component contracts are verified in Storybook. The goal is a type-safe adapter so an app can swap component libraries (React ↔ Svelte) without changing app code.
 
-```
-ENTER RESEARCH MODE or ERM
-ENTER INNOVATE MODE or EIM
-ENTER PLAN MODE or EPM
-ENTER EXECUTE MODE or EEM
-ENTER REVIEW MODE or EQM
-DIRECT EXECUTE MODE or DEM // Used to bypass the plan and go straight to execute mode
-```
-
-## Meta-Instruction
-**BEGIN EVERY RESPONSE WITH YOUR CURRENT MODE IN BRACKETS.**  
-**Format:** `[MODE: MODE_NAME]`
-
-## The RIPER-5 Modes
-
-### MODE 1: RESEARCH
-- **Purpose:** Information gathering ONLY
-- **Permitted:** Reading files, asking questions, understanding code
-- **Forbidden:** Suggestions, planning, implementation
-- **Output:** `[MODE: RESEARCH]` + observations and questions
-
-### MODE 2: INNOVATE
-- **Purpose:** Brainstorming potential approaches
-- **Permitted:** Discussing ideas, advantages/disadvantages
-- **Forbidden:** Concrete planning, code writing
-- **Output:** `[MODE: INNOVATE]` + possibilities and considerations
-
-### MODE 3: PLAN
-- **Purpose:** Creating technical specification
-- **Permitted:** Detailed plans with file paths and changes
-- **Forbidden:** Implementation or code writing
-- **Required:** Create comprehensive `PROJECT-PLAN_YYYYMMDD_<TASK-NAME>.md` with milestones. The milestones should consist of tasks with empty checkboxes to be filled in when the task is complete. (NEVER Commit the PROJECT-PLANs)
-- **Output:** `[MODE: PLAN]` + specifications and implementation details
-- **ADRs** Any architecture decisions should be captured in an Architecture Decision Record in `/docs/adrs/`
-- **Test Driven Development:** Always keep testing in mind and add tests first, then implement features. Thinking with testing in mind first, also created better software design because it's designed to be easily testable. "Testing code is as important as Production code."
-
-### MODE 4: EXECUTE
-- **Purpose:** Implementing the approved plan exactly
-- **Permitted:** Implementing detailed plan tasks, running QA checkpoints
-- **Forbidden:** Deviations from plan, creative additions
-- **Required:** After each milestone, run QA checkpoint and commit changes
-- **Output:** `[MODE: EXECUTE]` + implementation matching the plan
-- During execute, please use TODO comments for things that can be improved or changed in the future and use "FIXME" comments for things that are breaking the app.
-
-### MODE 5: REVIEW
-- **Purpose:** Validate implementation against plan
-- **Permitted:** Line-by-line comparison
-- **Required:** Flag ANY deviation with `:warning: DEVIATION DETECTED: [description]`
-- **Output:** `[MODE: REVIEW]` + comparison and verdict
-
-## QA Checkpoint Process
-
-After each milestone in EXECUTE mode:
-1. Run linter with auto-formatting
-2. Run type checks
-3. Run tests
-4. Review changes with git MCP server
-5. Commit changes with conventional commit messages before moving to next milestone
-
-**python** for python, you can run all of the checks together with `poetry run poe check-fix`
+## Setup
 
 ```bash
-# Run all checks and auto-format code
-python scripts/qa_checkpoint.py
-
-# Run checks and commit using conventional commit format
-python scripts/qa_checkpoint.py --commit "Complete Milestone X" --conventional-commit
+pnpm install
 ```
 
-## Git MCP Server for Clean Commits
+## Build / test / lint
 
-Use the git MCP server to review files and make logical commits:
-
-```
-[MODE: EXECUTE]
-
-Let's use the git MCP server to review files and make logical commits with commit lint based messages:
-```
-
-1. Review current status and changes:
 ```bash
-mcp_git_git_status <repo_path>
-mcp_git_git_diff_unstaged <repo_path>
+pnpm qa            # lint + typecheck + build + test + storybook:test — the full gate
+pnpm lint          # eslint across all packages
+pnpm typecheck     # tsc across all packages
+pnpm test          # vitest across all packages
+pnpm build         # build design tokens, then all packages
+pnpm format        # prettier across all packages
+pnpm storybook     # React Storybook locally (pnpm storybook:svelte for Svelte)
+pnpm generate:component   # scaffold a new component via the generator CLI
 ```
 
-2. Make logical commits using conventional commit format:
-```bash
-# Stage related files
-mcp_git_git_add <repo_path> ["file1.py", "file2.py"]
+**Run `pnpm qa` and fix all failures before finishing a task.**
 
-DO NOT Commit anything. Provide the Git Commit message and let me commit.
-```
+## Project layout
 
-### Conventional Commit Format
+- `packages/design-tokens/` (`@design-system/design-tokens`) — token definitions → layered CSS + JSON snapshots
+- `packages/component-libraries/react-v18/` (`@design-system/react-v18`) — React 18 library (Vite build, Storybook)
+- `packages/component-libraries/svelte-v5/` (`@design-system/svelte-v5`) — Svelte 5 library
+- `packages/dev-tools/component-generator/` (`@design-system/component-generator`) — component scaffolding CLI
+- `docs/` — `docs/component-standard.md` (canonical component contract), ADRs in `docs/adrs/`
 
-Format: `type(scope): description`
+## Conventions
 
-Types:
-- `feat`: New features
-- `fix`: Bug fixes
-- `docs`: Documentation
-- `style`: Formatting changes
-- `refactor`: Code restructuring
-- `test`: Test changes
-- `chore`: Maintenance
+- **Test-first.** Write contract/unit tests before implementing a component; treat test code as seriously as production code.
+- **Tokens, not hardcoded values.** Components use semantic design tokens; size in `rem`, not `px`.
+- **Theming is decoupled from components.** Color and theme swaps (light/dark and beyond) happen through tokens, never per-component edits.
+- **ADRs** for non-obvious architecture decisions, under `docs/adrs/`.
+- **Conventional commits** — `type(scope): description` using `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`.
+- Do **not** commit draft project plans (`PROJECT-PLAN_*.md`) or session handoffs (`docs/handoffs/`) — both are gitignored.
 
-### Files to Exclude
-- Temporary files
-- Draft project plans
-- Build artifacts
-- Cache files
+## Testing
 
-## Critical Guidelines
-- Never transition between modes without explicit permission
-- Always declare current mode at the start of every response
-- Follow the plan with 100% fidelity in EXECUTE mode
-- Flag even the smallest deviation in REVIEW mode
-- Return to PLAN mode if any implementation issue requires deviation
-- Use conventional commit messages for all commits
+- Unit/contract tests run on **Vitest + Testing Library**, co-located with components.
+- Storybook interaction tests run via `pnpm storybook:test` (included in `pnpm qa`).
+- Every component must satisfy the contract in `docs/component-standard.md` and include accessibility checks.
+
+## Security
+
+- Dependency advisories are gated with **osv-scanner** (`osv-scanner.toml`); never silence security scans with `continue-on-error`.
+- No secrets in the repo. See `SECURITY.md` for the current posture and controls.
+
+## Pull requests
+
+- Branch off `main`; integrate via PR (the repo history is PR-based).
+- `pnpm qa` must pass before merge.
+- Keep commits conventional and scoped to one logical change.
 
 <!-- br-agent-instructions-v1 -->
 
