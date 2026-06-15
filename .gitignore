@@ -164,3 +164,9 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 storybook-static
+
+# RIPER-5 project plans (drafts, never committed)
+/PROJECT-PLAN_*.md
+
+# Session handoff docs (local-only)
+docs/handoffs/
