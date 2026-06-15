@@ -170,3 +170,6 @@ storybook-static
 
 # Session handoff docs (local-only)
 docs/handoffs/
+
+# Local git worktrees (registered separate checkouts, never committed)
+.claude/worktrees/
