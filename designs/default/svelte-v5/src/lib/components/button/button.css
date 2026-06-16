@@ -64,7 +64,7 @@ button[data-variant="danger"] {
 }
 
 button[data-variant="danger"]:hover:not(:disabled) {
-  background-color: color-mix(in oklab, var(--ds-color-danger), black 15%);
+  background-color: color-mix(in oklab, var(--ds-color-danger), var(--ds-color-fg) 15%);
 }
 
 /* --- Sizes --- */

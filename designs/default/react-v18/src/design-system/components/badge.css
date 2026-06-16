@@ -22,7 +22,7 @@
 
   .badge--solid {
     background: var(--ds-color-accent);
-    border-color: color-mix(in oklab, var(--ds-color-accent), black 12%);
+    border-color: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-fg) 12%);
     color: var(--ds-color-accent-contrast);
   }
 
@@ -41,24 +41,24 @@
   .badge--danger {
     background: var(--ds-color-danger);
     color: var(--ds-color-danger-contrast);
-    border-color: color-mix(in oklab, var(--ds-color-danger), black 15%);
+    border-color: color-mix(in oklab, var(--ds-color-danger), var(--ds-color-fg) 15%);
   }
 
   .badge--success {
     background: var(--ds-color-success);
     color: var(--ds-color-success-contrast);
-    border-color: color-mix(in oklab, var(--ds-color-success), black 15%);
+    border-color: color-mix(in oklab, var(--ds-color-success), var(--ds-color-fg) 15%);
   }
 
   .badge--warning {
     background: var(--ds-color-warning);
     color: var(--ds-color-warning-contrast);
-    border-color: color-mix(in oklab, var(--ds-color-warning), black 15%);
+    border-color: color-mix(in oklab, var(--ds-color-warning), var(--ds-color-fg) 15%);
   }
 
   .badge--accent {
     background: var(--ds-color-accent);
-    border-color: color-mix(in oklab, var(--ds-color-accent), black 12%);
+    border-color: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-fg) 12%);
     color: var(--ds-color-accent-contrast);
   }
 

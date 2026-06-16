@@ -67,11 +67,11 @@
     background: var(--ds-color-danger);
     color: var(--ds-color-danger-contrast);
     border-color: var(--ds-color-fg);
-    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), var(--ds-color-fg) 50%);
   }
 
   .brutal-btn--danger:hover:not(:disabled) {
-    box-shadow: 6px 6px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);
+    box-shadow: 6px 6px 0 color-mix(in oklab, var(--ds-color-danger), var(--ds-color-fg) 50%);
   }
 
   .brutal-btn--sm {
