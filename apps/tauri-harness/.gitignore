@@ -1,0 +1,11 @@
+# Frontend build output
+dist/
+
+# Rust build artifacts
+src-tauri/target/
+
+# Tauri generated files
+src-tauri/gen/
+
+# Node modules
+node_modules/

@@ -1,0 +1,30 @@
+{
+  "name": "tauri-harness",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@design-system/contracts": "workspace:^",
+    "@design-system/design-tokens": "workspace:^",
+    "@design-system/react-v18": "workspace:^",
+    "@tauri-apps/api": "^2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.2",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.2",
+    "vite": "^6.4.3"
+  }
+}
