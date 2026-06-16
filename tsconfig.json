@@ -3,6 +3,6 @@
   "files": [],
   "references": [
     { "path": "./packages/design-tokens" },
-    { "path": "./packages/component-libraries/react-v18" }
+    { "path": "./designs/default/react-v18" }
   ]
 }

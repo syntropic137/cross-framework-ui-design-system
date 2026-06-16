@@ -1,5 +1,5 @@
 {
-  "name": "@design-system/svelte-v5",
+  "name": "@design-system/default-svelte-v5",
   "version": "0.1.0",
   "private": false,
   "type": "module",

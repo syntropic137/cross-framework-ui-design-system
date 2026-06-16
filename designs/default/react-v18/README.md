@@ -1,4 +1,4 @@
-# @design-system/react-v18
+# @design-system/default-react-v18
 
 React 18 implementation of the design system components powered by CSS custom properties and the shared token pipeline.
 
@@ -7,7 +7,7 @@ React 18 implementation of the design system components powered by CSS custom pr
 ```bash
 pnpm install
 pnpm --filter @design-system/design-tokens tokens:build
-pnpm --filter @design-system/react-v18 storybook
+pnpm --filter @design-system/default-react-v18 storybook
 ```
 
 The Storybook server regenerates tokens automatically via the package script, so you can also launch from the repo root with:
@@ -30,8 +30,8 @@ pnpm storybook
 ## Consuming the Package
 
 ```tsx
-import "@design-system/react-v18/dist/styles.css";
-import { ThemeProvider, Button, Card, Input } from "@design-system/react-v18";
+import "@design-system/default-react-v18/dist/styles.css";
+import { ThemeProvider, Button, Card, Input } from "@design-system/default-react-v18";
 
 export function App() {
   return (
