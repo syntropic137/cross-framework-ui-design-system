@@ -98,6 +98,43 @@ importers:
         specifier: ^6.4.3
         version: 6.4.3(@types/node@20.19.17)
 
+  apps/tauri-harness-svelte:
+    dependencies:
+      '@design-system/brutalist-svelte-v5':
+        specifier: workspace:^
+        version: link:../../designs/brutalist/svelte-v5
+      '@design-system/contracts':
+        specifier: workspace:^
+        version: link:../../packages/contracts
+      '@design-system/default-svelte-v5':
+        specifier: workspace:^
+        version: link:../../designs/default/svelte-v5
+      '@design-system/design-tokens':
+        specifier: workspace:^
+        version: link:../../packages/design-tokens
+      '@tauri-apps/api':
+        specifier: ^2
+        version: 2.11.0
+      svelte:
+        specifier: ^5
+        version: 5.56.3(@typescript-eslint/types@8.61.0)
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^4
+        version: 4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17))
+      '@tauri-apps/cli':
+        specifier: ^2
+        version: 2.11.2
+      svelte-check:
+        specifier: ^4
+        version: 4.6.0(picomatch@4.0.4)(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@5.9.2)
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+      vite:
+        specifier: ^6
+        version: 6.4.3(@types/node@20.19.17)
+
   designs/brutalist/react-v18:
     dependencies:
       '@design-system/contracts':
@@ -5384,6 +5421,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@sveltejs/vite-plugin-svelte-inspector@3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17)))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17))':
+    dependencies:
+      '@sveltejs/vite-plugin-svelte': 4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17))
+      debug: 4.4.3
+      svelte: 5.56.3(@typescript-eslint/types@8.61.0)
+      vite: 6.4.3(@types/node@20.19.17)
+    transitivePeerDependencies:
+      - supports-color
+
   '@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@5.4.21(@types/node@20.19.17))':
     dependencies:
       '@sveltejs/vite-plugin-svelte-inspector': 3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@5.4.21(@types/node@20.19.17)))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@5.4.21(@types/node@20.19.17))
@@ -5394,6 +5440,19 @@ snapshots:
       svelte: 5.56.3(@typescript-eslint/types@8.61.0)
       vite: 5.4.21(@types/node@20.19.17)
       vitefu: 1.1.3(vite@5.4.21(@types/node@20.19.17))
+    transitivePeerDependencies:
+      - supports-color
+
+  '@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17))':
+    dependencies:
+      '@sveltejs/vite-plugin-svelte-inspector': 3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17)))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(vite@6.4.3(@types/node@20.19.17))
+      debug: 4.4.3
+      deepmerge: 4.3.1
+      kleur: 4.1.5
+      magic-string: 0.30.21
+      svelte: 5.56.3(@typescript-eslint/types@8.61.0)
+      vite: 6.4.3(@types/node@20.19.17)
+      vitefu: 1.1.3(vite@6.4.3(@types/node@20.19.17))
     transitivePeerDependencies:
       - supports-color
 
@@ -8244,6 +8303,10 @@ snapshots:
   vitefu@1.1.3(vite@5.4.21(@types/node@20.19.17)):
     optionalDependencies:
       vite: 5.4.21(@types/node@20.19.17)
+
+  vitefu@1.1.3(vite@6.4.3(@types/node@20.19.17)):
+    optionalDependencies:
+      vite: 6.4.3(@types/node@20.19.17)
 
   vitest@1.6.1(@types/node@20.19.17)(jsdom@24.1.3):
     dependencies:

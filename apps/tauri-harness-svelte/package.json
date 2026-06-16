@@ -1,0 +1,28 @@
+{
+  "name": "tauri-harness-svelte",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "pnpm --filter @design-system/default-svelte-v5 build && pnpm --filter @design-system/brutalist-svelte-v5 build && pnpm --filter @design-system/design-tokens build && vite build",
+    "typecheck": "pnpm --filter @design-system/default-svelte-v5 build && pnpm --filter @design-system/brutalist-svelte-v5 build && pnpm --filter @design-system/design-tokens build && svelte-check --tsconfig ./tsconfig.json",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@design-system/contracts": "workspace:^",
+    "@design-system/design-tokens": "workspace:^",
+    "@design-system/default-svelte-v5": "workspace:^",
+    "@design-system/brutalist-svelte-v5": "workspace:^",
+    "@tauri-apps/api": "^2",
+    "svelte": "^5"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^4",
+    "@tauri-apps/cli": "^2",
+    "svelte": "^5",
+    "svelte-check": "^4",
+    "typescript": "^5.9.2",
+    "vite": "^6"
+  }
+}
