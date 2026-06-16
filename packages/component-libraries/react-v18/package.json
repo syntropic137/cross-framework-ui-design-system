@@ -14,7 +14,7 @@
     "src/design-system/components"
   ],
   "scripts": {
-    "build": "rimraf dist && pnpm --filter @design-system/contracts build && tsc --build tsconfig.build.json && vite build",
+    "build": "rimraf dist tsconfig.build.tsbuildinfo && pnpm --filter @design-system/contracts build && vite build && tsc --build tsconfig.build.json",
     "clean": "rimraf dist",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"tests/**/*.ts?(x)\"",
     "typecheck": "pnpm --filter @design-system/contracts build && tsc --noEmit",
