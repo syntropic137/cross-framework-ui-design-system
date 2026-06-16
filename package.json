@@ -18,7 +18,8 @@
     "storybook:svelte": "pnpm --filter @design-system/default-svelte-v5 storybook",
     "test:svelte": "pnpm --filter @design-system/default-svelte-v5 test",
     "generate:component": "pnpm --filter @design-system/component-generator build && node packages/dev-tools/component-generator/dist/cli.js",
-    "tui": "node --experimental-strip-types --disable-warning=ExperimentalWarning packages/dev-tools/dashboard/src/cli.ts"
+    "tui": "node --experimental-strip-types --disable-warning=ExperimentalWarning packages/dev-tools/dashboard/src/cli.ts",
+    "design-system:verify": "node scripts/verify-design-system.mjs"
   },
   "engines": {
     "node": ">=18.18.0",
