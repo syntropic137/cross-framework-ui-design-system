@@ -5,68 +5,68 @@
     gap: 0.5em;
     padding: var(--ds-space-2) var(--ds-space-4);
     border-radius: 0;
-    border: 3px solid #000;
-    background: #fff;
-    color: #000;
+    border: 3px solid var(--ds-color-fg);
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
     font-family: var(--ds-font-mono, monospace);
     font-weight: 700;
-    box-shadow: 4px 4px 0 #000;
+    box-shadow: 4px 4px 0 var(--ds-color-fg);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
 
   .brutal-badge--solid {
-    background: #000;
-    color: #fff;
+    background: var(--ds-color-fg);
+    color: var(--ds-color-bg);
   }
 
   .brutal-badge--soft {
-    background: #f0f0f0;
-    color: #000;
+    background: var(--ds-color-surface);
+    color: var(--ds-color-fg);
   }
 
   .brutal-badge--outline {
     background: transparent;
-    color: #000;
+    color: var(--ds-color-fg);
   }
 
   .brutal-badge--danger {
-    background: #e5484d;
-    color: #fff;
-    border-color: #000;
-    box-shadow: 4px 4px 0 #7a0000;
+    background: var(--ds-color-danger);
+    color: var(--ds-color-danger-contrast);
+    border-color: var(--ds-color-fg);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);
   }
 
   .brutal-badge--success {
-    background: #30a46c;
-    color: #fff;
-    border-color: #000;
-    box-shadow: 4px 4px 0 #004d2c;
+    background: var(--ds-color-success);
+    color: var(--ds-color-success-contrast);
+    border-color: var(--ds-color-fg);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-success), black 50%);
   }
 
   .brutal-badge--warning {
-    background: #f76808;
-    color: #fff;
-    border-color: #000;
-    box-shadow: 4px 4px 0 #7a2e00;
+    background: var(--ds-color-warning);
+    color: var(--ds-color-warning-contrast);
+    border-color: var(--ds-color-fg);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-warning), black 50%);
   }
 
   .brutal-badge--accent {
-    background: var(--ds-color-accent, #3b5bdb);
-    color: var(--ds-color-accent-contrast, #fff);
-    border-color: #000;
-    box-shadow: 4px 4px 0 #000;
+    background: var(--ds-color-accent);
+    color: var(--ds-color-accent-contrast);
+    border-color: var(--ds-color-fg);
+    box-shadow: 4px 4px 0 var(--ds-color-fg);
   }
 
   .brutal-badge--neutral {
-    background: #fff;
-    color: #000;
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
   }
 
   .brutal-badge--sm {
     padding: var(--ds-space-1) var(--ds-space-3);
     font-size: var(--ds-text-sm, 0.75rem);
-    box-shadow: 2px 2px 0 #000;
+    box-shadow: 2px 2px 0 var(--ds-color-fg);
   }
 
   .brutal-badge--md {
@@ -77,6 +77,6 @@
   .brutal-badge--lg {
     padding: var(--ds-space-3) var(--ds-space-6);
     font-size: var(--ds-text-lg, 1rem);
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--ds-color-fg);
   }
 }

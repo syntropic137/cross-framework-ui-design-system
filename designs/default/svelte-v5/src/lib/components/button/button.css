@@ -59,15 +59,12 @@ button[data-variant="ghost"]:hover:not(:disabled) {
 }
 
 button[data-variant="danger"] {
-  --ds-color-danger: hsl(0 85% 50%);
-  --ds-color-danger-hover: hsl(0 85% 40%);
-  --ds-color-danger-contrast: #ffffff;
   background-color: var(--ds-color-danger);
   color: var(--ds-color-danger-contrast);
 }
 
 button[data-variant="danger"]:hover:not(:disabled) {
-  background-color: var(--ds-color-danger-hover);
+  background-color: color-mix(in oklab, var(--ds-color-danger), black 15%);
 }
 
 /* --- Sizes --- */

@@ -39,8 +39,8 @@ span[data-variant="outline"] {
 /* --- Tones (override variant colors for semantic meaning) --- */
 
 span[data-tone="danger"] {
-  --badge-color: hsl(0 85% 50%);
-  --badge-contrast: #ffffff;
+  --badge-color: var(--ds-color-danger);
+  --badge-contrast: var(--ds-color-danger-contrast);
   background: var(--badge-color);
   color: var(--badge-contrast);
   border-color: color-mix(in oklab, var(--badge-color), black 15%);
@@ -59,8 +59,8 @@ span[data-variant="outline"][data-tone="danger"] {
 }
 
 span[data-tone="success"] {
-  --badge-color: hsl(150 60% 35%);
-  --badge-contrast: #ffffff;
+  --badge-color: var(--ds-color-success);
+  --badge-contrast: var(--ds-color-success-contrast);
   background: var(--badge-color);
   color: var(--badge-contrast);
   border-color: color-mix(in oklab, var(--badge-color), black 15%);
@@ -79,8 +79,8 @@ span[data-variant="outline"][data-tone="success"] {
 }
 
 span[data-tone="warning"] {
-  --badge-color: hsl(28 90% 50%);
-  --badge-contrast: #ffffff;
+  --badge-color: var(--ds-color-warning);
+  --badge-contrast: var(--ds-color-warning-contrast);
   background: var(--badge-color);
   color: var(--badge-contrast);
   border-color: color-mix(in oklab, var(--badge-color), black 15%);

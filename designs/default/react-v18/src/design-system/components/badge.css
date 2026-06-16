@@ -39,27 +39,21 @@
   }
 
   .badge--danger {
-    --danger: #e5484d;
-    --danger-contrast: #ffffff;
-    background: var(--danger);
-    color: var(--danger-contrast);
-    border-color: color-mix(in oklab, var(--danger), black 15%);
+    background: var(--ds-color-danger);
+    color: var(--ds-color-danger-contrast);
+    border-color: color-mix(in oklab, var(--ds-color-danger), black 15%);
   }
 
   .badge--success {
-    --success: #30a46c;
-    --success-contrast: #ffffff;
-    background: var(--success);
-    color: var(--success-contrast);
-    border-color: color-mix(in oklab, var(--success), black 15%);
+    background: var(--ds-color-success);
+    color: var(--ds-color-success-contrast);
+    border-color: color-mix(in oklab, var(--ds-color-success), black 15%);
   }
 
   .badge--warning {
-    --warning: #f76808;
-    --warning-contrast: #ffffff;
-    background: var(--warning);
-    color: var(--warning-contrast);
-    border-color: color-mix(in oklab, var(--warning), black 15%);
+    background: var(--ds-color-warning);
+    color: var(--ds-color-warning-contrast);
+    border-color: color-mix(in oklab, var(--ds-color-warning), black 15%);
   }
 
   .badge--accent {

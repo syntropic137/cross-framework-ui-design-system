@@ -44,11 +44,9 @@
   }
 
   .btn--danger {
-    --danger: #e5484d;
-    --danger-contrast: #ffffff;
-    background: var(--danger);
-    color: var(--danger-contrast);
-    border-color: color-mix(in oklab, var(--danger), black 15%);
+    background: var(--ds-color-danger);
+    color: var(--ds-color-danger-contrast);
+    border-color: color-mix(in oklab, var(--ds-color-danger), black 15%);
   }
 
   .btn--sm {
