@@ -1,7 +1,7 @@
 import "@design-system/design-tokens/generated/design-tokens.css";
 import { useState } from "react";
 import { ThemeProvider } from "@design-system/default-react-v18";
-import { ui } from "./ui/adapter.js";
+import { ui, activeDesign } from "./ui/adapter.js";
 
 const { badge: Badge, button: Button, toggle: Toggle } = ui;
 
@@ -12,6 +12,9 @@ export function App() {
     <ThemeProvider>
       <main style={{ padding: "2rem", fontFamily: "sans-serif" }}>
         <h1>Design System Harness</h1>
+        <p style={{ fontFamily: "monospace", fontSize: "0.85rem", color: "#666", marginTop: 0 }}>
+          design: <strong>{activeDesign}</strong>
+        </p>
 
         <section style={{ marginBottom: "2rem" }}>
           <h2>Button</h2>
