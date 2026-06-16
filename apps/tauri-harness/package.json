@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "typecheck": "tsc --noEmit",
+    "build": "pnpm --filter @design-system/react-v18 build && pnpm --filter @design-system/design-tokens build && tsc -b && vite build",
+    "typecheck": "pnpm --filter @design-system/react-v18 build && pnpm --filter @design-system/design-tokens build && tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "tauri": "tauri"
   },
