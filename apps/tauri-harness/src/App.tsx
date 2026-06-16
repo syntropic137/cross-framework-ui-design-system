@@ -1,6 +1,6 @@
 import "@design-system/design-tokens/generated/design-tokens.css";
 import { useState } from "react";
-import { ThemeProvider } from "@design-system/react-v18";
+import { ThemeProvider } from "@design-system/default-react-v18";
 import { ui } from "./ui/adapter.js";
 
 const { badge: Badge, button: Button, toggle: Toggle } = ui;

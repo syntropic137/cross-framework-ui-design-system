@@ -78,7 +78,7 @@ Custom variant names will generate `default` and the variant name as values.
 For a component named `Button`, the generator creates:
 
 ```
-packages/component-libraries/react-v18/
+designs/default/react-v18/
 ├── src/components/Button.tsx           # React component with TypeScript
 ├── src/components/Button.stories.tsx   # Storybook stories
 ├── src/design-system/components/button.css  # Component styles

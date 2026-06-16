@@ -29,7 +29,7 @@ export async function writeGeneratedFiles(
 
   // Determine base directory
   const baseDir = outputDir || process.cwd();
-  const targetDir = join(baseDir, 'packages/component-libraries/react-v18');
+  const targetDir = join(baseDir, 'designs/default/react-v18');
 
   for (const file of files) {
     try {
@@ -85,7 +85,7 @@ async function checkFileExists(path: string): Promise<boolean> {
  */
 export async function updatePackageExports(_componentName: string, outputDir?: string): Promise<void> {
   const baseDir = outputDir || process.cwd();
-  const packageDir = join(baseDir, 'packages/component-libraries/react-v18');
+  const packageDir = join(baseDir, 'designs/default/react-v18');
   
   try {
     // Update src/index.ts

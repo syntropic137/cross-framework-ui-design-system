@@ -9,8 +9,8 @@ export interface AdapterOptions {
 interface LibMeta { pkg: string; adapter: string; }
 
 const LIBS: Record<ImplLibrary, LibMeta> = {
-  "react-v18": { pkg: "@design-system/react-v18", adapter: "reactV18ContractAdapter" },
-  "svelte-v5": { pkg: "@design-system/svelte-v5", adapter: "svelteV5ContractAdapter" }
+  "react-v18": { pkg: "@design-system/default-react-v18", adapter: "reactV18ContractAdapter" },
+  "svelte-v5": { pkg: "@design-system/default-svelte-v5", adapter: "svelteV5ContractAdapter" }
 };
 
 export function renderAdapterModule(opts: AdapterOptions): string {

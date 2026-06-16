@@ -36,10 +36,11 @@ We prioritize building fewer, exceptionally well-crafted components over a large
 ```
 packages/
   design-tokens/                 # Token definitions, generator, and outputs
-  component-libraries/
-    react-v18/                   # React 18 component implementation + stories
   dev-tools/
     component-generator/         # CLI tool for generating new components
+designs/
+  default/
+    react-v18/                   # React 18 component implementation + stories
 ```
 
 Key highlights:
@@ -67,7 +68,7 @@ pnpm install
 | `pnpm storybook:build` | Produces a static Storybook build (useful for deployment previews). |
 | `pnpm storybook:test` | Builds tokens, launches Storybook, and executes Playwright-powered story tests. |
 | `pnpm --filter @design-system/design-tokens tokens:build` | Emits `generated/design-tokens.css` + `tokens.json`. |
-| `pnpm --filter @design-system/react-v18 test` | Runs component and provider unit tests via Vitest. |
+| `pnpm --filter @design-system/default-react-v18 test` | Runs component and provider unit tests via Vitest. |
 | `pnpm generate:component <ComponentName> [options]` | Generates new React components following design system standards. |
 
 > `pnpm qa` is the recommended pre-commit check; Storybook test runner requires Playwright browsers (installed automatically when running QA for the first time).
@@ -77,8 +78,8 @@ pnpm install
 Inside downstream projects (after publishing):
 
 ```tsx
-import "@design-system/react-v18/dist/styles.css";
-import { ThemeProvider, Button, Card, Input } from "@design-system/react-v18";
+import "@design-system/default-react-v18/dist/styles.css";
+import { ThemeProvider, Button, Card, Input } from "@design-system/default-react-v18";
 
 export function Example() {
   return (
