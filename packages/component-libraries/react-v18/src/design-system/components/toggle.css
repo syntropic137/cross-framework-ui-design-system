@@ -36,7 +36,7 @@
     transition: background var(--ds-duration-base) var(--ds-ease), border var(--ds-duration-base) var(--ds-ease);
   }
 
-  .toggle--checked .toggle__track {
+  .toggle--pressed .toggle__track {
     background: var(--ds-color-accent);
     border-color: color-mix(in oklab, var(--ds-color-accent), black 18%);
     justify-content: flex-end;
@@ -51,7 +51,7 @@
     transition: background var(--ds-duration-base) var(--ds-ease), box-shadow var(--ds-duration-base) var(--ds-ease);
   }
 
-  .toggle--checked .toggle__thumb {
+  .toggle--pressed .toggle__thumb {
     background: var(--ds-color-accent-contrast);
   }
 }

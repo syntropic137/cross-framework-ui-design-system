@@ -4,26 +4,21 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent
 } from "react";
+import type { ToggleContract } from "@design-system/contracts";
 import clsx from "clsx";
 import "../design-system/components/toggle.css";
 
 export type ToggleProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   "type" | "onChange" | "value"
-> & {
-  /** Controlled checked state. */
-  checked?: boolean;
-  /** Initial checked state when uncontrolled. */
-  defaultChecked?: boolean;
-  /** Notifies consumers when the checked state toggles. */
-  onCheckedChange?: (checked: boolean) => void;
-};
+> &
+  ToggleContract;
 
 export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(function Toggle(
   {
-    checked,
-    defaultChecked = false,
-    onCheckedChange,
+    pressed,
+    defaultPressed = false,
+    onPressedChange,
     disabled,
     className,
     onClick,
@@ -32,26 +27,26 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(function Toggle
   },
   ref
 ) {
-  const isControlled = checked !== undefined;
-  const [internalChecked, setInternalChecked] = useState(defaultChecked);
+  const isControlled = pressed !== undefined;
+  const [internalPressed, setInternalPressed] = useState(defaultPressed);
 
   useEffect(() => {
     if (!isControlled) {
-      setInternalChecked(defaultChecked);
+      setInternalPressed(defaultPressed);
     }
-  }, [defaultChecked, isControlled]);
+  }, [defaultPressed, isControlled]);
 
-  const currentChecked = isControlled ? checked! : internalChecked;
+  const currentPressed = isControlled ? pressed! : internalPressed;
 
   const emitChange = useCallback(
     (next: boolean) => {
       if (!isControlled) {
-        setInternalChecked(next);
+        setInternalPressed(next);
       }
 
-      onCheckedChange?.(next);
+      onPressedChange?.(next);
     },
-    [isControlled, onCheckedChange]
+    [isControlled, onPressedChange]
   );
 
   const handleToggle = useCallback(
@@ -60,10 +55,10 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(function Toggle
         return;
       }
 
-      emitChange(!currentChecked);
+      emitChange(!currentPressed);
       onClick?.(event);
     },
-    [currentChecked, disabled, emitChange, onClick]
+    [currentPressed, disabled, emitChange, onClick]
   );
 
   const handleKeyDown = useCallback(
@@ -75,12 +70,12 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(function Toggle
 
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        emitChange(!currentChecked);
+        emitChange(!currentPressed);
       }
 
       onKeyDown?.(event);
     },
-    [currentChecked, disabled, emitChange, onKeyDown]
+    [currentPressed, disabled, emitChange, onKeyDown]
   );
 
   return (
@@ -88,14 +83,13 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(function Toggle
       {...rest}
       ref={ref}
       type="button"
-      role="switch"
-      aria-checked={currentChecked}
+      aria-pressed={currentPressed}
       aria-disabled={disabled || undefined}
       disabled={disabled}
-      data-state={currentChecked ? "checked" : "unchecked"}
+      data-state={currentPressed ? "pressed" : "unpressed"}
       className={clsx(
         "toggle",
-        currentChecked && "toggle--checked",
+        currentPressed && "toggle--pressed",
         disabled && "toggle--disabled",
         className
       )}

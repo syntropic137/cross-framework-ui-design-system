@@ -27,10 +27,24 @@ export const Ghost: Story = {
   }
 };
 
+export const Secondary: Story = {
+  args: {
+    children: "Secondary button",
+    variant: "secondary"
+  }
+};
+
 export const Danger: Story = {
   args: {
     children: "Danger button",
     variant: "danger"
+  }
+};
+
+export const Loading: Story = {
+  args: {
+    children: "Saving",
+    loading: true
   }
 };
 

@@ -10,19 +10,20 @@ describe("Badge", () => {
   });
 
   it("applies variant classes", () => {
-    const { rerender } = render(
-      <Badge variant="primary">Primary content</Badge>
-    );
+    const { rerender } = render(<Badge variant="solid">Solid content</Badge>);
 
-    expect(screen.getByText("Primary content")).toHaveClass("badge--primary");
+    expect(screen.getByText("Solid content")).toHaveClass("badge--solid");
 
-    rerender(<Badge variant="secondary">Secondary content</Badge>);
-    expect(screen.getByText("Secondary content")).toHaveClass("badge--secondary");
+    rerender(<Badge variant="soft">Soft content</Badge>);
+    expect(screen.getByText("Soft content")).toHaveClass("badge--soft");
 
-    rerender(<Badge variant="ghost">Ghost content</Badge>);
-    expect(screen.getByText("Ghost content")).toHaveClass("badge--ghost");
+    rerender(<Badge variant="outline">Outline content</Badge>);
+    expect(screen.getByText("Outline content")).toHaveClass("badge--outline");
+  });
 
-    rerender(<Badge variant="danger">Danger content</Badge>);
+  it("applies tone classes", () => {
+    render(<Badge tone="danger">Danger content</Badge>);
+
     expect(screen.getByText("Danger content")).toHaveClass("badge--danger");
   });
 

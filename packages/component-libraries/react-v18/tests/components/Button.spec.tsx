@@ -11,13 +11,21 @@ describe("Button", () => {
 
   it("supports variant and size modifiers", () => {
     render(
-      <Button variant="ghost" size="lg">
-        Ghost
+      <Button variant="secondary" size="lg">
+        Secondary
       </Button>
     );
 
-    const button = screen.getByRole("button", { name: /ghost/i });
-    expect(button).toHaveClass("btn--ghost", "btn--lg");
+    const button = screen.getByRole("button", { name: /secondary/i });
+    expect(button).toHaveClass("btn--secondary", "btn--lg");
+  });
+
+  it("marks loading buttons busy and disabled", () => {
+    render(<Button loading>Saving</Button>);
+
+    const button = screen.getByRole("button", { name: /saving/i });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
   });
 
   it("merges custom className", () => {

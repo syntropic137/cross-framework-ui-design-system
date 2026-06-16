@@ -58,10 +58,30 @@ class HandlebarsTemplateEngine implements TemplateEngine {
     // Helper for design token recommendations based on component type
     Handlebars.registerHelper('design_tokens', function(type: string) {
       const tokenMap = {
-        form: ['--surface', '--fg', '--border', '--muted', '--accent'],
-        display: ['--accent', '--accent-contrast', '--surface', '--border'],
-        layout: ['--surface', '--border', '--shadow-sm'],
-        utility: ['--surface', '--fg', '--border', '--shadow-md']
+        form: [
+          '--ds-color-surface',
+          '--ds-color-fg',
+          '--ds-color-border',
+          '--ds-color-text-muted',
+          '--ds-color-accent'
+        ],
+        display: [
+          '--ds-color-accent',
+          '--ds-color-accent-contrast',
+          '--ds-color-surface',
+          '--ds-color-border'
+        ],
+        layout: [
+          '--ds-color-surface',
+          '--ds-color-border',
+          '--ds-shadow-sm'
+        ],
+        utility: [
+          '--ds-color-surface',
+          '--ds-color-fg',
+          '--ds-color-border',
+          '--ds-shadow-md'
+        ]
       };
       return tokenMap[type as keyof typeof tokenMap] || tokenMap.display;
     });

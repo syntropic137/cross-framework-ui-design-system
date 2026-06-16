@@ -16,13 +16,13 @@ type Story = StoryObj<typeof Toggle>;
 
 export const Default: Story = {
   args: {
-    defaultChecked: false
+    defaultPressed: false
   }
 };
 
-export const Checked: Story = {
+export const Pressed: Story = {
   args: {
-    checked: true,
+    pressed: true,
     "aria-label": "Always on"
   }
 };
@@ -30,14 +30,14 @@ export const Checked: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
-    defaultChecked: true,
+    defaultPressed: true,
     "aria-label": "Disabled toggle"
   }
 };
 
 export const WithLabel: Story = {
   render: (args) => {
-    const [checked, setChecked] = useState(false);
+    const [pressed, setPressed] = useState(false);
 
     return (
       <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
@@ -47,8 +47,8 @@ export const WithLabel: Story = {
         <Toggle
           {...args}
           id="toggle-marketing"
-          checked={checked}
-          onCheckedChange={setChecked}
+          pressed={pressed}
+          onPressedChange={setPressed}
           aria-label="Marketing emails"
         />
       </div>

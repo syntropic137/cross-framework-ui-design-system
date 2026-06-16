@@ -20,6 +20,11 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "jsdom",
+          environmentOptions: {
+            jsdom: {
+              url: "http://localhost"
+            }
+          },
           globals: true,
           setupFiles: [resolve(dir, "tests/setup.ts")],
           include: ["tests/**/*.spec.tsx"]
@@ -35,8 +40,7 @@ export default defineConfig({
             headless: true,
             provider: playwright(),
             instances: [{ browser: "chromium" }]
-          },
-          setupFiles: [resolve(dir, ".storybook/vitest.setup.ts")]
+          }
         }
       }
     ]

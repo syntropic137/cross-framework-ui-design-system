@@ -1,18 +1,17 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes } from "react";
+import type { BadgeContract, ComponentSize } from "@design-system/contracts";
 import clsx from "clsx";
 import "../design-system/components/badge.css";
 
-export type BadgeVariant = "primary" | "secondary" | "ghost" | "danger";
-export type BadgeSize = "sm" | "md" | "lg";
-
-export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: BadgeVariant;
-  size?: BadgeSize;
+export interface BadgeProps
+  extends HTMLAttributes<HTMLDivElement>,
+    BadgeContract {
+  size?: ComponentSize;
 }
 
 export const Badge = forwardRef<HTMLDivElement, BadgeProps>(function Badge(
-  { variant = "primary", size = "md", className, ...rest },
+  { variant = "solid", tone = "neutral", size = "md", className, ...rest },
   ref
 ) {
   return (
@@ -21,6 +20,7 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(function Badge(
       className={clsx(
         "badge",
         `badge--${variant}`,
+        `badge--${tone}`,
         `badge--${size}`,
         className
       )}

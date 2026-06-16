@@ -3,7 +3,40 @@ import { ThemeProvider } from "../../src/design-system/ThemeProvider.js";
 
 const STORAGE_KEY = "design-system-theme";
 
+function installLocalStorage() {
+  if (window.localStorage) {
+    return;
+  }
+
+  const storage = new Map<string, string>();
+
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: {
+      clear() {
+        storage.clear();
+      },
+      getItem(key: string) {
+        return storage.get(key) ?? null;
+      },
+      key(index: number) {
+        return Array.from(storage.keys())[index] ?? null;
+      },
+      removeItem(key: string) {
+        storage.delete(key);
+      },
+      setItem(key: string, value: string) {
+        storage.set(key, value);
+      },
+      get length() {
+        return storage.size;
+      }
+    } satisfies Storage
+  });
+}
+
 function resetDom() {
+  installLocalStorage();
   document.documentElement.removeAttribute("data-theme");
   window.localStorage.removeItem(STORAGE_KEY);
 }

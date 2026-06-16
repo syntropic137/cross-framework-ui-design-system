@@ -142,10 +142,33 @@ function getDefaultVariantValue(variantName: string): string {
  */
 function getDesignTokensForType(type: string): string[] {
   const tokenMap: Record<string, string[]> = {
-    form: ['--surface', '--fg', '--border', '--muted', '--accent'],
-    display: ['--accent', '--accent-contrast', '--surface', '--border', '--shadow-sm'],
-    layout: ['--surface', '--border', '--shadow-sm', '--radius-md'],
-    utility: ['--surface', '--fg', '--border', '--shadow-md', '--radius-md']
+    form: [
+      '--ds-color-surface',
+      '--ds-color-fg',
+      '--ds-color-border',
+      '--ds-color-text-muted',
+      '--ds-color-accent'
+    ],
+    display: [
+      '--ds-color-accent',
+      '--ds-color-accent-contrast',
+      '--ds-color-surface',
+      '--ds-color-border',
+      '--ds-shadow-sm'
+    ],
+    layout: [
+      '--ds-color-surface',
+      '--ds-color-border',
+      '--ds-shadow-sm',
+      '--ds-radius-md'
+    ],
+    utility: [
+      '--ds-color-surface',
+      '--ds-color-fg',
+      '--ds-color-border',
+      '--ds-shadow-md',
+      '--ds-radius-md'
+    ]
   };
 
   return tokenMap[type] || tokenMap.display;

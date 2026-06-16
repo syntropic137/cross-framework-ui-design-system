@@ -74,7 +74,7 @@ export const WithError: Story = {
   render: (args) => (
     <div>
       <{{componentName}} {...args} />
-      <div id="error-message" style={{"{{" }} color: "var(--danger, #e5484d)", fontSize: "0.875rem", marginTop: "0.25rem" {{"}}"}}>
+      <div id="error-message" style={{"{{" }} color: "var(--ds-color-accent)", fontSize: "var(--ds-text-sm)", marginTop: "var(--ds-space-1)" {{"}}"}}>
         This field is required
       </div>
     </div>

@@ -1,4 +1,5 @@
 export * from "./shared.js";
+export * from "./component-status.js";
 
 export * from "./components/accordion.js";
 export * from "./components/alert-dialog.js";

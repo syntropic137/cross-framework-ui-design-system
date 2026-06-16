@@ -6,7 +6,8 @@ const meta: Meta<typeof Badge> = {
   component: Badge,
   args: {
     children: "Badge content",
-    variant: "primary",
+    variant: "solid",
+    tone: "neutral",
     size: "md",
   },
   parameters: {
@@ -20,27 +21,21 @@ type Story = StoryObj<typeof Badge>;
 
 export const Default: Story = {};
 
-export const VariantPrimary: Story = {
+export const VariantSolid: Story = {
   args: {
-    variant: "primary"
+    variant: "solid"
   }
 };
 
-export const VariantSecondary: Story = {
+export const VariantSoft: Story = {
   args: {
-    variant: "secondary"
+    variant: "soft"
   }
 };
 
-export const VariantGhost: Story = {
+export const VariantOutline: Story = {
   args: {
-    variant: "ghost"
-  }
-};
-
-export const VariantDanger: Story = {
-  args: {
-    variant: "danger"
+    variant: "outline"
   }
 };
 
@@ -74,10 +69,13 @@ export const AllVariants: Story = {
         alignItems: "center"
       }}
     >
-      <Badge variant="primary">Variant: primary</Badge>
-      <Badge variant="secondary">Variant: secondary</Badge>
-      <Badge variant="ghost">Variant: ghost</Badge>
-      <Badge variant="danger">Variant: danger</Badge>
+      <Badge variant="solid">Variant: solid</Badge>
+      <Badge variant="soft">Variant: soft</Badge>
+      <Badge variant="outline">Variant: outline</Badge>
+      <Badge tone="danger">Tone: danger</Badge>
+      <Badge tone="success">Tone: success</Badge>
+      <Badge tone="warning">Tone: warning</Badge>
+      <Badge tone="accent">Tone: accent</Badge>
       <Badge size="sm">Size: sm</Badge>
       <Badge size="md">Size: md</Badge>
       <Badge size="lg">Size: lg</Badge>

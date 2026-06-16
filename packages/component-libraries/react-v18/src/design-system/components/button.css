@@ -27,9 +27,20 @@
     color: var(--ds-color-accent-contrast);
   }
 
+  .btn--secondary {
+    background: var(--ds-color-surface);
+    border-color: var(--ds-color-border);
+    color: var(--ds-color-fg);
+  }
+
   .btn--ghost {
     background: transparent;
     border-color: var(--ds-color-border);
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
   .btn--danger {
