@@ -38,7 +38,7 @@
 
   .toggle--pressed .toggle__track {
     background: var(--ds-color-accent);
-    border-color: color-mix(in oklab, var(--ds-color-accent), black 18%);
+    border-color: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-fg) 18%);
     justify-content: flex-end;
   }
 

@@ -34,21 +34,21 @@
     background: var(--ds-color-danger);
     color: var(--ds-color-danger-contrast);
     border-color: var(--ds-color-fg);
-    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), var(--ds-color-fg) 50%);
   }
 
   .brutal-badge--success {
     background: var(--ds-color-success);
     color: var(--ds-color-success-contrast);
     border-color: var(--ds-color-fg);
-    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-success), black 50%);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-success), var(--ds-color-fg) 50%);
   }
 
   .brutal-badge--warning {
     background: var(--ds-color-warning);
     color: var(--ds-color-warning-contrast);
     border-color: var(--ds-color-fg);
-    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-warning), black 50%);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-warning), var(--ds-color-fg) 50%);
   }
 
   .brutal-badge--accent {

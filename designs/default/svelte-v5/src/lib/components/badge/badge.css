@@ -20,7 +20,7 @@ span[data-variant] {
 
 span[data-variant="solid"] {
   background: var(--ds-color-accent);
-  border-color: color-mix(in oklab, var(--ds-color-accent), black 12%);
+  border-color: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-fg) 12%);
   color: var(--ds-color-accent-contrast);
 }
 
@@ -43,7 +43,7 @@ span[data-tone="danger"] {
   --badge-contrast: var(--ds-color-danger-contrast);
   background: var(--badge-color);
   color: var(--badge-contrast);
-  border-color: color-mix(in oklab, var(--badge-color), black 15%);
+  border-color: color-mix(in oklab, var(--badge-color), var(--ds-color-fg) 15%);
 }
 
 span[data-variant="soft"][data-tone="danger"] {
@@ -63,7 +63,7 @@ span[data-tone="success"] {
   --badge-contrast: var(--ds-color-success-contrast);
   background: var(--badge-color);
   color: var(--badge-contrast);
-  border-color: color-mix(in oklab, var(--badge-color), black 15%);
+  border-color: color-mix(in oklab, var(--badge-color), var(--ds-color-fg) 15%);
 }
 
 span[data-variant="soft"][data-tone="success"] {
@@ -83,7 +83,7 @@ span[data-tone="warning"] {
   --badge-contrast: var(--ds-color-warning-contrast);
   background: var(--badge-color);
   color: var(--badge-contrast);
-  border-color: color-mix(in oklab, var(--badge-color), black 15%);
+  border-color: color-mix(in oklab, var(--badge-color), var(--ds-color-fg) 15%);
 }
 
 span[data-variant="soft"][data-tone="warning"] {
@@ -101,7 +101,7 @@ span[data-variant="outline"][data-tone="warning"] {
 span[data-tone="accent"] {
   background: var(--ds-color-accent);
   color: var(--ds-color-accent-contrast);
-  border-color: color-mix(in oklab, var(--ds-color-accent), black 12%);
+  border-color: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-fg) 12%);
 }
 
 span[data-variant="soft"][data-tone="accent"] {
