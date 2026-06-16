@@ -1,0 +1,63 @@
+/* Toggle base styles */
+button[data-state] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-2);
+  width: 42px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--ds-font-sans);
+  transition: opacity var(--ds-duration-base) var(--ds-ease);
+}
+
+button[data-state]:focus-visible {
+  outline: var(--ds-focus-ring);
+  outline-offset: 2px;
+}
+
+button[data-state]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.toggle__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--ds-color-text-muted), transparent 40%);
+  border: 1px solid color-mix(in oklab, var(--ds-color-border), transparent 40%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2px;
+  transition:
+    background var(--ds-duration-base) var(--ds-ease),
+    border-color var(--ds-duration-base) var(--ds-ease);
+}
+
+button[data-state="pressed"] .toggle__track {
+  background: var(--ds-color-accent);
+  border-color: color-mix(in oklab, var(--ds-color-accent), black 18%);
+  justify-content: flex-end;
+}
+
+.toggle__thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ds-color-surface);
+  box-shadow: var(--ds-shadow-sm);
+  transition:
+    background var(--ds-duration-base) var(--ds-ease),
+    box-shadow var(--ds-duration-base) var(--ds-ease);
+}
+
+button[data-state="pressed"] .toggle__thumb {
+  background: var(--ds-color-accent-contrast);
+}
