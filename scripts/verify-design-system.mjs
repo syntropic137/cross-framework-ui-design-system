@@ -41,7 +41,7 @@ const DECORATIVE_ALLOWLIST = [
   'confetti', // multi-color rainbow palette — not a semantic token
 ];
 
-function isDecorativeFile(filePath) {
+export function isDecorativeFile(filePath) {
   const basename = path.basename(filePath).toLowerCase();
   return DECORATIVE_ALLOWLIST.some((name) => basename.includes(name));
 }
@@ -68,6 +68,33 @@ const C = {
   cyan: '\x1b[36m',
   dim: '\x1b[2m',
 };
+
+// ---------------------------------------------------------------------------
+// Pure exported helpers (used by tests)
+// ---------------------------------------------------------------------------
+
+/**
+ * Scan a CSS string for hardcoded color literals.
+ * Returns an array of { lineNo, label, snippet, matched } objects —
+ * one entry per offending source line (at most one violation per line).
+ */
+export function scanCssForHardcodedColors(cssContent) {
+  const violations = [];
+  const rawLines = cssContent.split('\n');
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+    const lineNo = i + 1;
+    for (const { label, re } of COLOR_PATTERNS) {
+      const match = re.exec(line);
+      if (match) {
+        const snippet = line.trim().slice(0, 80);
+        violations.push({ lineNo, label, snippet, matched: match[0] });
+        break; // one violation per source line
+      }
+    }
+  }
+  return violations;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -188,20 +215,9 @@ function checkB(packages) {
 
     for (const cssFile of cssFiles) {
       const relPath = path.relative(ROOT, cssFile);
-      const rawLines = fs.readFileSync(cssFile, 'utf8').split('\n');
-
-      for (let i = 0; i < rawLines.length; i++) {
-        const line = rawLines[i];
-        const lineNo = i + 1;
-
-        for (const { label, re } of COLOR_PATTERNS) {
-          const match = re.exec(line);
-          if (match) {
-            const snippet = line.trim().slice(0, 80);
-            pkgViolations.push({ file: relPath, lineNo, label, snippet, matched: match[0] });
-            break; // one violation per source line is enough
-          }
-        }
+      const content = fs.readFileSync(cssFile, 'utf8');
+      for (const v of scanCssForHardcodedColors(content)) {
+        pkgViolations.push({ file: relPath, ...v });
       }
     }
 
@@ -397,4 +413,7 @@ function main() {
   }
 }
 
-main();
+// Only run CLI when invoked directly (not when imported by tests).
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
