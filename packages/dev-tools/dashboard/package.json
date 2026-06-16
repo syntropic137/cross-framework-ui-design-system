@@ -1,0 +1,22 @@
+{
+  "name": "@design-system/dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Terminal dashboard and entry point for the design system",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.8"
+  },
+  "dependencies": {
+    "@neuralempowerment/tui": "^0.1.0"
+  }
+}
