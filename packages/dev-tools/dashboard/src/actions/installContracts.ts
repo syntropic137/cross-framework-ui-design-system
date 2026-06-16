@@ -23,6 +23,9 @@ function readContractNames(targetDir: string): { required: string[]; planned: st
       .map(([name]) => name);
     return { required, planned };
   } catch {
+    console.warn(
+      "Note: could not read @design-system/contracts from the target; using the default required set (badge, button, toggle)."
+    );
     return { required: [...FALLBACK_REQUIRED], planned: [] };
   }
 }
@@ -47,6 +50,9 @@ export async function installContracts(ctx: RepoContext): Promise<void> {
   const deps = ["@design-system/contracts", `@design-system/${library}`, "@design-system/design-tokens"];
   console.log(bold("\nAdd these dependencies to your app:"));
   console.log("  " + installCommand(pm, deps, false) + "\n");
+
+  console.log(bold("Import the design tokens once in your app entry (e.g. main.tsx):"));
+  console.log('  import "@design-system/design-tokens/generated/design-tokens.css";\n');
 
   console.log(bold("Will write:"));
   console.log("  " + adapterPath + "\n");

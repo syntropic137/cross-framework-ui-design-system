@@ -9,7 +9,7 @@ function readTokenNames(repoRoot: string): string[] {
   const text = readFileSync(css, "utf8");
   const names = new Set<string>();
   for (const m of text.matchAll(/--ds-[a-z0-9-]+/g)) names.add(m[0]);
-  return [...names].sort().slice(0, 20);
+  return [...names].sort();
 }
 
 export function showDesignTokens(ctx: RepoContext): void {
@@ -24,8 +24,11 @@ export function showDesignTokens(ctx: RepoContext): void {
   if (ctx.kind === "in-repo") {
     const names = readTokenNames(ctx.repoRoot);
     if (names.length) {
+      const shown = names.slice(0, 12);
+      const more = names.length - shown.length;
       console.log(bold("Sample tokens:"));
-      console.log(dim("  " + names.join("  ")) + "\n");
+      const suffix = more > 0 ? dim(`  …and ${more} more (${names.length} total)`) : "";
+      console.log(dim("  " + shown.join("  ")) + suffix + "\n");
     }
   }
   console.log(dim("See docs/component-standard.md for the full token-to-component map.\n"));
