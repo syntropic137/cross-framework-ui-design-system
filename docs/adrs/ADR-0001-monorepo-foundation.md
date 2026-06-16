@@ -3,6 +3,10 @@
 - Status: Accepted
 - Date: 2025-09-26
 
+> **Status update (2026):** The `packages/component-libraries/react-v18` path described here was
+> superseded by the design-first matrix layout introduced in ADR-0004 (`designs/<design>/<framework>/`).
+> This ADR remains valid for the monorepo tooling decisions (pnpm, shared config, CI).
+
 ## Context
 We are creating a modular design system that must support multiple React versions, shared design tokens, and reusable tooling. A pnpm-based monorepo improves maintainability for shared configurations, build scripts, and package versioning.
 
