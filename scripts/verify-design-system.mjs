@@ -29,6 +29,23 @@ const ROOT = path.resolve(__dirname, '..');
 const TOKENS_CSS = path.join(ROOT, 'packages/design-tokens/generated/design-tokens.css');
 const DESIGNS_GLOB_BASE = path.join(ROOT, 'designs');
 
+// ---------------------------------------------------------------------------
+// Decorative allowlist — CSS files whose hardcoded color literals are
+// intentional and therefore exempt from CHECK B.
+//
+// Rule: a file basename (case-insensitive) that contains any of these strings
+// is decorative and will be skipped. The gate PRINTS how many files were
+// skipped so the exception is visible, not silent.
+// ---------------------------------------------------------------------------
+const DECORATIVE_ALLOWLIST = [
+  'confetti', // multi-color rainbow palette — not a semantic token
+];
+
+function isDecorativeFile(filePath) {
+  const basename = path.basename(filePath).toLowerCase();
+  return DECORATIVE_ALLOWLIST.some((name) => basename.includes(name));
+}
+
 // Color literal patterns to flag in design CSS.
 // hsl()/hsla()/rgb()/rgba() with actual values (not just CSS custom property
 // definitions which use --ds-* names). We also catch hex literals.
@@ -156,9 +173,16 @@ function checkB(packages) {
     `  ${C.dim}Rule: design CSS must use var(--ds-color-*), never hex/#/rgb/hsl literals${C.reset}`
   );
 
+  let totalDecorativeSkipped = 0;
+
   for (const pkg of packages) {
     const srcDir = path.join(pkg.dir, 'src');
-    const cssFiles = walkFiles(srcDir).filter((f) => f.endsWith('.css'));
+    const allCssFiles = walkFiles(srcDir).filter((f) => f.endsWith('.css'));
+
+    // Split into enforced and decorative (allowlisted) files
+    const decorativeFiles = allCssFiles.filter(isDecorativeFile);
+    const cssFiles = allCssFiles.filter((f) => !isDecorativeFile(f));
+    totalDecorativeSkipped += decorativeFiles.length;
 
     const pkgViolations = [];
 
@@ -183,7 +207,7 @@ function checkB(packages) {
 
     lines.push(subheader(`${pkg.label}  (${pkg.name})`));
 
-    if (cssFiles.length === 0) {
+    if (allCssFiles.length === 0) {
       lines.push(`    ${C.dim}no CSS files found under src/${C.reset}`);
     } else if (pkgViolations.length === 0) {
       lines.push(pass(`${cssFiles.length} CSS file(s) — no hardcoded color literals`));
@@ -201,6 +225,13 @@ function checkB(packages) {
       }
       totalViolations += pkgViolations.length;
     }
+  }
+
+  if (totalDecorativeSkipped > 0) {
+    const names = DECORATIVE_ALLOWLIST.join(', ');
+    lines.push(
+      `\n  ${C.yellow}(skipped ${totalDecorativeSkipped} decorative file(s): ${names})${C.reset}`
+    );
   }
 
   return { passed: !anyFailed, lines, violations: totalViolations };
