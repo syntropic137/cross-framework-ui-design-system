@@ -9,6 +9,13 @@ import type { RequiredComponentContracts } from "@design-system/contracts";
 import { reactV18ContractAdapter as defaultAdapter } from "@design-system/default-react-v18";
 import { reactV18ContractAdapter as brutalistAdapter } from "@design-system/brutalist-react-v18";
 
+// Each design's component styles. vite lib mode emits CSS to a separate dist file
+// the JS bundle does NOT auto-inject, so consumers must import it. Both are
+// class-namespaced (brutalist uses `brutal-*`), so they coexist without collision
+// and only the active design's rendered elements pick up styling.
+import "@design-system/default-react-v18/dist/default-react-v18.css";
+import "@design-system/brutalist-react-v18/dist/brutalist-react-v18.css";
+
 const design = (import.meta.env.VITE_UI_DESIGN ?? "default") as
   | "default"
   | "brutalist";
