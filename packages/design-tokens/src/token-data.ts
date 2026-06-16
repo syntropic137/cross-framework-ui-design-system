@@ -44,6 +44,13 @@ export const baseTokens: TokenCategories = {
     "ds-color-accent":          "var(--ds-color-brand)",
     "ds-color-accent-contrast": "#ffffff",
 
+    "ds-color-danger":           "#e5484d",
+    "ds-color-danger-contrast":  "#ffffff",
+    "ds-color-success":          "#30a46c",
+    "ds-color-success-contrast": "#ffffff",
+    "ds-color-warning":          "#f76808",
+    "ds-color-warning-contrast": "#1a1207",
+
     "ds-focus-ring": "2px solid var(--ds-color-brand)"
   },
   typography: {
@@ -112,6 +119,9 @@ export const themeDefinitions: ThemeDefinition[] = [
         "ds-color-border":         "#1f2633",
         "ds-color-accent":         "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 62%)",
         "ds-color-accent-contrast":"#0a0b0e",
+        "ds-color-danger":         "#ff6369",
+        "ds-color-success":        "#3dd68c",
+        "ds-color-warning":        "#ff8b3d",
         "ds-focus-ring":           "2px solid var(--ds-color-accent)"
       },
       shadow: {
