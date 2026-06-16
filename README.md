@@ -1,126 +1,188 @@
-# React Component Library Monorepo
+# Design System — Cross-Framework Component Library
 
-A pnpm-powered workspace for building a modular design system with shared tokens, themed React 18 components, and Storybook-driven documentation.
+A pnpm monorepo (`pnpm@9.1.4`) that implements a **design-first matrix**: one framework-neutral contract, shared design tokens, and multiple designs each implemented per framework. The payoff is surgical: swap a design (one package specifier), swap a framework implementation behind the same contract, or switch themes at runtime — all decoupled, all enforced.
 
-## Design Philosophy
+> See [ADR-0004](docs/adrs/ADR-0004-design-first-matrix.md) for the canonical architecture decision.
 
-### Quality Over Quantity
-We prioritize building fewer, exceptionally well-crafted components over a large collection of mediocre ones. Each component must meet rigorous standards for performance, accessibility, and maintainability before being added to the standard.
+---
 
-### Performance-First Architecture
-- **Vanilla React + CSS**: We use pure React and CSS for long-term stability and maximum performance
-- **Zero Runtime Dependencies**: Components avoid heavy runtime libraries that impact bundle size
-- **Tree-Shakeable**: Only the components you use are included in your final bundle
-- **Optimized Rendering**: Components are designed to minimize unnecessary re-renders
+## Architecture
 
-### Design System Flexibility
-- **Token-Driven Styling**: All visual properties (colors, sizes, spacing, etc.) are controlled by design tokens
-- **Easy Customization**: Changing the entire look and feel should be as simple as updating token values
-- **Semantic Tokens**: We use meaningful token names (e.g., `--accent`, `--surface`) rather than raw color values
-- **CSS Layer Architecture**: Styles are organized in a cascade layer system for predictable specificity
+The system is organized in layers:
 
-### Expandable Standard
-- **Versioned Growth**: We expand the component standard incrementally over time based on actual needs
-- **Future-Ready**: All components are built with extensibility in mind
-- **Documentation-First**: New components require comprehensive stories, tests, and contract docs before implementation
-- **Community-Driven**: Component additions are prioritized based on team feedback and usage patterns
+| Layer | Package / Path | Role |
+|---|---|---|
+| **Contract** | `packages/contracts` → `@design-system/contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
+| **Design tokens** | `packages/design-tokens` → `@design-system/design-tokens` | Token definitions → generated `--ds-*` CSS custom properties; light/dark/… themes via `@layer` |
+| **Design cells** | `designs/<design>/<framework>/` → `@design-system/<design>-<framework>` | One package per (design × framework) cell; each exports a `*ContractAdapter` + `./styles.css` |
+| **Dev tools** | `packages/dev-tools/{component-generator,dashboard}` | Component scaffolding CLI + TUI dashboard |
+| **Example apps** | `apps/{tauri-harness,tauri-harness-svelte}` | Tauri harnesses that demonstrate the design swap and runtime theming |
 
-### Long-Term Stability
-- **Minimal Dependencies**: We avoid complex build tools and frameworks that may become obsolete
-- **Backward Compatibility**: We maintain API stability across minor versions
-- **Progressive Enhancement**: Components work without JavaScript when possible
-- **Accessibility First**: All components meet WCAG 2.1 AA standards by default
+### Current design × framework matrix
 
-## Repository Layout
+| | `react-v18` | `svelte-v5` |
+|---|---|---|
+| `default` | `@design-system/default-react-v18` | `@design-system/default-svelte-v5` |
+| `brutalist` | `@design-system/brutalist-react-v18` | `@design-system/brutalist-svelte-v5` |
 
-```
-packages/
-  design-tokens/                 # Token definitions, generator, and outputs
-  dev-tools/
-    component-generator/         # CLI tool for generating new components
-designs/
-  default/
-    react-v18/                   # React 18 component implementation + stories
+Each cell exports a stable adapter name tied to its framework, so a **design swap is a one-specifier change**:
+
+```ts
+// swap design (same framework — only the package name changes, binding is identical)
+import { reactV18ContractAdapter } from "@design-system/default-react-v18";
+import { reactV18ContractAdapter } from "@design-system/brutalist-react-v18";
 ```
 
-Key highlights:
-- **design-tokens** exposes TypeScript token definitions and writes layered CSS/JSON via `pnpm --filter @design-system/design-tokens tokens:build`.
-- **react-v18** consumes generated tokens, exports themed components, runs tests with Vitest, and ships Storybook stories/test-runner coverage.
-- **component-generator** provides a CLI tool for rapidly generating new components that follow design system standards.
+Swapping across frameworks (React ↔ Svelte) at runtime is explicitly a non-goal; the framework+version is the fixed lane.
 
-## Prerequisites
+---
 
-- Node.js ≥ 18.18
-- pnpm ≥ 9 (workspace uses `packageManager: pnpm@9.1.4`)
-
-Install dependencies once at the root:
+## Quick Start
 
 ```bash
 pnpm install
 ```
 
-## Everyday Commands
-
-| Command | Description |
-| --- | --- |
-| `pnpm qa` | Runs lint, typecheck, unit tests, and Storybook test-runner end-to-end. |
-| `pnpm storybook` | Starts Storybook for the React v18 package after regenerating tokens. |
-| `pnpm storybook:build` | Produces a static Storybook build (useful for deployment previews). |
-| `pnpm storybook:test` | Builds tokens, launches Storybook, and executes Playwright-powered story tests. |
-| `pnpm --filter @design-system/design-tokens tokens:build` | Emits `generated/design-tokens.css` + `tokens.json`. |
-| `pnpm --filter @design-system/default-react-v18 test` | Runs component and provider unit tests via Vitest. |
-| `pnpm generate:component <ComponentName> [options]` | Generates new React components following design system standards. |
-
-> `pnpm qa` is the recommended pre-commit check; Storybook test runner requires Playwright browsers (installed automatically when running QA for the first time).
-
-## Component Library Usage
-
-Inside downstream projects (after publishing):
-
-```tsx
-import "@design-system/default-react-v18/dist/styles.css";
-import { ThemeProvider, Button, Card, Input } from "@design-system/default-react-v18";
-
-export function Example() {
-  return (
-    <ThemeProvider>
-      <Card>
-        <h2>Hello</h2>
-        <Button>Click me</Button>
-      </Card>
-    </ThemeProvider>
-  );
-}
-```
-
-Theme switching is handled by the provider, which applies `data-theme` attributes and persists the current theme to `localStorage`.
-
-## Component Generation
-
-Rapidly create new components that follow design system standards:
+Run the enforcement gate (tokens + token discipline + contract conformance + adapter presence):
 
 ```bash
-# Generate a basic component
-pnpm generate:component Badge --type=display --dry-run
-
-# Generate with variants and sizes
-pnpm generate:component Button --type=display --variants=variant,size --sizes=sm,md,lg
-
-# Generate form component with props
-pnpm generate:component Input --type=form --props=placeholder,required --variants=error
-
-# Interactive mode for guided generation
-pnpm generate:component --interactive
+pnpm design-system:verify
 ```
 
-The generator creates complete component files:
-- **React component** with TypeScript interfaces and forwardRef
-- **Storybook stories** with variant showcases and examples
-- **Test suite** with accessibility and interaction testing
-- **CSS styles** with design token integration and variants
+Run the full QA gate (lint → typecheck → build → test → design-system:verify → test:verify → storybook:test):
 
-See [`packages/dev-tools/component-generator/README.md`](packages/dev-tools/component-generator/README.md) for detailed documentation.
+```bash
+pnpm qa
+```
 
-## Future Work
+**Run `pnpm qa` and fix all failures before finishing a task.**
 
-Milestones 5 and 6 of the project plan cover packaging/publishing automation, export tooling, and a reusable QA script. See `PROJECT-PLAN_20250926_design-system.md` for detailed tasks and progress.
+---
+
+## Common Commands
+
+| Command | What it does |
+|---|---|
+| `pnpm qa` | Full gate: lint + typecheck + build + test + design-system:verify + test:verify + storybook:test |
+| `pnpm lint` | ESLint across all packages |
+| `pnpm typecheck` | tsc across all packages |
+| `pnpm build` | Build design-tokens first, then all packages |
+| `pnpm test` | Vitest across all packages |
+| `pnpm format` | Prettier across all packages |
+| `pnpm design-system:verify` | Enforcement gate (see below) |
+| `pnpm test:verify` | Node test runner proving the gate script itself works |
+| `pnpm storybook` | React Storybook (default-react-v18) |
+| `pnpm storybook:svelte` | Svelte Storybook (default-svelte-v5) |
+| `pnpm tui` | Dashboard TUI (dev-tools/dashboard) |
+| `pnpm generate:component` | Scaffold a new component via the generator CLI |
+
+### Running an example app
+
+```bash
+# Svelte harness — default design
+pnpm --filter tauri-harness-svelte tauri dev
+
+# Svelte harness — brutalist design (build-time swap)
+VITE_UI_DESIGN=brutalist pnpm --filter tauri-harness-svelte tauri dev
+```
+
+Runtime light/dark theme toggle is implemented in the harness by flipping `data-theme` on the root element. No rebuild, no component changes — every `var(--ds-color-*)` re-resolves from the token layer.
+
+---
+
+## The Enforcement Gate (`design-system:verify`)
+
+`scripts/verify-design-system.mjs` (invoked via `pnpm design-system:verify`) runs four checks across every discovered `designs/<design>/<framework>/` cell:
+
+| Check | What it verifies |
+|---|---|
+| **A — Tokens present** | `packages/design-tokens/generated/design-tokens.css` exists and contains `--ds-*` custom properties |
+| **B — Token discipline** | No hardcoded color literals (hex, `rgb()`, `hsl()`, named colors) in design `src/` CSS — components must use `var(--ds-color-*)` |
+| **C — Contract conformance** | `pnpm -r typecheck` exits 0 (TypeScript enforces every adapter against `RequiredComponentContracts`) |
+| **D — Adapter export presence** | Each cell has a `contract-adapter.ts` that `export const *ContractAdapter` |
+
+`pnpm test:verify` runs the gate's own unit tests (Node built-in test runner). Both checks are included in `pnpm qa`.
+
+---
+
+## Consuming a Design Cell
+
+```ts
+// 1. Import styles (required — the JS bundle does not auto-inject CSS)
+import "@design-system/default-svelte-v5/styles.css";
+import "@design-system/design-tokens/generated/design-tokens.css";
+
+// 2. Import the adapter (satisfies RequiredComponentAdapter)
+import { svelteV5ContractAdapter as ui } from "@design-system/default-svelte-v5";
+
+// 3. Use components from the adapter
+const Button = ui.button;
+```
+
+To swap designs, change the package specifier on lines 1 and 2 — the adapter name and the rest of your code stay the same.
+
+---
+
+## How to Extend
+
+### Add a new component (contract first)
+
+1. Add the contract to `packages/contracts/src/components/<component>.ts`.
+2. Set its status in `component-status.ts` (`planned` while implementing, `required` when ready).
+3. Add it to `RequiredComponentContracts` when promoting to required.
+4. Implement in each supported adapter cell; export the component under the required key.
+5. Write tests (Vitest + Testing Library) and Storybook stories.
+6. Run `pnpm qa`.
+
+See [`docs/component-standard.md`](docs/component-standard.md) for the full compliance checklist.
+
+### Add a new design
+
+Create `designs/<new-design>/` with one subdirectory per framework you want to support. Mirror an existing cell (e.g. `designs/default/react-v18/`):
+- Keep the same package layout and `contract-adapter.ts` shape.
+- Name the package `@design-system/<new-design>-<framework>`.
+- Export `reactV18ContractAdapter` (React) or `svelteV5ContractAdapter` (Svelte) — these names are stable per framework.
+- Use only `var(--ds-color-*)` tokens; no hardcoded colors.
+- Run `pnpm design-system:verify` to confirm the gate picks up the new cell.
+
+### Add a new framework cell to an existing design
+
+Create `designs/<design>/<new-framework>/`. Follow the same steps as above. The gate auto-discovers all `designs/<design>/<framework>/package.json` entries.
+
+---
+
+## Repo Layout
+
+```
+designs/
+  default/
+    react-v18/             @design-system/default-react-v18 — default React 18 cell
+    svelte-v5/             @design-system/default-svelte-v5 — default Svelte 5 cell
+  brutalist/
+    react-v18/             @design-system/brutalist-react-v18 — brutalist React 18 cell
+    svelte-v5/             @design-system/brutalist-svelte-v5 — brutalist Svelte 5 cell
+packages/
+  contracts/               @design-system/contracts — framework-neutral prop contracts
+  design-tokens/           @design-system/design-tokens — token source → generated CSS/JSON
+  dev-tools/
+    component-generator/   @design-system/component-generator — scaffolding CLI
+    dashboard/             TUI dashboard (pnpm tui)
+apps/
+  tauri-harness/           React 18 example app (Tauri)
+  tauri-harness-svelte/    Svelte 5 example app (Tauri) — demonstrates design swap + theming
+scripts/
+  verify-design-system.mjs   Enforcement gate (design-system:verify)
+  verify-design-system.test.mjs  Gate unit tests (test:verify)
+docs/
+  adrs/                    Architecture Decision Records
+  component-standard.md    Component contract standard and compliance checklist
+```
+
+---
+
+## Further Reading
+
+- [`AGENTS.md`](AGENTS.md) — Canonical contributor instructions (CI gate, conventions, commit format, beads workflow). Read this first.
+- [`docs/component-standard.md`](docs/component-standard.md) — Component contract standard, required vs. planned components, adapter compliance checklist.
+- [`docs/adrs/`](docs/adrs/) — Architecture decisions: ADR-0001 monorepo, ADR-0002 token generation, ADR-0003 component generator, ADR-0004 design-first matrix.
+- [`SECURITY.md`](SECURITY.md) — Security posture and dependency advisory controls.
