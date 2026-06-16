@@ -27,4 +27,9 @@ describe("renderAdapterModule", () => {
   it("lists planned components as TODO binding points", () => {
     expect(out).toContain("TODO (planned, not yet required): select, checkbox");
   });
+
+  it("omits the planned-components TODO when there are none", () => {
+    const out = renderAdapterModule({ library: "react-v18", requiredNames: ["badge"], plannedNames: [] });
+    expect(out).not.toContain("TODO (planned");
+  });
 });
