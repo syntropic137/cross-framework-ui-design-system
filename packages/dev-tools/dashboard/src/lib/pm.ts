@@ -5,6 +5,7 @@ export type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
 
 export function detectPackageManager(dir: string): PackageManager {
   if (existsSync(join(dir, "pnpm-lock.yaml"))) return "pnpm";
+  if (existsSync(join(dir, "package-lock.json"))) return "npm";
   if (existsSync(join(dir, "yarn.lock"))) return "yarn";
   if (existsSync(join(dir, "bun.lockb"))) return "bun";
   return "npm";

@@ -29,4 +29,12 @@ describe("installCommand", () => {
     expect(installCommand("pnpm", ["@design-system/contracts", "@design-system/react-v18"], false))
       .toBe("pnpm add @design-system/contracts @design-system/react-v18");
   });
+
+  it("builds a pnpm dev install command", () => {
+    expect(installCommand("pnpm", ["vitest"], true)).toBe("pnpm add -D vitest");
+  });
+
+  it("builds an npm dev install command", () => {
+    expect(installCommand("npm", ["vitest"], true)).toBe("npm install --save-dev vitest");
+  });
 });
