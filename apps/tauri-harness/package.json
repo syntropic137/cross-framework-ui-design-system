@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm --filter @design-system/default-react-v18 build && pnpm --filter @design-system/design-tokens build && tsc -b && vite build",
-    "typecheck": "pnpm --filter @design-system/default-react-v18 build && pnpm --filter @design-system/design-tokens build && tsc --noEmit",
+    "build": "pnpm --filter @design-system/default-react-v18 build && pnpm --filter @design-system/brutalist-react-v18 build && pnpm --filter @design-system/design-tokens build && tsc -b && vite build",
+    "typecheck": "pnpm --filter @design-system/default-react-v18 build && pnpm --filter @design-system/brutalist-react-v18 build && pnpm --filter @design-system/design-tokens build && tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "tauri": "tauri"
   },
@@ -14,6 +14,7 @@
     "@design-system/contracts": "workspace:^",
     "@design-system/design-tokens": "workspace:^",
     "@design-system/default-react-v18": "workspace:^",
+    "@design-system/brutalist-react-v18": "workspace:^",
     "@tauri-apps/api": "^2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
