@@ -1,0 +1,11 @@
+import { describe, expect, it } from "vitest";
+import { requiredContractNames } from "@design-system/contracts";
+import { svelteV5ContractAdapter } from "../src/lib/contract-adapter.js";
+
+describe("svelteV5ContractAdapter (brutalist)", () => {
+  it("exports every currently required contract implementation", () => {
+    expect(Object.keys(svelteV5ContractAdapter).sort()).toEqual([
+      ...requiredContractNames,
+    ].sort());
+  });
+});

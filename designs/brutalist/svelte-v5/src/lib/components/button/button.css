@@ -1,0 +1,92 @@
+@layer components {
+  .brutal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: calc(var(--ds-space-2) + 2px) var(--ds-space-4);
+    border-radius: 0;
+    border: 3px solid var(--ds-color-fg);
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+    font-family: var(--ds-font-mono, monospace);
+    font-weight: 700;
+    font-size: inherit;
+    box-shadow: 4px 4px 0 var(--ds-color-fg);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: transform 0.04s ease, box-shadow 0.04s ease;
+  }
+
+  .brutal-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ds-color-fg);
+  }
+
+  .brutal-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ds-color-fg);
+  }
+
+  .brutal-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: 2px 2px 0 var(--ds-color-text-muted);
+    border-color: var(--ds-color-text-muted);
+  }
+
+  .brutal-btn--primary {
+    background: var(--ds-color-fg);
+    color: var(--ds-color-bg);
+    border-color: var(--ds-color-fg);
+  }
+
+  .brutal-btn--primary:hover:not(:disabled) {
+    background: var(--ds-color-fg);
+  }
+
+  .brutal-btn--secondary {
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+    border-color: var(--ds-color-fg);
+  }
+
+  .brutal-btn--ghost {
+    background: transparent;
+    color: var(--ds-color-fg);
+    border-color: var(--ds-color-fg);
+    box-shadow: none;
+  }
+
+  .brutal-btn--ghost:hover:not(:disabled) {
+    background: var(--ds-color-surface);
+    box-shadow: 4px 4px 0 var(--ds-color-fg);
+  }
+
+  .brutal-btn--danger {
+    background: var(--ds-color-danger);
+    color: var(--ds-color-danger-contrast);
+    border-color: var(--ds-color-fg);
+    box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);
+  }
+
+  .brutal-btn--danger:hover:not(:disabled) {
+    box-shadow: 6px 6px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);
+  }
+
+  .brutal-btn--sm {
+    padding: var(--ds-space-1) var(--ds-space-3);
+    font-size: var(--ds-text-sm, 0.75rem);
+    box-shadow: 2px 2px 0 var(--ds-color-fg);
+  }
+
+  .brutal-btn--md {
+    font-size: var(--ds-text-md, 0.875rem);
+  }
+
+  .brutal-btn--lg {
+    padding: var(--ds-space-3) var(--ds-space-6);
+    font-size: var(--ds-text-lg, 1rem);
+    box-shadow: 6px 6px 0 var(--ds-color-fg);
+  }
+}
