@@ -11,7 +11,7 @@ A powerful CLI tool for generating React components that follow the design syste
 - ✅ **Validation** - Comprehensive input validation with helpful error messages
 - 🔧 **Customizable** - Support for variants, sizes, props, and component types
 - 📖 **Storybook Ready** - Generated stories work out of the box
-- 🧪 **Test Coverage** - Complete test suites with accessibility testing
+- 🧪 **Test Coverage** - Complete test suites with role/ARIA attribute assertions (automated axe-style a11y gating is not yet in place)
 
 ## Quick Start
 

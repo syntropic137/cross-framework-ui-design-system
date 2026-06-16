@@ -53,7 +53,7 @@ pnpm generate:component   # scaffold a new component via the generator CLI
 
 - Unit/contract tests run on **Vitest + Testing Library**, co-located with components.
 - Storybook interaction tests run via `pnpm storybook:test` (included in `pnpm qa`).
-- Every component must satisfy the contract in `docs/component-standard.md` and include accessibility checks.
+- Every component must satisfy the contract in `docs/component-standard.md`; components use semantic roles/ARIA and tests assert key attributes (automated axe-style a11y gating is not yet in place).
 
 ## Security
 
