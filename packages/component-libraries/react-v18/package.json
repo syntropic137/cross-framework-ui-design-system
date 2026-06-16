@@ -8,7 +8,10 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src/design-system"
+    "src/design-system/ThemeProvider.tsx",
+    "src/design-system/styles.css",
+    "src/design-system/base.css",
+    "src/design-system/components"
   ],
   "scripts": {
     "build": "rimraf dist && pnpm --filter @design-system/contracts build && tsc --build tsconfig.build.json && vite build",

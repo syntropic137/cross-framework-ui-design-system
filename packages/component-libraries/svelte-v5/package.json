@@ -15,7 +15,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build":           "svelte-package -i src/lib",
+    "build":           "svelte-package -i src/lib && rimraf --glob \"dist/**/*.stories.*\"",
     "clean":           "rimraf dist",
     "lint":            "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
     "typecheck":       "svelte-check --tsconfig ./tsconfig.json",
