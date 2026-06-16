@@ -56,6 +56,15 @@ const COLOR_PATTERNS = [
   { label: 'rgb()', re: /\brgba?\s*\(\s*\d/ },
   // hsl( / hsla( with a digit immediately following (excludes `hsl(var(...)`)
   { label: 'hsl()', re: /\bhsla?\s*\(\s*\d/ },
+  // Named CSS color keywords used as values (not as property names, not in --ds-* token names).
+  // Allowlisted non-color keywords: transparent, currentColor, inherit, initial, unset, revert, none, auto.
+  // (?<!-) prevents matching inside CSS custom property names like --ds-color-blackish.
+  // (?!-) prevents matching CSS property fragments like "white" in "white-space".
+  // (?!\s*:) prevents matching when the word is a CSS property name (followed by colon).
+  {
+    label: 'named color',
+    re: /(?<!-)\b(aqua|black|blue|fuchsia|gray|grey|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|cyan|magenta|coral|crimson|gold|indigo|ivory|khaki|lavender|linen|orchid|pink|plum|salmon|tan|tomato|turquoise|violet)\b(?!-|\s*:)/i,
+  },
 ];
 
 // ANSI colours for terminal output

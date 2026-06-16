@@ -102,6 +102,54 @@ describe('scanCssForHardcodedColors — PASSES compliant CSS using var()', () =>
 });
 
 // ---------------------------------------------------------------------------
+// scanCssForHardcodedColors — named CSS color keywords
+// ---------------------------------------------------------------------------
+
+describe('scanCssForHardcodedColors — FLAGS named CSS color keywords', () => {
+  it('flags color: black', () => {
+    const violations = scanCssForHardcodedColors('color: black;');
+    assert.ok(violations.length >= 1, `Expected ≥1 violation for "color: black;", got ${violations.length}`);
+    assert.equal(violations[0].label, 'named color');
+  });
+
+  it('flags color: white', () => {
+    const violations = scanCssForHardcodedColors('color: white;');
+    assert.ok(violations.length >= 1, `Expected ≥1 violation for "color: white;", got ${violations.length}`);
+    assert.equal(violations[0].label, 'named color');
+  });
+
+  it('flags black inside color-mix(): color-mix(in oklab, var(--ds-color-danger), black 50%)', () => {
+    const violations = scanCssForHardcodedColors(
+      'box-shadow: 4px 4px 0 color-mix(in oklab, var(--ds-color-danger), black 50%);'
+    );
+    assert.ok(violations.length >= 1, `Expected ≥1 violation, got ${violations.length}`);
+    assert.equal(violations[0].label, 'named color');
+  });
+});
+
+describe('scanCssForHardcodedColors — PASSES allowlisted CSS keywords (not named colors)', () => {
+  it('passes color: transparent', () => {
+    const violations = scanCssForHardcodedColors('color: transparent;');
+    assert.equal(violations.length, 0, `Expected 0 violations for "transparent", got ${violations.length}`);
+  });
+
+  it('passes color: currentColor', () => {
+    const violations = scanCssForHardcodedColors('color: currentColor;');
+    assert.equal(violations.length, 0, `Expected 0 violations for "currentColor", got ${violations.length}`);
+  });
+
+  it('passes color: var(--ds-color-fg)', () => {
+    const violations = scanCssForHardcodedColors('color: var(--ds-color-fg);');
+    assert.equal(violations.length, 0, `Expected 0 violations for "var(--ds-color-fg)", got ${violations.length}`);
+  });
+
+  it('passes a token name containing a color word (--ds-color-blackboard is hypothetical but safe)', () => {
+    const violations = scanCssForHardcodedColors('color: var(--ds-color-blackboard);');
+    assert.equal(violations.length, 0, `Expected 0 violations for token containing "black", got ${violations.length}`);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // isDecorativeFile — allowlist predicate
 // ---------------------------------------------------------------------------
 
