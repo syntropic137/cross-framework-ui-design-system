@@ -1,0 +1,61 @@
+@layer components {
+  .brutal-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 28px;
+    padding: 0;
+    border: 3px solid #000;
+    background: none;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 #000;
+    border-radius: 0;
+    transition: box-shadow 0.04s ease, transform 0.04s ease;
+  }
+
+  .brutal-toggle:hover:not(.brutal-toggle--disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .brutal-toggle:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 3px;
+  }
+
+  .brutal-toggle--disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    box-shadow: 1px 1px 0 #888;
+    border-color: #888;
+  }
+
+  .brutal-toggle__track {
+    position: absolute;
+    inset: 0;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 3px;
+  }
+
+  .brutal-toggle--pressed .brutal-toggle__track {
+    background: #000;
+    justify-content: flex-end;
+  }
+
+  .brutal-toggle__thumb {
+    width: 18px;
+    height: 18px;
+    background: #000;
+    border: 2px solid #000;
+  }
+
+  .brutal-toggle--pressed .brutal-toggle__thumb {
+    background: #fff;
+    border-color: #fff;
+  }
+}
