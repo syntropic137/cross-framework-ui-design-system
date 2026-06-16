@@ -1,0 +1,11 @@
+import { describe, expect, it } from "vitest";
+import { requiredContractNames } from "@design-system/contracts";
+import { reactV18ContractAdapter } from "../src/contract-adapter.js";
+
+describe("reactV18ContractAdapter (brutalist)", () => {
+  it("exports every currently required contract implementation", () => {
+    expect(Object.keys(reactV18ContractAdapter).sort()).toEqual([
+      ...requiredContractNames,
+    ].sort());
+  });
+});
