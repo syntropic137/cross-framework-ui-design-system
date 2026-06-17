@@ -1,0 +1,69 @@
+name: Release
+
+# Publish-on-merge: pushing to `release` (via a reviewed PR from `main`) runs the
+# full QA gate once more, then publishes the public @syntropic137/* packages to npm
+# with provenance, tags the version, and cuts a GitHub Release. See ADR-0009.
+on:
+  push:
+    branches:
+      - release
+
+# Least-privilege default; the publish job widens exactly what it needs.
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the git tag + GitHub Release
+      id-token: write # npm provenance (OIDC attestation)
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d # v3.0.0
+        with:
+          version: 9
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      # Install scripts are blocked (.npmrc ignore-scripts=true), so provision the
+      # Storybook test-runner's browser explicitly, mirroring ci.yml.
+      - name: Install Playwright browser
+        run: pnpm --filter @syntropic137/default-react-v18 exec playwright install --with-deps chromium
+      # Re-run the full gate before an irreversible publish (the PR already ran it;
+      # this is the belt-and-suspenders check on the merged result).
+      - name: QA gate
+        run: pnpm qa
+      - name: Resolve release version
+        id: v
+        run: echo "version=$(node -p "require('./packages/contracts/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Check tag does not already exist
+        id: tag
+        run: |
+          if git rev-parse "v${{ steps.v.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "v${{ steps.v.outputs.version }} already released; skipping publish."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish to npm with provenance
+        if: steps.tag.outputs.exists == 'false'
+        run: pnpm publish:packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"
+      - name: Tag and create GitHub Release
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="v${{ steps.v.outputs.version }}"
+          git tag -a "$VERSION" -m "$VERSION"
+          git push origin "$VERSION"
+          gh release create "$VERSION" --title "$VERSION" --notes "See CHANGELOG.md for details."

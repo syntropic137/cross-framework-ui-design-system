@@ -8,13 +8,13 @@ the practical map and the pre-publish checklist.
 
 | Package | Publishes? | Runtime deps | Notes |
 | --- | --- | --- | --- |
-| `@design-system/contracts` | ✅ public | **none** (enforced) | framework-neutral API |
-| `@design-system/design-tokens` | ✅ public | **none** (enforced) | tokens CSS + JSON |
-| `@design-system/<design>-react-v18` | ✅ public | `clsx` only | `react`/`react-dom` are peers |
-| `@design-system/<design>-svelte-v5` | ✅ public | `bits-ui` (`default` cell today) | `svelte` is a peer; cell deps audited in `rcl-tws.9` |
+| `@syntropic137/contracts` | ✅ public | **none** (enforced) | framework-neutral API |
+| `@syntropic137/design-tokens` | ✅ public | **none** (enforced) | tokens CSS + JSON |
+| `@syntropic137/<design>-react-v18` | ✅ public | `clsx` only | `react`/`react-dom` are peers |
+| `@syntropic137/<design>-svelte-v5` | ✅ public | `bits-ui` (`default` cell today) | `svelte` is a peer; cell deps audited in `rcl-tws.9` |
 | `apps/tauri-harness*` | 🚫 private | — | demo apps, not products |
-| `@design-system/component-generator` | 🚫 private | — | internal dev tool |
-| `@design-system/dashboard` | 🚫 private | — | internal dev tool |
+| `@syntropic137/component-generator` | 🚫 private | — | internal dev tool |
+| `@syntropic137/dashboard` | 🚫 private | — | internal dev tool |
 
 ## Zero-dependency foundation
 
@@ -39,45 +39,47 @@ Practical consequence: compatible versions are simply *equal* versions.
 `workspace:^` references between packages are rewritten to the concrete published
 version automatically at `pnpm publish` time.
 
-## Pre-publish checklist (blockers today)
+## Status: wired vs manual prerequisites
 
-The repo is **not yet publish-ready**. Before the first `pnpm publish`:
+The packaging and pipeline are wired in-repo (ADR-0009). Done:
 
-- [ ] **Add an `exports` map to `@design-system/design-tokens`.** It is imported by
-      subpath (`@design-system/design-tokens/generated/design-tokens.css`) but has
-      no `exports` field — that works in bundlers now but breaks under strict
-      `exports` resolution once published. Export `.`, `./generated/design-tokens.css`,
-      and the JSON.
-- [ ] **Normalize `private` / `publishConfig`.** Today the flags are inconsistent
-      (contracts `false`, design-tokens `true`, default-react-v18 `true`,
-      default-svelte-v5 `false`). Set `private` per the table above, and add to each
-      publishable package:
-      ```jsonc
-      "publishConfig": { "access": "public", "provenance": true }
-      ```
-- [ ] **Verify `files` / `.npmignore`** ship only built output (+ source the
-      shadcn-style export needs) and that types resolve — the react cells' post-vite
-      `tsc --build` `.d.ts` emission (ADR-0004) must produce `dist/*.d.ts`.
-- [ ] **Secure the `@design-system` npm scope** (create the org, or rename the scope
-      to an owned one). Intersects the repo-rename beads `rcl-95y` / `rcl-0fp`.
-- [ ] **Wire a publish workflow** (`rcl-tws.2`): bump shared version → update
-      CHANGELOG → tag → CI runs `pnpm qa` then publishes with provenance.
+- [x] **`exports` map on `@syntropic137/design-tokens`** (`.`,
+      `./generated/design-tokens.css`, `./generated/design-tokens.json`).
+- [x] **Normalized `private` / `publishConfig`.** The 6 publishable packages are
+      `"private": false` with `"publishConfig": { "access": "public", "provenance":
+      true }` and a `repository` field; apps, dashboard, and generator are
+      `"private": true`, so `pnpm -r publish` skips them.
+- [x] **Release workflow + version tooling**: `.github/workflows/release.yml`,
+      `scripts/bump-version.mjs`, and the `version:bump` / `publish:packages` scripts.
 
-## Release flow (target)
+Manual prerequisites (cannot be done from the repo; blockers for the first live
+publish):
 
-```bash
-# 1. bump the shared version across all publishable packages
-# 2. update CHANGELOG
-# 3. commit + tag (e.g. v0.2.0)
-git tag -a v0.2.0 -m "..." && git push --tags
-# 4. CI: install --frozen-lockfile, pnpm qa, then:
-pnpm -r --filter "./packages/*" --filter "./designs/*/*" publish \
-  --access public --provenance --no-git-checks
-```
+- [ ] **Create the `syntropic137` npm org** so the `@syntropic137` scope is
+      publishable.
+- [ ] **Add an `NPM_TOKEN` repo secret** (an npm automation token), or configure an
+      npm trusted publisher (OIDC) per package.
+- [ ] **Protect the `release` branch**: require `ci.yml` green and a review before
+      merge. This is what turns the `main` -> `release` PR into a real gate.
+- [ ] (Optional) confirm `dist/*.d.ts` ship for the react cells (ADR-0004 emission)
+      before the first publish.
 
-Publishing always runs from CI with **npm provenance** (OIDC), `ignore-scripts=true`,
-and `--frozen-lockfile` — the existing supply-chain hardening
-([ADR-0008](./adrs/ADR-0008-npm-distribution.md)) carries straight into release.
+## Release flow
+
+The model is **release branch + gate + publish-on-merge** (ADR-0009):
+
+1. **Bump** the lockstep version on `main`: `pnpm version:bump 0.2.0` (updates every
+   publishable package + root, seeds a CHANGELOG entry). Edit the CHANGELOG entry.
+2. **Open the release PR** `main` -> `release`. `ci.yml` runs the full `pnpm qa` gate
+   on it; this PR is the release gate.
+3. **Merge.** `.github/workflows/release.yml` re-runs `pnpm qa`, then
+   `pnpm publish:packages` publishes the 6 public packages to npm with provenance,
+   tags `vX.Y.Z`, and cuts a GitHub Release. A guard skips publish if the tag already
+   exists, so re-pushing `release` is idempotent.
+
+Publishing always runs from CI with **npm provenance** (OIDC `id-token`),
+`ignore-scripts=true`, and `--frozen-lockfile` — the supply-chain hardening from
+[ADR-0008](./adrs/ADR-0008-npm-distribution.md) carries straight into release.
 
 ## Consuming the published packages
 
@@ -85,8 +87,8 @@ Once published, external apps install exactly as in the
 [cookbook](./cookbook/integrate-tauri.md):
 
 ```bash
-pnpm add @design-system/contracts @design-system/design-tokens \
-         @design-system/default-svelte-v5
+pnpm add @syntropic137/contracts @syntropic137/design-tokens \
+         @syntropic137/default-svelte-v5
 ```
 
 There is also a planned **shadcn-style source export** (`rcl-tws.3`) for consumers
