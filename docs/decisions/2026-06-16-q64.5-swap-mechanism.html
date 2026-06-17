@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>q64.5 — Cross-Framework Swap: Decision Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&family=Shantell+Sans:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111722; --panel2:#0d131c; --ink:#e6edf3; --dim:#8aa0b4;
+    --line:#22303f; --signal:#36d3e0; --good:#56d364; --warn:#e3b341; --hot:#ff7b72;
+    --rail:#1b6b73;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    min-height:100vh; padding:40px 18px;
+    background:
+      radial-gradient(900px 500px at 18% -8%, rgba(54,211,224,.10), transparent 60%),
+      radial-gradient(900px 600px at 110% 20%, rgba(86,211,100,.07), transparent 55%),
+      var(--bg);
+  }
+  /* film grain */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:9;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .sheet{
+    max-width:1140px; margin:0 auto; position:relative; z-index:1;
+    background:linear-gradient(180deg,#0f1620,#0b1119);
+    border:1px solid var(--line); border-radius:6px;
+    box-shadow:0 40px 120px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.03);
+    padding:28px 30px 34px;
+    /* faint patch-bay grid */
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 31px, rgba(255,255,255,.018) 31px 32px),
+      repeating-linear-gradient(90deg, transparent 0 31px, rgba(255,255,255,.018) 31px 32px),
+      linear-gradient(180deg,#0f1620,#0b1119);
+  }
+  /* title block */
+  .titleblock{display:flex; justify-content:space-between; align-items:flex-start; gap:18px;
+    border-bottom:1px dashed var(--line); padding-bottom:14px; flex-wrap:wrap}
+  .titleblock .meta{font-size:11px; color:var(--dim); line-height:1.7; text-align:right}
+  .kicker{color:var(--signal); letter-spacing:.32em; font-size:11px; text-transform:uppercase}
+  h1{font-family:"Archivo Black",sans-serif; font-weight:400; margin:6px 0 0;
+    font-size:clamp(26px,4.4vw,46px); line-height:.98; letter-spacing:-.01em}
+  h1 .em{color:var(--signal)}
+  .tag{display:inline-block; border:1px solid var(--line); border-radius:3px; padding:2px 8px;
+    font-size:11px; color:var(--dim)}
+
+  .lede{margin:16px 0 6px; font-size:14px; color:var(--ink); max-width:80ch; line-height:1.55}
+  .lede b{color:var(--warn)}
+
+  /* contract bus */
+  .bus{margin:18px 0 6px; border:1px solid var(--rail); border-radius:6px; overflow:hidden;
+    background:linear-gradient(90deg, rgba(27,107,115,.20), rgba(27,107,115,.05));}
+  .bus .busrow{display:flex; align-items:center; gap:14px; padding:12px 16px; flex-wrap:wrap}
+  .bus .lab{color:var(--signal); font-weight:600; letter-spacing:.08em; font-size:12px}
+  .chip{border:1px solid var(--line); background:#0c1219; border-radius:20px; padding:4px 12px; font-size:12px}
+  .chip.req{border-color:var(--rail); color:#bfeef2}
+  .arrow{color:var(--dim)}
+  .adp{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap}
+  .adp .ok{color:var(--good)}
+  .busnote{padding:0 16px 12px; font-size:11.5px; color:var(--dim)}
+  .busnote b{color:var(--good)}
+
+  .secthead{display:flex; align-items:center; gap:10px; margin:22px 0 12px}
+  .secthead .n{font-family:"Archivo Black"; color:var(--dim); font-size:13px; letter-spacing:.2em}
+  .secthead .l{flex:1; height:1px; background:var(--line)}
+
+  /* option modules */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  .mod{border:1px solid var(--line); border-radius:6px; background:linear-gradient(180deg,#121a25,#0d141d);
+    padding:0 0 14px; display:flex; flex-direction:column; position:relative; overflow:hidden}
+  .mod .top{padding:14px 15px 10px; border-bottom:1px solid var(--line)}
+  .mod .jack{position:absolute; top:14px; right:14px; width:12px; height:12px; border-radius:50%;
+    border:2px solid var(--line); background:#0a0e14}
+  .mod .opt{font-size:11px; color:var(--dim); letter-spacing:.2em}
+  .mod h3{font-family:"Archivo Black"; font-weight:400; font-size:18px; margin:4px 0 8px; line-height:1.05}
+  .badge{display:inline-block; font-size:10.5px; padding:2px 8px; border-radius:3px; letter-spacing:.04em}
+  .b-now{background:rgba(86,211,100,.15); color:var(--good); border:1px solid rgba(86,211,100,.4)}
+  .b-big{background:rgba(227,179,65,.13); color:var(--warn); border:1px solid rgba(227,179,65,.4)}
+  .b-lite{background:rgba(138,160,180,.12); color:var(--dim); border:1px solid var(--line)}
+
+  .mod .body{padding:12px 15px; font-size:12.5px; line-height:1.5}
+  .mod .label{font-size:10px; letter-spacing:.18em; color:var(--signal); text-transform:uppercase; margin:10px 0 5px}
+  .code{background:#070b10; border:1px solid var(--line); border-radius:4px; padding:8px 10px;
+    font-size:11.5px; color:#cfe; white-space:pre-wrap; word-break:break-word; line-height:1.45}
+  .code .c{color:#5f7488}
+  .code .k{color:var(--signal)}
+  .ul{margin:6px 0 0; padding:0; list-style:none}
+  .ul li{padding:3px 0 3px 16px; position:relative; color:var(--ink)}
+  .ul li::before{content:"▸"; position:absolute; left:0; color:var(--rail)}
+  .ul.cost li::before{content:"✕"; color:var(--hot)}
+  .ul.win li::before{content:"✓"; color:var(--good)}
+
+  /* effort meter */
+  .meter{display:flex; align-items:center; gap:8px; margin:10px 0 2px}
+  .meter .bars{display:flex; gap:3px}
+  .meter .bars i{width:18px; height:7px; border-radius:1px; background:#1a2430; display:block}
+  .meter .bars i.on1{background:var(--good)} .meter .bars i.on2{background:var(--warn)} .meter .bars i.on3{background:var(--hot)}
+  .meter .et{font-size:10.5px; color:var(--dim); letter-spacing:.08em}
+
+  .verdict{margin-top:auto; padding:10px 15px 0; font-size:11.5px; color:var(--dim)}
+  .verdict b{color:var(--ink)}
+
+  /* recommended highlight */
+  .mod.pick{border-color:var(--good); box-shadow:0 0 0 1px rgba(86,211,100,.35), 0 18px 50px rgba(0,0,0,.5)}
+  .mod.pick .jack{background:var(--good); border-color:var(--good); box-shadow:0 0 0 4px rgba(86,211,100,.18); animation:pulse 2.4s ease-in-out infinite}
+  .stamp{position:absolute; top:54px; right:-30px; transform:rotate(12deg); background:var(--good); color:#062b0e;
+    font-family:"Archivo Black"; font-size:11px; letter-spacing:.1em; padding:4px 36px; opacity:.96}
+
+  /* decision helper */
+  .foot{margin-top:22px; display:grid; grid-template-columns:1.3fr 1fr; gap:16px}
+  @media (max-width:880px){.foot{grid-template-columns:1fr}}
+  .helper{border:1px solid var(--line); border-radius:6px; padding:14px 16px; background:#0c131c}
+  .helper h4{margin:0 0 8px; font-size:12px; color:var(--signal); letter-spacing:.14em; text-transform:uppercase}
+  .q{font-size:12.5px; line-height:1.6; color:var(--ink)}
+  .q .a{color:var(--good)} .q .b{color:var(--warn)} .q .c{color:var(--dim)}
+  .note{font-family:"Shantell Sans",cursive; color:var(--warn); font-size:14px; line-height:1.5; transform:rotate(-.6deg)}
+  .note .ar{color:var(--dim)}
+
+  footer{margin-top:18px; border-top:1px dashed var(--line); padding-top:10px;
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:10.5px; color:var(--dim)}
+
+  /* motion */
+  @keyframes rise{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(86,211,100,.18)} 50%{box-shadow:0 0 0 8px rgba(86,211,100,.04)}}
+  .r{opacity:0; animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards}
+  .d1{animation-delay:.05s}.d2{animation-delay:.13s}.d3{animation-delay:.22s}.d4{animation-delay:.32s}
+  .d5{animation-delay:.42s}.d6{animation-delay:.52s}.d7{animation-delay:.62s}
+  @media (prefers-reduced-motion:reduce){.r{animation:none;opacity:1}.mod.pick .jack{animation:none}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="titleblock r d1">
+    <div>
+      <div class="kicker">Design System · Cross-Framework Swap</div>
+      <h1>HOW SHOULD THE<br><span class="em">SWAP</span> ACTUALLY WORK?</h1>
+      <div style="margin-top:8px"><span class="tag">bead rcl-q64.5 · P1</span> <span class="tag">decision sheet</span></div>
+    </div>
+    <div class="meta">
+      DRAWN 2026-06-16<br>
+      branch: main<br>
+      contract: badge · button · toggle<br>
+      drawn by Claude
+    </div>
+  </div>
+
+  <p class="lede r d2">
+    A Tauri window renders <b>one web framework at a time</b>. The contract and both adapters already exist
+    and are type-safe — so the open question isn't <i>whether</i> you can swap implementations, it's
+    <b>what the swap gesture is</b> and how much you build to get it. Three routes:
+  </p>
+
+  <!-- shared contract bus -->
+  <div class="bus r d2">
+    <div class="busrow">
+      <span class="lab">CONTRACT&nbsp;BUS</span>
+      <span class="chip req">RequiredComponentContracts</span>
+      <span class="arrow">→</span>
+      <span class="chip">badge</span><span class="chip">button</span><span class="chip">toggle</span>
+      <span class="adp">
+        <span class="chip"><span class="ok">●</span> reactV18ContractAdapter</span>
+        <span class="chip"><span class="ok">●</span> svelteV5ContractAdapter</span>
+      </span>
+    </div>
+    <div class="busnote">Both adapters <b>already implemented &amp; conformance-enforced at typecheck</b> (rcl-q64.1 / q64.2). The type-safe swap is done — these options differ only in the <i>runtime</i> story.</div>
+  </div>
+
+  <div class="secthead r d3"><span class="n">THREE&nbsp;ROUTES</span><span class="l"></span></div>
+
+  <div class="grid">
+
+    <!-- OPTION 1 -->
+    <div class="mod pick r d4">
+      <span class="jack"></span>
+      <span class="stamp">RECOMMENDED</span>
+      <div class="top">
+        <div class="opt">OPTION 1</div>
+        <h3>Two builds,<br>one selector</h3>
+        <span class="badge b-now">ACHIEVABLE NOW · no new lib work</span>
+      </div>
+      <div class="body">
+        <div class="label">The swap looks like</div>
+        <div class="code"><span class="c"># flip one selector + rebuild</span>
+<span class="k">VITE_UI_LIB</span>=svelte pnpm build</div>
+        <div class="label">What you get</div>
+        <ul class="ul win">
+          <li>Real running demo: see React vs Svelte render the <i>same</i> contract UI</li>
+          <li>Proves parity end-to-end in the actual Tauri shell</li>
+          <li>Uses the adapters as-is</li>
+        </ul>
+        <div class="label">Cost</div>
+        <ul class="ul cost">
+          <li>Harness carries both framework runtimes + two mount entries</li>
+          <li>“Swap” = rebuild, not live toggle</li>
+        </ul>
+        <div class="meter"><span class="et">EFFORT</span><div class="bars"><i class="on2"></i><i class="on2"></i><i></i><i></i></div><span class="et">~½–1 day</span></div>
+      </div>
+      <div class="verdict"><b>Pick if</b> you want to <b>see it swap soon</b> with what's already built.</div>
+    </div>
+
+    <!-- OPTION 2 -->
+    <div class="mod r d5">
+      <span class="jack"></span>
+      <div class="top">
+        <div class="opt">OPTION 2</div>
+        <h3>Web components<br>(custom elements)</h3>
+        <span class="badge b-big">TRUEST SWAP · bigger build</span>
+      </div>
+      <div class="body">
+        <div class="label">The swap looks like</div>
+        <div class="code"><span class="c">&lt;!-- framework-agnostic markup --&gt;</span>
+&lt;<span class="k">ds-button</span>&gt;Go&lt;/<span class="k">ds-button</span>&gt;
+<span class="c">// swap = load a different bundle</span></div>
+        <div class="label">What you get</div>
+        <ul class="ul win">
+          <li>Genuine one-import swap, <i>any</i> host (vanilla, React, Svelte, Tauri)</li>
+          <li>The cleanest "import into any app" end-state</li>
+          <li>Design truly decoupled from framework</li>
+        </ul>
+        <div class="label">Cost</div>
+        <ul class="ul cost">
+          <li>New custom-element build target for <i>both</i> libraries</li>
+          <li>Slots/events/SSR & styling edge cases to solve</li>
+          <li>Really its own epic, not one bead</li>
+        </ul>
+        <div class="meter"><span class="et">EFFORT</span><div class="bars"><i class="on3"></i><i class="on3"></i><i class="on3"></i><i class="on3"></i></div><span class="et">~1–2 wks</span></div>
+      </div>
+      <div class="verdict"><b>Pick if</b> the real goal is <b>drop into ANY app</b>, and you'll invest.</div>
+    </div>
+
+    <!-- OPTION 3 -->
+    <div class="mod r d6">
+      <span class="jack"></span>
+      <div class="top">
+        <div class="opt">OPTION 3</div>
+        <h3>Type-level<br>swap only</h3>
+        <span class="badge b-lite">LIGHTEST · defers runtime</span>
+      </div>
+      <div class="body">
+        <div class="label">The swap looks like</div>
+        <div class="code"><span class="c">// src/ui/adapter.ts — one line</span>
+import { <span class="k">reactV18ContractAdapter</span> }
+  from <span class="k">"@design-system/react-v18"</span>;</div>
+        <div class="label">What you get</div>
+        <ul class="ul win">
+          <li>Proves the type contract + conformance now</li>
+          <li>Documents the swap point; near-zero work</li>
+          <li>Harness stays single-framework (React)</li>
+        </ul>
+        <div class="label">Cost</div>
+        <ul class="ul cost">
+          <li>No running Svelte render — nothing visual to "see"</li>
+          <li>Defers the actual demo to later</li>
+        </ul>
+        <div class="meter"><span class="et">EFFORT</span><div class="bars"><i class="on1"></i><i></i><i></i><i></i></div><span class="et">~1 hr</span></div>
+      </div>
+      <div class="verdict"><b>Pick if</b> you only need to <b>prove type-safety</b> and move on.</div>
+    </div>
+
+  </div>
+
+  <!-- decision helper -->
+  <div class="foot">
+    <div class="helper r d6">
+      <h4>Decide in two questions</h4>
+      <p class="q">1 · Do you need to <b>SEE</b> it swap at runtime, or just <b>prove</b> the contract?<br>
+        &nbsp;&nbsp;&nbsp;see it → <span class="a">Opt 1</span> or <span class="b">Opt 2</span> · prove only → <span class="c">Opt 3</span></p>
+      <p class="q">2 · Is the goal "swap inside <b>this Tauri app</b>" or "drop into <b>any app, anywhere</b>"?<br>
+        &nbsp;&nbsp;&nbsp;this app → <span class="a">Opt 1</span> · anywhere → <span class="b">Opt 2 (epic)</span></p>
+    </div>
+    <div class="helper r d7">
+      <h4>My read</h4>
+      <p class="note">Opt 1 now → it's the demo your end-goal asks for, built from what already exists.
+        Opt 2 later, as its own epic, when "any app" matters.
+        <span class="ar">↳ Opt 3 only if you want to keep moving.</span></p>
+    </div>
+  </div>
+
+  <footer>
+    <span>SOURCE · rcl-q64.5 (open, P1) · apps/tauri-harness · reactV18ContractAdapter + svelteV5ContractAdapter</span>
+    <span>contract = { badge · button · toggle } · enforced @ typecheck</span>
+  </footer>
+
+</div>
+</body>
+</html>

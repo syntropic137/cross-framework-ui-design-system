@@ -173,3 +173,6 @@ docs/handoffs/
 
 # Local git worktrees (registered separate checkouts, never committed)
 .claude/worktrees/
+
+# APSS Code Topology — regenerable analysis + visualization artifacts
+.topology/

@@ -1,8 +1,16 @@
 # ADR-0003: Component Generator Architecture
 
-**Status:** Proposed  
-**Date:** 2025-09-26  
+**Status:** Accepted  
+**Date:** 2025-09-26 (accepted), updated 2026-06-16  
 **Deciders:** Design System Team  
+
+> **Status update (2026-06-16):** Accepted and implemented. The generator exists
+> at `packages/dev-tools/component-generator/` (`cli.ts`, `generator.ts`,
+> `template-engine.ts`, `file-writer.ts`, `validators.ts`) and is wired to
+> `pnpm generate:component`. Note: since this ADR was written, the component
+> surface moved to the framework-neutral contract model (ADR-0007) and the
+> design×framework matrix (ADR-0004); the generator's templates are being aligned
+> to emit contract-conformant components (tracked in `rcl-g8z`).
 
 ## Context
 
