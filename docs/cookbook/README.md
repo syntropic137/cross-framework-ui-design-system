@@ -8,14 +8,14 @@ below, then jump to the recipe you need.
 
 The system is a **design × framework matrix**. Three layers:
 
-1. **`@design-system/contracts`** — a framework-neutral API. It says *what* a
+1. **`@syntropic137/contracts`** — a framework-neutral API. It says *what* a
    `Button` or `Badge` accepts (props, variants), not *how* it looks or which
    framework renders it.
-2. **`@design-system/design-tokens`** — the visual foundation as CSS custom
+2. **`@syntropic137/design-tokens`** — the visual foundation as CSS custom
    properties (`--ds-color-*`, `--ds-radius-*`, …). Themes (light/dark/…) are
    just different values for the same variables, swapped at runtime via a
    `data-theme` attribute.
-3. **Design cells** — `@design-system/<design>-<framework>` (e.g.
+3. **Design cells** — `@syntropic137/<design>-<framework>` (e.g.
    `default-svelte-v5`, `brutalist-react-v18`). Each cell *implements* the
    contracts for one design in one framework, and exports a stable
    **contract adapter** (`svelteV5ContractAdapter` / `reactV18ContractAdapter`).
@@ -35,18 +35,18 @@ framework  (how)   ─┘     (default/brutalist × react/svelte)
 ```bash
 # 1. Add the layers you need (inside a workspace; for external apps see
 #    docs/distribution.md for the published-package story).
-pnpm add @design-system/contracts \
-         @design-system/design-tokens \
-         @design-system/default-svelte-v5   # pick your cell
+pnpm add @syntropic137/contracts \
+         @syntropic137/design-tokens \
+         @syntropic137/default-svelte-v5   # pick your cell
 
 # 2. Import the foundation once, near your app root:
 #    - tokens CSS (the --ds-* variables + themes)
 #    - your chosen cell's component styles
-import "@design-system/design-tokens/generated/design-tokens.css";
-import "@design-system/default-svelte-v5/styles.css";
+import "@syntropic137/design-tokens/generated/design-tokens.css";
+import "@syntropic137/default-svelte-v5/styles.css";
 
 # 3. Use the adapter:
-import { svelteV5ContractAdapter as ui } from "@design-system/default-svelte-v5";
+import { svelteV5ContractAdapter as ui } from "@syntropic137/default-svelte-v5";
 ```
 
 ## Recipes

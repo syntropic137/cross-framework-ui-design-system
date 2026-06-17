@@ -5,14 +5,14 @@ describe("command builders", () => {
   it("builds the react storybook command", () => {
     expect(storybookCommand("react-v18")).toEqual({
       cmd: "pnpm",
-      args: ["--filter", "@design-system/default-react-v18", "storybook"]
+      args: ["--filter", "@syntropic137/default-react-v18", "storybook"]
     });
   });
 
   it("builds the svelte storybook command", () => {
     expect(storybookCommand("svelte-v5")).toEqual({
       cmd: "pnpm",
-      args: ["--filter", "@design-system/default-svelte-v5", "storybook"]
+      args: ["--filter", "@syntropic137/default-svelte-v5", "storybook"]
     });
   });
 

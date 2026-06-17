@@ -10,12 +10,12 @@ The system should be consumable by external apps via npm, not only inside this
 workspace. We need to decide *what* publishes, *how* it's versioned, and how we
 keep the supply-chain posture the user cares about — specifically a
 **zero-dependency** guarantee for the two foundational packages
-(`@design-system/contracts`, `@design-system/design-tokens`).
+(`@syntropic137/contracts`, `@syntropic137/design-tokens`).
 
 Current state is inconsistent and not publish-ready: `private` flags differ across
 packages (contracts `false`, design-tokens `true`, default-react-v18 `true`,
 default-svelte-v5 `false`), no package sets `publishConfig`, all are `0.1.0`, and
-`@design-system/design-tokens` has **no `exports` map** despite being imported by
+`@syntropic137/design-tokens` has **no `exports` map** despite being imported by
 subpath (`/generated/design-tokens.css`) — which works in bundlers today but
 breaks under strict `exports` resolution once published.
 
@@ -23,9 +23,9 @@ breaks under strict `exports` resolution once published.
 
 **What publishes (public):**
 
-- `@design-system/contracts` — framework-neutral API. **Zero runtime deps.**
-- `@design-system/design-tokens` — tokens CSS/JSON. **Zero runtime deps.**
-- The design cells `@design-system/<design>-<framework>` — framework as a
+- `@syntropic137/contracts` — framework-neutral API. **Zero runtime deps.**
+- `@syntropic137/design-tokens` — tokens CSS/JSON. **Zero runtime deps.**
+- The design cells `@syntropic137/<design>-<framework>` — framework as a
   `peerDependency` (react/react-dom, or svelte), tokens/contracts as peer or
   regular deps. React cells may carry `clsx` only.
 
@@ -49,7 +49,7 @@ does this automatically on `pnpm publish`).
 
 **Packaging hygiene (blockers before first publish):**
 
-1. Add an `exports` map to `@design-system/design-tokens` exposing `.` and
+1. Add an `exports` map to `@syntropic137/design-tokens` exposing `.` and
    `./generated/design-tokens.css` (and the JSON), so subpath imports survive
    strict resolution.
 2. Normalize `private`/`publishConfig`: every publishable package gets
@@ -75,7 +75,7 @@ with provenance.
   — they're equal.
 - **Cost:** lockstep means a cell-only patch still bumps everyone; acceptable while
   the matrix is small. Revisit if cells diverge in cadence.
-- **Open:** the `@design-system` npm scope must be secured (org or rename); the
+- **Open:** the `@syntropic137` npm scope must be secured (org or rename); the
   repo-rename beads (`rcl-95y`/`rcl-0fp`) intersect with the published name.
   Practical checklist and the `exports`/`publishConfig` edits live in
   [`docs/distribution.md`](../distribution.md) and `rcl-tws.10`.

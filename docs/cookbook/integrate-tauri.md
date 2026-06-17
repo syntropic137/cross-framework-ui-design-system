@@ -22,9 +22,9 @@ pnpm tauri init        # answers: dist dir = ../dist, dev url = http://localhost
 Add the design-system packages:
 
 ```bash
-pnpm add @design-system/contracts \
-         @design-system/design-tokens \
-         @design-system/default-svelte-v5
+pnpm add @syntropic137/contracts \
+         @syntropic137/design-tokens \
+         @syntropic137/default-svelte-v5
 ```
 
 ## 2. Configure Vite
@@ -58,16 +58,16 @@ swaps a one-line change (see [swap-designs.md](./swap-designs.md)).
 
 ```ts
 // src/ui/adapter.ts
-import type { RequiredComponentContracts } from "@design-system/contracts";
-import { svelteV5ContractAdapter as defaultAdapter } from "@design-system/default-svelte-v5";
+import type { RequiredComponentContracts } from "@syntropic137/contracts";
+import { svelteV5ContractAdapter as defaultAdapter } from "@syntropic137/default-svelte-v5";
 
 // ⚠️ Gotcha #2 — component CSS is NOT auto-injected.
 // In Vite library mode the JS bundle and the CSS are separate files; importing
 // the adapter does not pull in styles. Import the cell's stylesheet explicitly.
-import "@design-system/default-svelte-v5/styles.css";
+import "@syntropic137/default-svelte-v5/styles.css";
 
 // The shared token foundation (the --ds-* variables + every theme).
-import "@design-system/design-tokens/generated/design-tokens.css";
+import "@syntropic137/design-tokens/generated/design-tokens.css";
 
 export const ui = defaultAdapter satisfies Record<
   keyof RequiredComponentContracts,
@@ -85,7 +85,7 @@ element syntax:
 <!-- src/App.svelte -->
 <script lang="ts">
   import type { Component } from "svelte";
-  import type { ButtonContract } from "@design-system/contracts";
+  import type { ButtonContract } from "@syntropic137/contracts";
   import { ui } from "./ui/adapter.js";
 
   const Button = ui.button as Component<ButtonContract & { children?: any }>;
@@ -127,7 +127,7 @@ Everything above holds, with three substitutions:
 
 | Svelte | React |
 | --- | --- |
-| `@design-system/default-svelte-v5` | `@design-system/default-react-v18` |
+| `@syntropic137/default-svelte-v5` | `@syntropic137/default-react-v18` |
 | `svelteV5ContractAdapter` | `reactV18ContractAdapter` |
 | `resolve.conditions: ["browser"]` | not needed (Gotcha #1 is Svelte-only) |
 
@@ -136,9 +136,9 @@ identical. The reference React app is `apps/tauri-harness`.
 
 ```ts
 // src/ui/adapter.ts (React)
-import { reactV18ContractAdapter as ui } from "@design-system/default-react-v18";
-import "@design-system/default-react-v18/styles.css";
-import "@design-system/design-tokens/generated/design-tokens.css";
+import { reactV18ContractAdapter as ui } from "@syntropic137/default-react-v18";
+import "@syntropic137/default-react-v18/styles.css";
+import "@syntropic137/design-tokens/generated/design-tokens.css";
 export { ui };
 ```
 

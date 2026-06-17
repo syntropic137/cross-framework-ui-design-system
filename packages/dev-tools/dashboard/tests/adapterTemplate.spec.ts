@@ -9,8 +9,8 @@ describe("renderAdapterModule", () => {
   });
 
   it("imports the chosen library's adapter and the contract manifest", () => {
-    expect(out).toContain('import { reactV18ContractAdapter } from "@design-system/default-react-v18";');
-    expect(out).toContain('import type { RequiredComponentContracts } from "@design-system/contracts";');
+    expect(out).toContain('import { reactV18ContractAdapter } from "@syntropic137/default-react-v18";');
+    expect(out).toContain('import type { RequiredComponentContracts } from "@syntropic137/contracts";');
   });
 
   it("exports a `ui` const constrained by the contract surface", () => {
@@ -21,7 +21,7 @@ describe("renderAdapterModule", () => {
   });
 
   it("includes the one-line swap hint for the other library", () => {
-    expect(out).toContain('// import { svelteV5ContractAdapter } from "@design-system/default-svelte-v5";');
+    expect(out).toContain('// import { svelteV5ContractAdapter } from "@syntropic137/default-svelte-v5";');
   });
 
   it("lists planned components as TODO binding points", () => {

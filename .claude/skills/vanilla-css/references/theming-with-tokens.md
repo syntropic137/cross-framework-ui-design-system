@@ -11,7 +11,7 @@ Components never hold raw values. They read design tokens (CSS custom properties
 `--ds-*`): `--ds-color-bg`, `--ds-color-fg`, `--ds-color-accent`,
 `--ds-color-accent-contrast`, `--ds-color-surface`, `--ds-color-border`,
 `--ds-radius-*`, `--ds-space-*`, shadow and motion tokens, and so on. The token values
-live in `@design-system/design-tokens` and are generated into CSS; component CSS only
+live in `@syntropic137/design-tokens` and are generated into CSS; component CSS only
 consumes them.
 
 ```css

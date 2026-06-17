@@ -1,6 +1,6 @@
 # Component Standard
 
-Tracks the canonical, framework-neutral component contract surface for the design system. The source of truth is `@design-system/contracts`; this document explains the standard, release status, and implementation expectations.
+Tracks the canonical, framework-neutral component contract surface for the design system. The source of truth is `@syntropic137/contracts`; this document explains the standard, release status, and implementation expectations.
 
 ## Versioning
 
@@ -86,7 +86,7 @@ Applications that want one swap point should use a local app module and change o
 
 ## Styling Rules
 
-- Use generated design tokens from `@design-system/design-tokens`.
+- Use generated design tokens from `@syntropic137/design-tokens`.
 - Token references use the `--ds-*` naming scheme.
 - Raw brand colors belong in token definitions, not component CSS.
 - Components use CSS cascade layers for predictable specificity.

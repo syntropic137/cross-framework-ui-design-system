@@ -8,7 +8,7 @@ re-resolves.
 
 ## How it works
 
-`@design-system/design-tokens` generates CSS where `:root` holds the default
+`@syntropic137/design-tokens` generates CSS where `:root` holds the default
 (light) theme and each additional theme is a `[data-theme="…"]` override block:
 
 ```css
@@ -71,7 +71,7 @@ Style your own chrome from the same tokens so it transitions with the theme:
 
 ## The React delta
 
-Identical idea; use `ThemeProvider` from `@design-system/default-react-v18` (an
+Identical idea; use `ThemeProvider` from `@syntropic137/default-react-v18` (an
 implementation extra) or set the attribute yourself in an effect:
 
 ```tsx
@@ -90,7 +90,7 @@ and regenerate:
    (`themeDefinitions` — a selector like `[data-theme="midnight"]` plus the token
    values it overrides). You only override what changes; everything else inherits
    from `:root`.
-2. Regenerate: `pnpm --filter @design-system/design-tokens tokens:build`.
+2. Regenerate: `pnpm --filter @syntropic137/design-tokens tokens:build`.
 3. Use it: `document.documentElement.setAttribute("data-theme", "midnight")`.
 
 Because generation is deterministic from one source file, every consumer (CSS for

@@ -12,9 +12,9 @@ The system is organized in layers:
 
 | Layer | Package / Path | Role |
 |---|---|---|
-| **Contract** | `packages/contracts` → `@design-system/contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
-| **Design tokens** | `packages/design-tokens` → `@design-system/design-tokens` | Token definitions → generated `--ds-*` CSS custom properties; light/dark/… themes via `@layer` |
-| **Design cells** | `designs/<design>/<framework>/` → `@design-system/<design>-<framework>` | One package per (design × framework) cell; each exports a `*ContractAdapter` + `./styles.css` |
+| **Contract** | `packages/contracts` → `@syntropic137/contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
+| **Design tokens** | `packages/design-tokens` → `@syntropic137/design-tokens` | Token definitions → generated `--ds-*` CSS custom properties; light/dark/… themes via `@layer` |
+| **Design cells** | `designs/<design>/<framework>/` → `@syntropic137/<design>-<framework>` | One package per (design × framework) cell; each exports a `*ContractAdapter` + `./styles.css` |
 | **Dev tools** | `packages/dev-tools/{component-generator,dashboard}` | Component scaffolding CLI + TUI dashboard |
 | **Example apps** | `apps/{tauri-harness,tauri-harness-svelte}` | Tauri harnesses that demonstrate the design swap and runtime theming |
 
@@ -22,15 +22,15 @@ The system is organized in layers:
 
 | | `react-v18` | `svelte-v5` |
 |---|---|---|
-| `default` | `@design-system/default-react-v18` | `@design-system/default-svelte-v5` |
-| `brutalist` | `@design-system/brutalist-react-v18` | `@design-system/brutalist-svelte-v5` |
+| `default` | `@syntropic137/default-react-v18` | `@syntropic137/default-svelte-v5` |
+| `brutalist` | `@syntropic137/brutalist-react-v18` | `@syntropic137/brutalist-svelte-v5` |
 
 Each cell exports a stable adapter name tied to its framework, so a **design swap is a one-specifier change**:
 
 ```ts
 // swap design (same framework — only the package name changes, binding is identical)
-import { reactV18ContractAdapter } from "@design-system/default-react-v18";
-import { reactV18ContractAdapter } from "@design-system/brutalist-react-v18";
+import { reactV18ContractAdapter } from "@syntropic137/default-react-v18";
+import { reactV18ContractAdapter } from "@syntropic137/brutalist-react-v18";
 ```
 
 Swapping across frameworks (React ↔ Svelte) at runtime is explicitly a non-goal; the framework+version is the fixed lane.
@@ -109,11 +109,11 @@ Runtime light/dark theme toggle is implemented in the harness by flipping `data-
 
 ```ts
 // 1. Import styles (required — the JS bundle does not auto-inject CSS)
-import "@design-system/default-svelte-v5/styles.css";
-import "@design-system/design-tokens/generated/design-tokens.css";
+import "@syntropic137/default-svelte-v5/styles.css";
+import "@syntropic137/design-tokens/generated/design-tokens.css";
 
 // 2. Import the adapter (satisfies RequiredComponentAdapter)
-import { svelteV5ContractAdapter as ui } from "@design-system/default-svelte-v5";
+import { svelteV5ContractAdapter as ui } from "@syntropic137/default-svelte-v5";
 
 // 3. Use components from the adapter
 const Button = ui.button;
@@ -140,7 +140,7 @@ See [`docs/component-standard.md`](docs/component-standard.md) for the full comp
 
 Create `designs/<new-design>/` with one subdirectory per framework you want to support. Mirror an existing cell (e.g. `designs/default/react-v18/`):
 - Keep the same package layout and `contract-adapter.ts` shape.
-- Name the package `@design-system/<new-design>-<framework>`.
+- Name the package `@syntropic137/<new-design>-<framework>`.
 - Export `reactV18ContractAdapter` (React) or `svelteV5ContractAdapter` (Svelte) — these names are stable per framework.
 - Use only `var(--ds-color-*)` tokens; no hardcoded colors.
 - Run `pnpm design-system:verify` to confirm the gate picks up the new cell.
@@ -156,16 +156,16 @@ Create `designs/<design>/<new-framework>/`. Follow the same steps as above. The 
 ```
 designs/
   default/
-    react-v18/             @design-system/default-react-v18 — default React 18 cell
-    svelte-v5/             @design-system/default-svelte-v5 — default Svelte 5 cell
+    react-v18/             @syntropic137/default-react-v18 — default React 18 cell
+    svelte-v5/             @syntropic137/default-svelte-v5 — default Svelte 5 cell
   brutalist/
-    react-v18/             @design-system/brutalist-react-v18 — brutalist React 18 cell
-    svelte-v5/             @design-system/brutalist-svelte-v5 — brutalist Svelte 5 cell
+    react-v18/             @syntropic137/brutalist-react-v18 — brutalist React 18 cell
+    svelte-v5/             @syntropic137/brutalist-svelte-v5 — brutalist Svelte 5 cell
 packages/
-  contracts/               @design-system/contracts — framework-neutral prop contracts
-  design-tokens/           @design-system/design-tokens — token source → generated CSS/JSON
+  contracts/               @syntropic137/contracts — framework-neutral prop contracts
+  design-tokens/           @syntropic137/design-tokens — token source → generated CSS/JSON
   dev-tools/
-    component-generator/   @design-system/component-generator — scaffolding CLI
+    component-generator/   @syntropic137/component-generator — scaffolding CLI
     dashboard/             TUI dashboard (pnpm tui)
 apps/
   tauri-harness/           React 18 example app (Tauri)

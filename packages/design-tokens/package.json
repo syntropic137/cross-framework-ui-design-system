@@ -1,7 +1,7 @@
 {
-  "name": "@design-system/design-tokens",
+  "name": "@syntropic137/design-tokens",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,5 +25,23 @@
     "typescript": "^5.5.4",
     "vitest": "^4.1.8",
     "eslint": "^9.39.4"
-  }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./generated/design-tokens.css": "./generated/design-tokens.css",
+    "./generated/design-tokens.json": "./generated/design-tokens.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
+    "directory": "packages/design-tokens"
+  },
+  "license": "MIT"
 }

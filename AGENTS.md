@@ -34,10 +34,10 @@ pnpm generate:component   # scaffold a new component via the generator CLI
 
 ## Project layout
 
-- `packages/design-tokens/` (`@design-system/design-tokens`) — token definitions → layered CSS + JSON snapshots
-- `designs/default/react-v18/` (`@design-system/default-react-v18`) — React 18 library (Vite build, Storybook)
-- `designs/default/svelte-v5/` (`@design-system/default-svelte-v5`) — Svelte 5 library
-- `packages/dev-tools/component-generator/` (`@design-system/component-generator`) — component scaffolding CLI
+- `packages/design-tokens/` (`@syntropic137/design-tokens`) — token definitions → layered CSS + JSON snapshots
+- `designs/default/react-v18/` (`@syntropic137/default-react-v18`) — React 18 library (Vite build, Storybook)
+- `designs/default/svelte-v5/` (`@syntropic137/default-svelte-v5`) — Svelte 5 library
+- `packages/dev-tools/component-generator/` (`@syntropic137/component-generator`) — component scaffolding CLI
 - `docs/` — `docs/component-standard.md` (canonical component contract), ADRs in `docs/adrs/`
 
 ## Conventions

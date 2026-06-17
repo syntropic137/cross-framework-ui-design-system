@@ -1,5 +1,5 @@
 {
-  "name": "@design-system/default-svelte-v5",
+  "name": "@syntropic137/default-svelte-v5",
   "version": "0.1.0",
   "private": false,
   "type": "module",
@@ -8,52 +8,64 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types":  "./dist/index.d.ts",
+      "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js",
       "import": "./dist/index.js"
     },
     "./styles.css": "./dist/styles.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build":           "svelte-package -i src/lib && rimraf --glob \"dist/**/*.stories.*\"",
-    "clean":           "rimraf dist",
-    "lint":            "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "typecheck":       "svelte-check --tsconfig ./tsconfig.json",
-    "test":            "vitest run",
-    "test:watch":      "vitest",
-    "format":          "prettier --check \"src/**/*.{ts,svelte}\" \"tests/**/*.ts\"",
-    "storybook":       "storybook dev --config-dir .storybook --port 6007",
+    "build": "svelte-package -i src/lib && rimraf --glob \"dist/**/*.stories.*\"",
+    "clean": "rimraf dist",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --check \"src/**/*.{ts,svelte}\" \"tests/**/*.ts\"",
+    "storybook": "storybook dev --config-dir .storybook --port 6007",
     "storybook:build": "storybook build --config-dir .storybook"
   },
   "peerDependencies": {
     "svelte": ">=5.0.0",
-    "@design-system/design-tokens": ">=0.1.0"
+    "@syntropic137/design-tokens": ">=0.1.0"
   },
   "dependencies": {
     "bits-ui": "^1.0.0"
   },
   "devDependencies": {
-    "@design-system/contracts":           "workspace:^",
-    "@design-system/design-tokens":       "workspace:^",
-    "@storybook/addon-docs":              "^8.6.0",
-    "@storybook/addon-svelte-csf":        "^5.0.0",
-    "@storybook/svelte-vite":             "^8.6.0",
-    "@sveltejs/package":                  "^2.3.0",
-    "@sveltejs/vite-plugin-svelte":       "^4.0.0",
-    "@testing-library/svelte":            "^5.2.0",
-    "@testing-library/jest-dom":          "^6.6.3",
-    "@testing-library/user-event":        "^14.5.2",
-    "jsdom":                              "^24.1.0",
-    "prettier":                           "^3.3.2",
-    "prettier-plugin-svelte":             "^3.2.5",
-    "rimraf":                             "^5.0.7",
-    "storybook":                          "^8.6.0",
-    "svelte":                             "^5.0.0",
-    "svelte-check":                       "^4.0.0",
-    "typescript":                         "^5.5.4",
-    "vite":                               "^5.4.8",
-    "eslint":                             "^9.39.4",
-    "vitest":                             "^1.6.0"
-  }
+    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-tokens": "workspace:^",
+    "@storybook/addon-docs": "^8.6.0",
+    "@storybook/addon-svelte-csf": "^5.0.0",
+    "@storybook/svelte-vite": "^8.6.0",
+    "@sveltejs/package": "^2.3.0",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@testing-library/svelte": "^5.2.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^14.5.2",
+    "jsdom": "^24.1.0",
+    "prettier": "^3.3.2",
+    "prettier-plugin-svelte": "^3.2.5",
+    "rimraf": "^5.0.7",
+    "storybook": "^8.6.0",
+    "svelte": "^5.0.0",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8",
+    "eslint": "^9.39.4",
+    "vitest": "^1.6.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
+    "directory": "designs/default/svelte-v5"
+  },
+  "license": "MIT"
 }

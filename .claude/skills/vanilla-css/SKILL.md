@@ -8,7 +8,7 @@ description: >-
   responsive", "mobile-first", "rem sizing", "@layer", "dark mode", "theming", "the
   layout breaks on mobile", "center this", "why isn't this themeable", "pass the
   token gate". Do NOT use to define design-token values (those live in
-  @design-system/design-tokens; this skill consumes them), and do NOT use for
+  @syntropic137/design-tokens; this skill consumes them), and do NOT use for
   component scripting or framework logic (see the svelte-5 skill).
 ---
 

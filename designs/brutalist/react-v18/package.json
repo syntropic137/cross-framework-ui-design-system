@@ -1,7 +1,7 @@
 {
-  "name": "@design-system/brutalist-react-v18",
+  "name": "@syntropic137/brutalist-react-v18",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -14,14 +14,16 @@
     },
     "./styles.css": "./dist/brutalist-react-v18.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "rimraf dist tsconfig.build.tsbuildinfo && pnpm --filter @design-system/contracts build && vite build && tsc --build tsconfig.build.json",
+    "build": "rimraf dist tsconfig.build.tsbuildinfo && pnpm --filter @syntropic137/contracts build && vite build && tsc --build tsconfig.build.json",
     "clean": "rimraf dist",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"tests/**/*.ts?(x)\"",
-    "typecheck": "pnpm --filter @design-system/contracts build && tsc --noEmit",
-    "test": "pnpm --filter @design-system/contracts build && vitest run --project=unit",
-    "test:watch": "pnpm --filter @design-system/contracts build && vitest --project=unit",
+    "typecheck": "pnpm --filter @syntropic137/contracts build && tsc --noEmit",
+    "test": "pnpm --filter @syntropic137/contracts build && vitest run --project=unit",
+    "test:watch": "pnpm --filter @syntropic137/contracts build && vitest --project=unit",
     "format": "prettier --check \"src/**/*.{ts,tsx}\" \"tests/**/*.ts?(x)\""
   },
   "peerDependencies": {
@@ -29,8 +31,8 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "@design-system/contracts": "workspace:^",
-    "@design-system/design-tokens": "workspace:^",
+    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-tokens": "workspace:^",
     "clsx": "^2.1.1"
   },
   "devDependencies": {
@@ -49,5 +51,15 @@
     "vite": "^6.4.3",
     "vitest": "^4.1.8",
     "eslint": "^9.39.4"
-  }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
+    "directory": "designs/brutalist/react-v18"
+  },
+  "license": "MIT"
 }

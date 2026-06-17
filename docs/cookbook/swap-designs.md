@@ -18,10 +18,10 @@ binding name (`ui`, `svelteV5ContractAdapter`) does not change:
 
 ```diff
 // src/ui/adapter.ts
-- import { svelteV5ContractAdapter as ui } from "@design-system/default-svelte-v5";
-- import "@design-system/default-svelte-v5/styles.css";
-+ import { svelteV5ContractAdapter as ui } from "@design-system/brutalist-svelte-v5";
-+ import "@design-system/brutalist-svelte-v5/styles.css";
+- import { svelteV5ContractAdapter as ui } from "@syntropic137/default-svelte-v5";
+- import "@syntropic137/default-svelte-v5/styles.css";
++ import { svelteV5ContractAdapter as ui } from "@syntropic137/brutalist-svelte-v5";
++ import "@syntropic137/brutalist-svelte-v5/styles.css";
 ```
 
 Nothing else in your app changes. If `brutalist-svelte-v5` were missing a required
@@ -35,15 +35,15 @@ both cells and pick one from an env var. This is what the reference apps do:
 
 ```ts
 // src/ui/adapter.ts
-import type { RequiredComponentContracts } from "@design-system/contracts";
-import { svelteV5ContractAdapter as defaultAdapter } from "@design-system/default-svelte-v5";
-import { svelteV5ContractAdapter as brutalistAdapter } from "@design-system/brutalist-svelte-v5";
+import type { RequiredComponentContracts } from "@syntropic137/contracts";
+import { svelteV5ContractAdapter as defaultAdapter } from "@syntropic137/default-svelte-v5";
+import { svelteV5ContractAdapter as brutalistAdapter } from "@syntropic137/brutalist-svelte-v5";
 
 // Both cells' styles are imported; classes are namespaced (brutalist uses
 // `brutal-*`), so they coexist and only the rendered design picks up styling.
-import "@design-system/default-svelte-v5/styles.css";
-import "@design-system/brutalist-svelte-v5/styles.css";
-import "@design-system/design-tokens/generated/design-tokens.css";
+import "@syntropic137/default-svelte-v5/styles.css";
+import "@syntropic137/brutalist-svelte-v5/styles.css";
+import "@syntropic137/design-tokens/generated/design-tokens.css";
 
 const design = (import.meta.env.VITE_UI_DESIGN ?? "default") as
   | "default"

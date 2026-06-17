@@ -11,8 +11,8 @@
     "skipLibCheck":         true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "@design-system/contracts": ["../../contracts/src/index.ts"],
-      "@design-system/contracts/*": ["../../contracts/src/*"]
+      "@syntropic137/contracts": ["../../contracts/src/index.ts"],
+      "@syntropic137/contracts/*": ["../../contracts/src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts"],

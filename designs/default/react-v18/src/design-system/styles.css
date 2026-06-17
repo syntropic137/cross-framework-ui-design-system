@@ -1,4 +1,4 @@
-@import "@design-system/design-tokens/generated/design-tokens.css";
+@import "@syntropic137/design-tokens/generated/design-tokens.css";
 @import "./base.css";
 @import "./components/button.css";
 @import "./components/input.css";

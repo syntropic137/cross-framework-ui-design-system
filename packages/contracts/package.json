@@ -1,5 +1,5 @@
 {
-  "name": "@design-system/contracts",
+  "name": "@syntropic137/contracts",
   "version": "0.1.0",
   "private": false,
   "type": "module",
@@ -11,7 +11,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "clean": "rimraf dist",
@@ -26,5 +28,15 @@
     "rimraf": "^5.0.7",
     "typescript": "^5.5.4",
     "vitest": "^1.6.0"
-  }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
+    "directory": "packages/contracts"
+  },
+  "license": "MIT"
 }

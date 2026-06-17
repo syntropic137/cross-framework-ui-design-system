@@ -22,7 +22,7 @@ on.
 
 Split *contract* from *implementation*:
 
-- **`@design-system/contracts`** is a framework-neutral, **zero-dependency**
+- **`@syntropic137/contracts`** is a framework-neutral, **zero-dependency**
   package defining each component's prop contract (`ButtonContract`,
   `BadgeContract`, …) plus shared union types (`shared.ts`: size, tone,
   orientation, side, align, open/value/position contracts). It contains no React

@@ -1,5 +1,5 @@
 {
-  "name": "@design-system/component-generator",
+  "name": "@syntropic137/component-generator",
   "version": "0.1.0",
   "description": "CLI tool for generating design system components",
   "type": "module",
@@ -42,5 +42,6 @@
     "typescript"
   ],
   "author": "Design System Team",
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }

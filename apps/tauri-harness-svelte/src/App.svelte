@@ -5,7 +5,7 @@
     BadgeContract,
     ButtonContract,
     ToggleContract,
-  } from "@design-system/contracts";
+  } from "@syntropic137/contracts";
   import { ui, activeDesign } from "./ui/adapter.js";
 
   // The adapter values are typed `unknown` (RequiredComponentAdapter widened
@@ -26,7 +26,7 @@
 
   // Theming is RUNTIME: flip `data-theme` on the root element and every
   // var(--ds-color-*) re-resolves — no rebuild, no component changes. The dark
-  // palette lives entirely in @design-system/design-tokens.
+  // palette lives entirely in @syntropic137/design-tokens.
   type Theme = "light" | "dark";
   const stored =
     typeof localStorage !== "undefined" ? localStorage.getItem("ds-theme") : null;
