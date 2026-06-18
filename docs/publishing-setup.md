@@ -88,10 +88,17 @@ For each package: open `https://www.npmjs.com/package/@syntropic137/<name>` ->
 This makes the `main -> release` PR a real gate: nothing reaches `release` (and
 therefore nothing publishes) without a green CI run and a review.
 
+> **Order matters:** do Step 1 (bootstrap) *before* this. The push that creates the
+> `release` branch triggers `release.yml`, which runs the publish job. That is safe
+> only because the publish step is idempotent (it skips versions already on npm) and
+> the tag guard skips an existing tag, so a release-branch push when nothing has
+> changed is a no-op. Creating `release` before the bootstrap would attempt a real
+> first publish from CI instead of your controlled local bootstrap.
+
 Using the GitHub CLI:
 
 ```bash
-# create the release branch off main if it does not exist yet
+# create the release branch off main (only after Step 1 bootstrap)
 git checkout main && git pull
 git checkout -b release && git push -u origin release
 git checkout main

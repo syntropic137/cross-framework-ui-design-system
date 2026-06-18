@@ -31,7 +31,6 @@
     "@syntropic137/design-tokens": ">=0.1.0"
   },
   "devDependencies": {
-    "@syntropic137/contracts": "workspace:^",
     "@syntropic137/design-tokens": "workspace:^",
     "@sveltejs/package": "^2.3.0",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
@@ -58,5 +57,8 @@
     "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
     "directory": "designs/brutalist/svelte-v5"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@syntropic137/contracts": "workspace:^"
+  }
 }

@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 // Publish the design-system packages to npm.
 //
-// Strategy (chosen so npm OIDC "trusted publishing" works without a token):
-//   1. `pnpm pack` each publishable package. pnpm rewrites the `workspace:^`
-//      dependencies into real version ranges in the packed manifest (plain
-//      `npm publish` cannot do this), so the tarball is registry-correct.
-//   2. `npm publish <tarball>` for each. The npm CLI (>= 11.5.1) performs the
-//      OIDC handshake with the registry when a trusted publisher is configured
-//      and the workflow has `id-token: write`, so no NPM_TOKEN is needed.
+// Strategy (so npm OIDC "trusted publishing" works without a token):
+//   1. `pnpm pack` each publishable package. pnpm rewrites `workspace:^` deps into
+//      real version ranges in the packed manifest (plain `npm publish` cannot), so
+//      the tarball is registry-correct.
+//   2. `npm publish <tarball>` for each. The npm CLI (>= 11.5.1) does the OIDC
+//      handshake when a trusted publisher is configured and the workflow has
+//      `id-token: write`, so no NPM_TOKEN is needed.
 //
-// Zero dependencies (Node built-ins only). Run from CI on push to `release`
-// (see .github/workflows/release.yml), or locally for a dry run:
-//   DRY_RUN=1 node scripts/publish-packages.mjs
+// Idempotent: a version already on the registry is skipped, so re-running after a
+// partial failure publishes only what is missing (it never errors on a duplicate,
+// which would otherwise wedge a half-finished release).
+//
+// Zero dependencies. Run from CI on push to `release` (see release.yml), or locally:
+//   DRY_RUN=1 node scripts/publish-packages.mjs   # pack only, publish nothing
 
 import { execSync } from "node:child_process";
 import { readFileSync, existsSync, readdirSync, mkdtempSync } from "node:fs";
@@ -39,40 +42,65 @@ function pkgDirs() {
   return out;
 }
 
-const publishable = pkgDirs().filter((d) => {
-  const pkg = JSON.parse(readFileSync(join(root, d, "package.json"), "utf8"));
-  return pkg.private === false;
-});
+const publishable = pkgDirs()
+  .map((dir) => {
+    const pkg = JSON.parse(readFileSync(join(root, dir, "package.json"), "utf8"));
+    return { dir, name: pkg.name, version: pkg.version, isPrivate: pkg.private };
+  })
+  .filter((p) => p.isPrivate === false);
 
 if (publishable.length === 0) {
-  console.error("No publishable packages (none with \"private\": false).");
+  console.error('No publishable packages (none with "private": false).');
   process.exit(1);
 }
 
+// A version already on the registry should not be re-published (npm would error and
+// wedge a partially-completed release). `npm view` exits non-zero / prints nothing
+// when the exact version is absent.
+function alreadyPublished(name, version) {
+  try {
+    const v = execSync(`npm view ${name}@${version} version`, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    return v === version;
+  } catch {
+    return false;
+  }
+}
+
 const tarballDir = mkdtempSync(join(tmpdir(), "ds-publish-"));
-const tarballs = [];
-for (const dir of publishable) {
+let published = 0;
+let skipped = 0;
+
+for (const pkg of publishable) {
+  if (alreadyPublished(pkg.name, pkg.version)) {
+    console.log(`skip   ${pkg.name}@${pkg.version} (already on npm)`);
+    skipped += 1;
+    continue;
+  }
+
   const stdout = execSync(`pnpm pack --pack-destination "${tarballDir}"`, {
-    cwd: join(root, dir),
+    cwd: join(root, pkg.dir),
     encoding: "utf8",
   });
   const tgz = stdout.trim().split("\n").filter(Boolean).pop();
-  tarballs.push(tgz);
-  console.log(`packed  ${dir}  ->  ${tgz}`);
-}
-
-for (const tgz of tarballs) {
-  const cmd = `npm publish "${tgz}" --provenance --access public`;
-  if (dryRun) {
-    console.log(`[dry-run] would run: ${cmd}`);
-  } else {
-    console.log(`publishing ${tgz}`);
-    execSync(cmd, { cwd: root, stdio: "inherit" });
+  if (!tgz || !tgz.endsWith(".tgz") || !existsSync(tgz)) {
+    throw new Error(`pnpm pack did not produce a .tgz for ${pkg.name}; got: ${JSON.stringify(tgz)}`);
   }
+  console.log(`packed ${pkg.name}@${pkg.version} -> ${tgz}`);
+
+  if (dryRun) {
+    console.log(`[dry-run] would run: npm publish "${tgz}" --provenance --access public`);
+    continue;
+  }
+  execSync(`npm publish "${tgz}" --provenance --access public`, { cwd: root, stdio: "inherit" });
+  console.log(`published ${pkg.name}@${pkg.version}`);
+  published += 1;
 }
 
 console.log(
   dryRun
-    ? `Dry run complete: ${tarballs.length} packages packed (nothing published).`
-    : `Published ${tarballs.length} packages.`,
+    ? `Dry run complete: packed ${publishable.length - skipped}, ${skipped} already published.`
+    : `Done: published ${published}, skipped ${skipped} (already on npm).`,
 );

@@ -33,10 +33,10 @@
     "@syntropic137/design-tokens": ">=0.1.0"
   },
   "dependencies": {
-    "bits-ui": "^1.0.0"
+    "bits-ui": "^1.0.0",
+    "@syntropic137/contracts": "workspace:^"
   },
   "devDependencies": {
-    "@syntropic137/contracts": "workspace:^",
     "@syntropic137/design-tokens": "workspace:^",
     "@storybook/addon-docs": "^8.6.0",
     "@storybook/addon-svelte-csf": "^5.0.0",
