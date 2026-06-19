@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes } from "react";
-import type { BadgeContract, ComponentSize } from "@design-system/contracts";
+import type { BadgeContract, ComponentSize } from "@syntropic137/contracts";
 import clsx from "clsx";
 import "../styles/badge.css";
 

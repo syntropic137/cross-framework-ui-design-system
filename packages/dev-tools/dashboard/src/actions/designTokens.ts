@@ -17,7 +17,7 @@ export function showDesignTokens(ctx: RepoContext): void {
   console.log("Tokens are the visual source of truth. Components consume semantic");
   console.log("`--ds-*` custom properties; never hardcode colors or px. Size in rem.\n");
   console.log(bold("Consume the layered CSS:"));
-  console.log('  import "@design-system/design-tokens/generated/design-tokens.css";\n');
+  console.log('  import "@syntropic137/design-tokens/generated/design-tokens.css";\n');
   console.log(bold("Theme swapping:"));
   console.log("  Set data-theme on a root element; tokens re-resolve. Light/dark and beyond.\n");
 

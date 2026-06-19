@@ -1,4 +1,4 @@
-# @design-system/default-react-v18
+# @syntropic137/default-react-v18
 
 React 18 implementation of the design system components powered by CSS custom properties and the shared token pipeline.
 
@@ -6,8 +6,8 @@ React 18 implementation of the design system components powered by CSS custom pr
 
 ```bash
 pnpm install
-pnpm --filter @design-system/design-tokens tokens:build
-pnpm --filter @design-system/default-react-v18 storybook
+pnpm --filter @syntropic137/design-tokens tokens:build
+pnpm --filter @syntropic137/default-react-v18 storybook
 ```
 
 The Storybook server regenerates tokens automatically via the package script, so you can also launch from the repo root with:
@@ -30,8 +30,8 @@ pnpm storybook
 ## Consuming the Package
 
 ```tsx
-import "@design-system/default-react-v18/dist/styles.css";
-import { ThemeProvider, Button, Card, Input } from "@design-system/default-react-v18";
+import "@syntropic137/default-react-v18/dist/styles.css";
+import { ThemeProvider, Button, Card, Input } from "@syntropic137/default-react-v18";
 
 export function App() {
   return (
@@ -56,10 +56,10 @@ export function App() {
 
 ## Token Pipeline
 
-This package depends on `@design-system/design-tokens` for generated assets. During local development the scripts call `tokens:build`, but you can also run it manually:
+This package depends on `@syntropic137/design-tokens` for generated assets. During local development the scripts call `tokens:build`, but you can also run it manually:
 
 ```bash
-pnpm --filter @design-system/design-tokens tokens:build
+pnpm --filter @syntropic137/design-tokens tokens:build
 ```
 
 Generated outputs live in `packages/design-tokens/generated/` and are imported by `src/design-system/styles.css`.

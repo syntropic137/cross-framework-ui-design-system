@@ -1,0 +1,83 @@
+/*
+ * EXAMPLE: a rem-based, mobile-first responsive page layout.
+ *
+ * Demonstrates:
+ *   - the 62.5% root so 1rem = 10px (the "one knob resizes everything" trick,
+ *     here bumped at a wide breakpoint to scale the whole UI ~10%)
+ *   - mobile-first: single column by default, columns added via min-width queries
+ *   - intrinsic responsiveness (auto-fit grid) so the card area needs no breakpoints
+ *   - logical properties + centered, width-capped container
+ *   - all spacing/sizing in rem or tokens; no hardcoded colors → passes the gate
+ */
+
+@layer base {
+  :root {
+    font-size: 62.5%; /* 1rem = 10px; rem math = px / 10 */
+  }
+
+  @media (min-width: 90rem) {
+    :root {
+      font-size: 68.75%; /* 1rem = 11px on very wide screens  -  entire UI scales up */
+    }
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--ds-font-sans);
+    font-size: 1.6rem; /* = 16px */
+    line-height: 1.5;
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+  }
+}
+
+@layer components {
+  /* Page shell: width-capped and centered, with a fluid gutter on small screens. */
+  .page {
+    inline-size: min(120rem, 100% - 3.2rem);
+    margin-inline: auto;
+    padding-block: clamp(2.4rem, 1.6rem + 4vw, 6.4rem);
+  }
+
+  /* App scaffold: mobile = stacked; tablet+ = sidebar + main; wide = three columns. */
+  .app {
+    display: grid;
+    gap: var(--ds-space-6);
+    grid-template-columns: 1fr; /* base: mobile */
+  }
+
+  @media (min-width: 48rem) {
+    .app {
+      grid-template-columns: 22rem 1fr;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .app {
+      grid-template-columns: 24rem 1fr 28rem;
+    }
+  }
+
+  /* Card gallery: responsive with zero media queries. */
+  .gallery {
+    display: grid;
+    gap: var(--ds-space-4);
+    grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  }
+
+  .panel {
+    padding: var(--ds-space-6);
+    background: var(--ds-color-surface);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+  }
+
+  /* A wrapping toolbar  -  one-dimensional flow, gap for spacing, no child margins. */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    align-items: center;
+  }
+}

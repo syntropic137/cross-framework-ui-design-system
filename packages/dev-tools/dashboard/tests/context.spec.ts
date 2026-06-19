@@ -12,7 +12,7 @@ describe("detectContext", () => {
   it("detects in-repo when pnpm-workspace.yaml + packages/contracts exist up-tree", () => {
     writeFileSync(join(root, "pnpm-workspace.yaml"), "packages:\n  - 'packages/*'\n");
     mkdirSync(join(root, "packages", "contracts"), { recursive: true });
-    writeFileSync(join(root, "packages", "contracts", "package.json"), '{"name":"@design-system/contracts"}');
+    writeFileSync(join(root, "packages", "contracts", "package.json"), '{"name":"@syntropic137/contracts"}');
     const nested = join(root, "packages", "dev-tools", "dashboard");
     mkdirSync(nested, { recursive: true });
 

@@ -1,4 +1,4 @@
-# @design-system/design-tokens
+# @syntropic137/design-tokens
 
 A generated source of truth for design tokens and theme layers used across the component libraries.
 

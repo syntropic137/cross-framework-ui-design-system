@@ -32,7 +32,7 @@ jobs:
       # supply-chain defense, so Playwright's browser is not auto-downloaded.
       # Provision it explicitly — the Storybook test-runner drives chromium.
       - name: Install Playwright browser
-        run: pnpm --filter @design-system/default-react-v18 exec playwright install --with-deps chromium
+        run: pnpm --filter @syntropic137/default-react-v18 exec playwright install --with-deps chromium
       - name: Run monorepo QA
         run: pnpm qa
 

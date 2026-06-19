@@ -5,15 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm --filter @design-system/default-svelte-v5 build && pnpm --filter @design-system/brutalist-svelte-v5 build && pnpm --filter @design-system/design-tokens build && vite build",
-    "typecheck": "pnpm --filter @design-system/default-svelte-v5 build && pnpm --filter @design-system/brutalist-svelte-v5 build && pnpm --filter @design-system/design-tokens build && svelte-check --tsconfig ./tsconfig.json",
+    "build": "pnpm --filter @syntropic137/default-svelte-v5 build && pnpm --filter @syntropic137/brutalist-svelte-v5 build && pnpm --filter @syntropic137/design-tokens build && vite build",
+    "typecheck": "pnpm --filter @syntropic137/default-svelte-v5 build && pnpm --filter @syntropic137/brutalist-svelte-v5 build && pnpm --filter @syntropic137/design-tokens build && svelte-check --tsconfig ./tsconfig.json",
     "tauri": "tauri"
   },
   "dependencies": {
-    "@design-system/contracts": "workspace:^",
-    "@design-system/design-tokens": "workspace:^",
-    "@design-system/default-svelte-v5": "workspace:^",
-    "@design-system/brutalist-svelte-v5": "workspace:^",
+    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-tokens": "workspace:^",
+    "@syntropic137/default-svelte-v5": "workspace:^",
+    "@syntropic137/brutalist-svelte-v5": "workspace:^",
     "@tauri-apps/api": "^2",
     "svelte": "^5"
   },

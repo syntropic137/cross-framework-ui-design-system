@@ -26,8 +26,8 @@ describe("detectPackageManager", () => {
 
 describe("installCommand", () => {
   it("builds a pnpm install command", () => {
-    expect(installCommand("pnpm", ["@design-system/contracts", "@design-system/default-react-v18"], false))
-      .toBe("pnpm add @design-system/contracts @design-system/default-react-v18");
+    expect(installCommand("pnpm", ["@syntropic137/contracts", "@syntropic137/default-react-v18"], false))
+      .toBe("pnpm add @syntropic137/contracts @syntropic137/default-react-v18");
   });
 
   it("builds a pnpm dev install command", () => {

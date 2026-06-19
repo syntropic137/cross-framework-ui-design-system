@@ -13,7 +13,7 @@ const FALLBACK_REQUIRED = ["badge", "button", "toggle"];
 function readContractNames(targetDir: string): { required: string[]; planned: string[] } {
   try {
     const require = createRequire(join(targetDir, "noop.js"));
-    const mod = require("@design-system/contracts") as {
+    const mod = require("@syntropic137/contracts") as {
       requiredContractNames?: readonly string[];
       componentContractStatus?: Record<string, string>;
     };
@@ -24,7 +24,7 @@ function readContractNames(targetDir: string): { required: string[]; planned: st
     return { required, planned };
   } catch {
     console.warn(
-      "Note: could not read @design-system/contracts from the target; using the default required set (badge, button, toggle)."
+      "Note: could not read @syntropic137/contracts from the target; using the default required set (badge, button, toggle)."
     );
     return { required: [...FALLBACK_REQUIRED], planned: [] };
   }
@@ -47,12 +47,12 @@ export async function installContracts(ctx: RepoContext): Promise<void> {
 
   // Show the install command (do not auto-run unless confirmed).
   const pm = detectPackageManager(targetDir);
-  const deps = ["@design-system/contracts", `@design-system/${library}`, "@design-system/design-tokens"];
+  const deps = ["@syntropic137/contracts", `@syntropic137/${library}`, "@syntropic137/design-tokens"];
   console.log(bold("\nAdd these dependencies to your app:"));
   console.log("  " + installCommand(pm, deps, false) + "\n");
 
   console.log(bold("Import the design tokens once in your app entry (e.g. main.tsx):"));
-  console.log('  import "@design-system/design-tokens/generated/design-tokens.css";\n');
+  console.log('  import "@syntropic137/design-tokens/generated/design-tokens.css";\n');
 
   console.log(bold("Will write:"));
   console.log("  " + adapterPath + "\n");

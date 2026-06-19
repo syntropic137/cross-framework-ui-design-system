@@ -1,0 +1,73 @@
+/*
+ * EXAMPLE: a theme override block (a TOKEN-DEFINITION file). The raw color literals
+ * below are CORRECT here because this is where token values are defined; never write
+ * color literals in component CSS, which fails design-system:verify CHECK B.
+ *
+ * Theming is decoupled from components: a theme ONLY reassigns semantic --ds-*
+ * tokens inside @layer tokens. No component CSS is touched - every component that
+ * reads var(--ds-color-*) reflows automatically.
+ *
+ * Apply by setting the attribute on a root or any subtree:
+ *   <html data-theme="ocean"> … </html>
+ *   <section data-theme="ocean"> … </section>   ← scoped to a region
+ *
+ * NOTE: token files are the ONE place raw color literals are allowed - the verify
+ * gate (CHECK B) does NOT scan packages/design-tokens/generated/. It DOES scan
+ * design package src/**, so never put literals like these in a component stylesheet.
+ * Prefer deriving from the brand HSL axis (hue/sat) so shades stay consistent.
+ */
+
+@layer tokens {
+  [data-theme="ocean"] {
+    /* Drive everything off a single brand hue/saturation, like the repo's default. */
+    --ds-color-brand-hue: 200;
+    --ds-color-brand-sat: 80%;
+
+    --ds-color-brand: hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 45%);
+    --ds-color-brand-600: hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 36%);
+    --ds-color-brand-700: hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 28%);
+
+    /* Semantic surfaces - what components actually consume. */
+    --ds-color-bg: #f3f8fb;
+    --ds-color-fg: #08222e;
+    --ds-color-surface: #ffffff;
+    --ds-color-surface-raised: #e8f1f6;
+    --ds-color-overlay: #d6e6ee;
+    --ds-color-border: #c2d8e2;
+    --ds-color-text-muted: #4a6473;
+    --ds-color-text-subtle: #7d97a4;
+
+    /* Intent colors keep their contrast pairs in sync. */
+    --ds-color-accent: var(--ds-color-brand);
+    --ds-color-accent-contrast: #ffffff;
+
+    /* Native controls + UA chrome follow the theme. */
+    color-scheme: light;
+
+    /* Focus ring re-derives from the new accent automatically. */
+    --ds-focus-ring: 2px solid var(--ds-color-accent);
+  }
+
+  /* A theme can also extend an existing one: dark-ocean overrides only what differs. */
+  [data-theme="ocean-dark"] {
+    --ds-color-brand-hue: 200;
+    --ds-color-brand-sat: 70%;
+
+    --ds-color-bg: #061620;
+    --ds-color-fg: #dcebf2;
+    --ds-color-surface: #0c2231;
+    --ds-color-surface-raised: #123043;
+    --ds-color-overlay: #16384d;
+    --ds-color-border: #16384d;
+    --ds-color-text-muted: #9bb6c4;
+    --ds-color-text-subtle: #5f7c8b;
+
+    --ds-color-accent: hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 62%);
+    --ds-color-accent-contrast: #04141d;
+
+    color-scheme: dark;
+    --ds-focus-ring: 2px solid var(--ds-color-accent);
+    --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --ds-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.55);
+  }
+}

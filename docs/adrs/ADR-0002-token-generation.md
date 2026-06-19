@@ -15,7 +15,7 @@ We need a single source of truth for design tokens that can emit layered CSS var
 - Cover the generator with Vitest unit tests to guard against accidental token drift and ensure each theme exposes a complete set of values.
 
 ## Consequences
-- Token updates require TypeScript edits followed by running `pnpm --filter @design-system/design-tokens tokens:build` to regenerate assets.
+- Token updates require TypeScript edits followed by running `pnpm --filter @syntropic137/design-tokens tokens:build` to regenerate assets.
 - The generator currently supports CSS-based theming; extending to additional platforms (e.g., native) would require extra formatters but the data model already supports it.
 - Consumers must import the generated CSS to align with theme variables; documentation explains the workflow.
 

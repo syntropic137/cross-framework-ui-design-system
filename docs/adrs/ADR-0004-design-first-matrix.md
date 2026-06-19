@@ -7,7 +7,7 @@
 ## Context
 
 The design system targets multiple frameworks (React 18, Svelte 5, later Vue) behind one
-framework-neutral contract (`@design-system/contracts`). We need to support **multiple visual
+framework-neutral contract (`@syntropic137/contracts`). We need to support **multiple visual
 designs** (e.g. a `default` design, a `shadcn`-style design, a `brutalist` design), where:
 
 - A **design** is a coherent look/behavior that can span several frameworks.
@@ -31,20 +31,20 @@ packages/
   dev-tools/                 # generator, dashboard (unchanged)
 designs/
   default/
-    react-v18/               # @design-system/default-react-v18
-    svelte-v5/               # @design-system/default-svelte-v5
+    react-v18/               # @syntropic137/default-react-v18
+    svelte-v5/               # @syntropic137/default-svelte-v5
   <design>/                  # future: shadcn/, brutalist/, ...
     <framework>/             # one cell per framework the design supports
 ```
 
-- **Package naming:** `@design-system/<design>-<framework>` (e.g. `default-react-v18`).
+- **Package naming:** `@syntropic137/<design>-<framework>` (e.g. `default-react-v18`).
 - **Export names are stable per cell** — every React-18 cell exports `reactV18ContractAdapter`,
   every Svelte-5 cell exports `svelteV5ContractAdapter`. Consequence: **a design swap changes only
   the import specifier**, not the binding:
   ```ts
-  import { reactV18ContractAdapter } from "@design-system/default-react-v18";
+  import { reactV18ContractAdapter } from "@syntropic137/default-react-v18";
   // swap design (same framework): change the package only
-  import { reactV18ContractAdapter } from "@design-system/shadcn-react-v18";
+  import { reactV18ContractAdapter } from "@syntropic137/shadcn-react-v18";
   ```
 - A design's cross-framework **shared theme** (token/value layer) may later live at
   `designs/<design>/theme/`; deferred until a second design needs it.
@@ -57,7 +57,7 @@ designs/
 - **Cost:** each cell still carries its own framework tooling (vite / svelte-package / storybook) —
   inherent and acceptable; cells are small.
 - **Migration:** today's `packages/component-libraries/{react-v18,svelte-v5}` move to
-  `designs/default/*` and are renamed `@design-system/default-*`. All package-name and path
+  `designs/default/*` and are renamed `@syntropic137/default-*`. All package-name and path
   references update; export names are preserved. Done while only two cells exist (cheapest time).
 - The dashboard TUI's "install contracts" will grow a **design** dimension (currently framework-only)
   as a follow-up.

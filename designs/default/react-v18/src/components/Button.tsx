@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import type { ButtonHTMLAttributes } from "react";
-import type { ButtonContract } from "@design-system/contracts";
+import type { ButtonContract } from "@syntropic137/contracts";
 import clsx from "clsx";
 import "../design-system/components/button.css";
 
