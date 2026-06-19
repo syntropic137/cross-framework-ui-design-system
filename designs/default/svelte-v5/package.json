@@ -38,11 +38,11 @@
   },
   "devDependencies": {
     "@syntropic137/design-tokens": "workspace:^",
-    "@storybook/addon-docs": "^8.6.0",
-    "@storybook/addon-svelte-csf": "^5.0.0",
-    "@storybook/svelte-vite": "^8.6.0",
+    "@storybook/addon-docs": "^10.4.5",
+    "@storybook/addon-svelte-csf": "^5.1.0",
+    "@storybook/svelte-vite": "^10.4.5",
     "@sveltejs/package": "^2.3.0",
-    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@testing-library/svelte": "^5.2.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/user-event": "^14.5.2",
@@ -50,13 +50,13 @@
     "prettier": "^3.3.2",
     "prettier-plugin-svelte": "^3.2.5",
     "rimraf": "^5.0.7",
-    "storybook": "^8.6.0",
+    "storybook": "^10.4.5",
     "svelte": "^5.0.0",
     "svelte-check": "^4.0.0",
     "typescript": "^5.5.4",
-    "vite": "^5.4.8",
+    "vite": "^6.4.3",
     "eslint": "^9.39.4",
-    "vitest": "^1.6.0"
+    "vitest": "^4.1.8"
   },
   "publishConfig": {
     "access": "public",
