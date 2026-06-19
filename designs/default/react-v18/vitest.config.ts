@@ -35,6 +35,13 @@ export default defineConfig({
         plugins: [storybookTest({ configDir: resolve(dir, ".storybook") })],
         test: {
           name: "storybook",
+          // Browser-mode flake guard. On a cold Vite dep cache (fresh CI), the
+          // optimizer can re-bundle mid-run and trigger "Vite unexpectedly reloaded
+          // a test" -> "failed to find the current suite", failing a few story files
+          // nondeterministically. Serializing files and retrying lets the run settle
+          // once deps are optimized. (Passes first try locally with a warm cache.)
+          fileParallelism: false,
+          retry: 2,
           browser: {
             enabled: true,
             headless: true,
