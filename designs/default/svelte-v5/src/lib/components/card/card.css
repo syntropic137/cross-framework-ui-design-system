@@ -8,10 +8,10 @@
   padding: var(--ds-space-4);
 }
 
-.card--interactive {
+.card[data-state="interactive"] {
   cursor: pointer;
 }
 
-.card--interactive:hover {
+.card[data-state="interactive"]:hover {
   box-shadow: var(--ds-shadow-md);
 }

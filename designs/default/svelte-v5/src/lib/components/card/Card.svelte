@@ -13,7 +13,7 @@
   let { interactive = false, children }: Props = $props();
 </script>
 
-<div class="card" class:card--interactive={interactive}>
+<div class="card" data-state={interactive ? "interactive" : "static"}>
   {#if typeof children === "string"}
     {children}
   {:else}
