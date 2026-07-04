@@ -1,0 +1,17 @@
+/* Card base styles */
+.card {
+  background: var(--ds-color-surface);
+  color: var(--ds-color-fg);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  padding: var(--ds-space-4);
+}
+
+.card--interactive {
+  cursor: pointer;
+}
+
+.card--interactive:hover {
+  box-shadow: var(--ds-shadow-md);
+}

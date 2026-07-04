@@ -46,6 +46,8 @@ The following contract files exist but are not required in the current release s
 
 `accordion`, `alert-dialog`, `aspect-ratio`, `avatar`, `calendar`, `checkbox`, `collapsible`, `combobox`, `command`, `context-menu`, `date-field`, `date-picker`, `date-range-field`, `date-range-picker`, `dialog`, `dropdown-menu`, `label`, `link-preview`, `menu`, `menubar`, `meter`, `navigation-menu`, `pagination`, `pin-input`, `popover`, `progress`, `radio-group`, `range-calendar`, `rating-group`, `scroll-area`, `select`, `separator`, `slider`, `switch`, `tabs`, `time-field`, `time-range-field`, `toggle-group`, `toolbar`, `tooltip`.
 
+`meter` now has a `default-svelte-v5` implementation (`designs/default/svelte-v5/src/lib/components/meter/Meter.svelte`), built against `MeterContract` (`value`, `min`, `max`, `label`). It stays `planned` — and out of `svelteV5ContractAdapter` / `RequiredComponentContracts` — until every supported adapter (including `default-react-v18`) implements it per the promotion steps above.
+
 Moving a planned contract to required requires:
 
 1. Updating `componentContractStatus`.
@@ -63,6 +65,8 @@ Some current React components are useful implementation exports but are not part
 - `Card`
 - `Modal`
 - `Confetti`
+
+`Card` also has a `default-svelte-v5` implementation (`designs/default/svelte-v5/src/lib/components/card/Card.svelte`), ported 1:1 from `default-react-v18`'s `Card` (same `interactive` boolean, no variant/tone). Like its React counterpart, it is exported directly from the package's `index.ts` and is **not** part of `svelteV5ContractAdapter`, since it has no contract in `packages/contracts/src`.
 
 Keep these documented as implementation extras until they either receive contracts or are intentionally removed from the public standard.
 
