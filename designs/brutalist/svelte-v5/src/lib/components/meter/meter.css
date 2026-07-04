@@ -1,0 +1,19 @@
+@layer components {
+  .brutal-meter {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    block-size: var(--ds-space-4);
+    background: var(--ds-color-bg);
+    border: 3px solid var(--ds-color-fg);
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .brutal-meter__fill {
+    block-size: 100%;
+    background: var(--ds-color-accent);
+    border-inline-end: 3px solid var(--ds-color-fg);
+    transition: width var(--ds-duration-base, 0.15s) var(--ds-ease, ease);
+  }
+}

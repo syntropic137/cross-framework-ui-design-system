@@ -1,0 +1,18 @@
+/* Tag base styles */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--ds-space-1) var(--ds-space-3);
+  border-radius: var(--ds-radius-full, var(--ds-radius-lg));
+  border: 1px solid var(--ds-color-border);
+  background: var(--ds-color-surface);
+  color: var(--ds-color-fg);
+  font-size: var(--ds-text-sm, 0.875rem);
+  line-height: 1;
+}
+
+.tag[data-tone="accent"] {
+  background: var(--ds-color-accent);
+  color: var(--ds-color-accent-contrast, var(--ds-color-fg));
+  border-color: var(--ds-color-accent);
+}
