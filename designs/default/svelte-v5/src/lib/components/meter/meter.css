@@ -1,0 +1,18 @@
+/* Meter base styles */
+.meter {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  block-size: var(--ds-space-3);
+  background: var(--ds-color-surface);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-md);
+  overflow: hidden;
+}
+
+.meter__fill {
+  block-size: 100%;
+  background: var(--ds-color-accent);
+  border-radius: inherit;
+  transition: width var(--ds-duration-base) var(--ds-ease);
+}
