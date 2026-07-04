@@ -15,13 +15,13 @@ describe("Card", () => {
     expect(el).toHaveClass("card");
   });
 
-  it("does not apply the interactive class by default", () => {
+  it("does not mark data-state as interactive by default", () => {
     render(Card, { props: { children: "Static" } });
-    expect(screen.getByText("Static")).not.toHaveClass("card--interactive");
+    expect(screen.getByText("Static")).not.toHaveAttribute("data-state", "interactive");
   });
 
-  it("applies the interactive class when interactive is true", () => {
+  it("marks data-state as interactive when interactive is true", () => {
     render(Card, { props: { interactive: true, children: "Clickable" } });
-    expect(screen.getByText("Clickable")).toHaveClass("card--interactive");
+    expect(screen.getByText("Clickable")).toHaveAttribute("data-state", "interactive");
   });
 });
