@@ -1,0 +1,23 @@
+@layer components {
+  .brutal-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ds-space-1) var(--ds-space-3);
+    border-radius: 0;
+    border: 2px solid var(--ds-color-fg);
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+    font-family: var(--ds-font-mono, monospace);
+    font-weight: 700;
+    font-size: var(--ds-text-sm, 0.875rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .brutal-tag[data-tone="accent"] {
+    background: var(--ds-color-accent);
+    color: var(--ds-color-accent-contrast);
+    border-color: var(--ds-color-fg);
+  }
+}
