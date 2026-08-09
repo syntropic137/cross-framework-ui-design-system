@@ -1,0 +1,12 @@
+/* Parallax base styles (brutalist). No transition — the step change IS the
+   aesthetic; easing between steps would defeat the point. */
+.parallax {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax {
+    will-change: auto;
+    transform: none !important;
+  }
+}
