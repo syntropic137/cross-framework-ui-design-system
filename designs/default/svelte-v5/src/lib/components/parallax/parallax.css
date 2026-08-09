@@ -1,0 +1,15 @@
+/* Parallax base styles. `will-change` promotes the layer to its own
+   compositor layer so scroll-driven transforms never repaint siblings. */
+.parallax {
+  will-change: transform;
+}
+
+/* Belt and braces: the component already skips the scroll listener under
+   reduced motion, but this guarantees no residual transform or promotion
+   even if a transform was written before the preference changed. */
+@media (prefers-reduced-motion: reduce) {
+  .parallax {
+    will-change: auto;
+    transform: none !important;
+  }
+}
