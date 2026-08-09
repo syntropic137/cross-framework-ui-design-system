@@ -38,6 +38,12 @@
       });
     };
 
+    // Initialise from the current scroll position: the component can mount
+    // with the page already scrolled (tab switch, deep link with scroll
+    // restoration), and without this the layer sits at 0 until the first
+    // scroll event and then jumps.
+    offset = offsetFor(window.scrollY, speed);
+
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {

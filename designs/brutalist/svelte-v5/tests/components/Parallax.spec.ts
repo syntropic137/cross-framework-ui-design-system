@@ -73,6 +73,14 @@ describe("Parallax (brutalist)", () => {
     expect(addSpy.mock.calls.filter((c) => c[0] === "scroll")).toHaveLength(0);
   });
 
+  it("initialises its offset at mount, snapped to the step grid", () => {
+    stubMatchMedia(false);
+    window.scrollY = 600;
+    const { container } = render(Parallax, { props: { speed: 0.5, children: "x" } });
+    const el = container.querySelector(".parallax") as HTMLElement;
+    expect(el.style.transform).toBe("translate3d(0, -288px, 0)");
+  });
+
   it("removes its scroll listener on unmount", () => {
     stubMatchMedia(false);
     const removeSpy = vi.spyOn(window, "removeEventListener");

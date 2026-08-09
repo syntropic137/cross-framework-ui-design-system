@@ -75,6 +75,14 @@ describe("Parallax", () => {
     expect(el.style.transform).toBe("translate3d(0, 0px, 0)");
   });
 
+  it("initialises its offset at mount when the page is already scrolled", () => {
+    stubMatchMedia(false);
+    window.scrollY = 600;
+    const { container } = render(Parallax, { props: { speed: 0.5, children: "x" } });
+    const el = container.querySelector(".parallax") as HTMLElement;
+    expect(el.style.transform).toBe("translate3d(0, -300px, 0)");
+  });
+
   it("does not attach a scroll listener when reduced motion is requested", () => {
     stubMatchMedia(true);
     const addSpy = vi.spyOn(window, "addEventListener");
