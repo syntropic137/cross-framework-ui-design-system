@@ -123,5 +123,36 @@ describe("Toggle", () => {
       render(Toggle, { props: { pressed: true, "data-state": "bogus" } });
       expect(screen.getByRole("button")).toHaveAttribute("data-state", "pressed");
     });
+
+    // `onclick` is NOT a component invariant — the invariants are the data-*
+    // attributes, aria-pressed and disabled. default-react-v18's Toggle
+    // destructures onClick and calls it from handleToggle; the Svelte cell
+    // must do the same or the handler is silently swallowed by the spread.
+    it("invokes a consumer onclick handler in addition to onPressedChange", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { onclick, onPressedChange, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onPressedChange).toHaveBeenCalledWith(true);
+      expect(onclick).toHaveBeenCalledOnce();
+    });
+
+    it("passes the click event to the consumer onclick handler", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { onclick, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onclick.mock.calls[0]?.[0]).toBeInstanceOf(MouseEvent);
+    });
+
+    // Mirrors React, which returns before calling onClick when disabled.
+    it("does not invoke consumer onclick when disabled", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { disabled: true, onclick, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onclick).not.toHaveBeenCalled();
+    });
   });
 });

@@ -102,4 +102,32 @@ describe("Toggle (brutalist)", () => {
       expect(btn).toHaveAttribute("aria-pressed", "false");
     });
   });
+
+  // `onclick` is NOT a component invariant — the invariants are the data-*
+  // attributes, aria-pressed and disabled. Kept in parity with the default
+  // cell and default-react-v18, both of which invoke the consumer handler.
+  describe("attribute pass-through", () => {
+    it("invokes a consumer onclick handler in addition to onPressedChange", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { onclick, onPressedChange, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onPressedChange).toHaveBeenCalledWith(true);
+      expect(onclick).toHaveBeenCalledOnce();
+    });
+
+    it("does not invoke consumer onclick when disabled", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { disabled: true, onclick, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onclick).not.toHaveBeenCalled();
+    });
+
+    it("does not let rest props clobber aria-pressed", () => {
+      render(Toggle, { props: { pressed: true, "aria-pressed": "false" } });
+      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
+    });
+  });
 });

@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/svelte";
+import { userEvent } from "@testing-library/user-event";
 import Card from "../src/lib/components/card/Card.svelte";
 
 describe("Card (brutalist)", () => {
@@ -23,5 +24,42 @@ describe("Card (brutalist)", () => {
   it("marks data-state as interactive when interactive is true", () => {
     render(Card, { props: { interactive: true, children: "Clickable" } });
     expect(screen.getByText("Clickable")).toHaveAttribute("data-state", "interactive");
+  });
+
+  // An interactive Card sets cursor:pointer, so it must be able to carry the
+  // handler, role and tabindex that make it actually reachable. Required by
+  // docs/component-standard.md "Native Attribute Pass-Through".
+  describe("attribute pass-through", () => {
+    it("forwards id and data-* attributes", () => {
+      render(Card, { props: { id: "summary", "data-testid": "summary-card", children: "Body" } });
+      expect(screen.getByTestId("summary-card")).toHaveAttribute("id", "summary");
+    });
+
+    it("forwards role and tabindex so an interactive card is reachable", () => {
+      render(Card, {
+        props: { interactive: true, role: "button", tabindex: 0, children: "Open" }
+      });
+      expect(screen.getByRole("button", { name: "Open" })).toHaveAttribute("tabindex", "0");
+    });
+
+    it("invokes a consumer onclick handler", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Card, { props: { interactive: true, onclick, children: "Open" } });
+      await user.click(screen.getByText("Open"));
+      expect(onclick).toHaveBeenCalledOnce();
+    });
+
+    it("merges a consumer class with the brutal-card class", () => {
+      render(Card, { props: { class: "featured", children: "Body" } });
+      const el = screen.getByText("Body");
+      expect(el).toHaveClass("brutal-card");
+      expect(el).toHaveClass("featured");
+    });
+
+    it("does not let rest props clobber data-state", () => {
+      render(Card, { props: { interactive: true, "data-state": "bogus", children: "Body" } });
+      expect(screen.getByText("Body")).toHaveAttribute("data-state", "interactive");
+    });
   });
 });

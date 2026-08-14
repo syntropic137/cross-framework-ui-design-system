@@ -77,7 +77,9 @@ Some current React components are useful implementation exports but are not part
 - `Modal`
 - `Confetti`
 
-`Card` also has a `default-svelte-v5` implementation (`designs/default/svelte-v5/src/lib/components/card/Card.svelte`), ported 1:1 from `default-react-v18`'s `Card` (same `interactive` boolean, no variant/tone). Like its React counterpart, it is exported directly from the package's `index.ts` and is **not** part of `svelteV5ContractAdapter`, since it has no contract in `packages/contracts/src`.
+`Card` also has a `default-svelte-v5` implementation (`designs/default/svelte-v5/src/lib/components/card/Card.svelte`), ported from `default-react-v18`'s `Card`: same `interactive` boolean, no variant/tone, and the same native attribute pass-through with the consumer's `class` merged rather than dropped. Like its React counterpart, it is exported directly from the package's `index.ts` and is **not** part of `svelteV5ContractAdapter`, since it has no contract in `packages/contracts/src`.
+
+The port is not attribute-identical: React marks the interactive state with the class `card--interactive`, the Svelte cells with `data-state="interactive"`, per the cell convention. Consumer CSS that targets one will not match the other, so style overrides do not survive a swap — target the `card` class or a passed-in class instead.
 
 Keep these documented as implementation extras until they either receive contracts or are intentionally removed from the public standard.
 
