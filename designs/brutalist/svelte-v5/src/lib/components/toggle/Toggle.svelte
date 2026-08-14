@@ -16,7 +16,11 @@
     onPressedChange,
     disabled = false,
     children,
-    class: className = "",
+    class: className,
+    // Pulled out of `rest` deliberately. The component owns the click handler,
+    // so a spread `onclick` would be overwritten by ours and silently never
+    // run. Kept in parity with the default cell and default-react-v18.
+    onclick,
     ...rest
   }: Props = $props();
 
@@ -30,7 +34,7 @@
 
   const currentPressed = $derived(isControlled ? pressed! : internalPressed);
 
-  function handleClick() {
+  function handleClick(event: MouseEvent & { currentTarget: HTMLButtonElement }) {
     if (disabled) return;
 
     const next = !currentPressed;
@@ -38,6 +42,7 @@
       internalPressed = next;
     }
     onPressedChange?.(next);
+    onclick?.(event);
   }
 </script>
 
@@ -48,7 +53,12 @@
   aria-pressed={currentPressed}
   {disabled}
   data-state={currentPressed ? "pressed" : "unpressed"}
-  class="brutal-toggle{currentPressed ? ' brutal-toggle--pressed' : ''}{disabled ? ' brutal-toggle--disabled' : ''} {className}"
+  class={[
+    "brutal-toggle",
+    currentPressed && "brutal-toggle--pressed",
+    disabled && "brutal-toggle--disabled",
+    className
+  ]}
   onclick={handleClick}
 >
   <span class="brutal-toggle__track" aria-hidden="true">
