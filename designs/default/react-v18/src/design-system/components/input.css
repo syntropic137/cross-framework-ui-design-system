@@ -2,7 +2,9 @@
   .input {
     width: 100%;
     padding: var(--ds-space-2) var(--ds-space-3);
-    background: var(--ds-color-surface);
+    /* surface-raised, not surface: `surface` is Card's own background, so a
+       control painted with it disappears whenever it sits on a card. */
+    background: var(--ds-color-surface-raised);
     color: var(--ds-color-fg);
     border: 1px solid var(--ds-color-border);
     border-radius: var(--ds-radius-sm);

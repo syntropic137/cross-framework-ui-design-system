@@ -6,11 +6,18 @@ span[data-variant] {
   padding: var(--ds-space-1) var(--ds-space-3);
   border-radius: var(--ds-radius-md);
   border: 1px solid var(--ds-color-border);
-  background: var(--ds-color-surface);
+  /* surface-raised, not surface: `surface` is Card's own background, and a
+     badge on a card is the common case. */
+  background: var(--ds-color-surface-raised);
   color: var(--ds-color-fg);
   font-family: var(--ds-font-sans);
   font-size: var(--ds-text-sm);
-  font-weight: 500;
+  /* 600, not 500: the type stack is system fonts only (no @font-face
+     anywhere in this repo), and classic Segoe UI on Windows has no Medium —
+     CSS font matching resolves 500 down to 400 there, so 500 is a silent
+     no-op on a large share of users. 600 is a real weight in every family in
+     the stack. */
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   box-shadow: var(--ds-shadow-sm);
@@ -25,7 +32,7 @@ span[data-variant="solid"] {
 }
 
 span[data-variant="soft"] {
-  background: var(--ds-color-surface);
+  background: var(--ds-color-surface-raised);
   border-color: var(--ds-color-border);
   color: var(--ds-color-fg);
 }
@@ -47,7 +54,7 @@ span[data-tone="danger"] {
 }
 
 span[data-variant="soft"][data-tone="danger"] {
-  background: color-mix(in oklab, var(--badge-color), var(--ds-color-surface) 80%);
+  background: color-mix(in oklab, var(--badge-color), var(--ds-color-surface-raised) 80%);
   color: var(--badge-color);
   border-color: color-mix(in oklab, var(--badge-color), transparent 60%);
 }
@@ -67,7 +74,7 @@ span[data-tone="success"] {
 }
 
 span[data-variant="soft"][data-tone="success"] {
-  background: color-mix(in oklab, var(--badge-color), var(--ds-color-surface) 80%);
+  background: color-mix(in oklab, var(--badge-color), var(--ds-color-surface-raised) 80%);
   color: var(--badge-color);
   border-color: color-mix(in oklab, var(--badge-color), transparent 60%);
 }
@@ -87,7 +94,7 @@ span[data-tone="warning"] {
 }
 
 span[data-variant="soft"][data-tone="warning"] {
-  background: color-mix(in oklab, var(--badge-color), var(--ds-color-surface) 80%);
+  background: color-mix(in oklab, var(--badge-color), var(--ds-color-surface-raised) 80%);
   color: var(--badge-color);
   border-color: color-mix(in oklab, var(--badge-color), transparent 60%);
 }
@@ -105,7 +112,7 @@ span[data-tone="accent"] {
 }
 
 span[data-variant="soft"][data-tone="accent"] {
-  background: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-surface) 80%);
+  background: color-mix(in oklab, var(--ds-color-accent), var(--ds-color-surface-raised) 80%);
   color: var(--ds-color-accent);
   border-color: color-mix(in oklab, var(--ds-color-accent), transparent 60%);
 }

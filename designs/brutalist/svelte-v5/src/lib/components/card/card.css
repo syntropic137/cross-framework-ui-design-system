@@ -13,6 +13,11 @@
     transition: transform 0.04s ease, box-shadow 0.04s ease;
   }
 
+  .brutal-card[data-state="interactive"]:focus-visible {
+    outline: 3px solid var(--ds-color-fg);
+    outline-offset: 3px;
+  }
+
   .brutal-card[data-state="interactive"]:hover {
     transform: translate(-2px, -2px);
     box-shadow: 8px 8px 0 var(--ds-color-fg);

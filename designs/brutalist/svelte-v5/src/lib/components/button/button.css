@@ -8,7 +8,7 @@
     border: 3px solid var(--ds-color-fg);
     background: var(--ds-color-bg);
     color: var(--ds-color-fg);
-    font-family: var(--ds-font-mono, monospace);
+    font-family: var(--ds-font-mono);
     font-weight: 700;
     font-size: inherit;
     box-shadow: 4px 4px 0 var(--ds-color-fg);
@@ -26,6 +26,13 @@
   .brutal-btn:active:not(:disabled) {
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0 var(--ds-color-fg);
+  }
+
+  /* Matches .brutal-toggle:focus-visible — this cell ships no global
+     base.css, so the ring must live on the component. */
+  .brutal-btn:focus-visible {
+    outline: 3px solid var(--ds-color-fg);
+    outline-offset: 3px;
   }
 
   .brutal-btn:disabled {
@@ -76,17 +83,17 @@
 
   .brutal-btn--sm {
     padding: var(--ds-space-1) var(--ds-space-3);
-    font-size: var(--ds-text-sm, 0.75rem);
+    font-size: var(--ds-text-sm);
     box-shadow: 2px 2px 0 var(--ds-color-fg);
   }
 
   .brutal-btn--md {
-    font-size: var(--ds-text-md, 0.875rem);
+    font-size: var(--ds-text-md);
   }
 
   .brutal-btn--lg {
     padding: var(--ds-space-3) var(--ds-space-6);
-    font-size: var(--ds-text-lg, 1rem);
+    font-size: var(--ds-text-lg);
     box-shadow: 6px 6px 0 var(--ds-color-fg);
   }
 }

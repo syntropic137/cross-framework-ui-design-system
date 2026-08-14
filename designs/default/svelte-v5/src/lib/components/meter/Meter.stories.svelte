@@ -10,6 +10,10 @@
       min: { control: "number" },
       max: { control: "number" },
       label: { control: "text" },
+      tone: {
+        control: "select",
+        options: ["accent", "neutral", "success", "warning", "danger"],
+      },
     },
   });
 </script>

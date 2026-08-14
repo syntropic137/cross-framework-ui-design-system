@@ -97,4 +97,31 @@ describe("Toggle", () => {
       expect(btn).toHaveAttribute("aria-pressed", "false");
     });
   });
+
+  // Matches default-react-v18's Toggle, which spreads `...rest` onto the
+  // <button>. Without this, an icon-only toggle cannot be given an
+  // accessible name and consumers hand-roll a <button> instead.
+  describe("attribute pass-through", () => {
+    it("forwards aria-label", () => {
+      render(Toggle, { props: { "aria-label": "Mute audio" } });
+      expect(screen.getByRole("button", { name: "Mute audio" })).toBeInTheDocument();
+    });
+
+    it("forwards id and data-* attributes", () => {
+      render(Toggle, { props: { id: "mute", "data-testid": "mute-toggle" } });
+      const btn = screen.getByRole("button");
+      expect(btn).toHaveAttribute("id", "mute");
+      expect(btn).toHaveAttribute("data-testid", "mute-toggle");
+    });
+
+    it("does not let rest props clobber the component's own aria-pressed", () => {
+      render(Toggle, { props: { pressed: true, "aria-pressed": "false" } });
+      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("does not let rest props clobber data-state", () => {
+      render(Toggle, { props: { pressed: true, "data-state": "bogus" } });
+      expect(screen.getByRole("button")).toHaveAttribute("data-state", "pressed");
+    });
+  });
 });
