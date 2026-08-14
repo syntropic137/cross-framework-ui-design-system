@@ -18,6 +18,11 @@
     onPressedChange,
     disabled = false,
     children,
+    // Pulled out of `rest` deliberately. The component owns the click handler,
+    // so a spread `onclick` would be overwritten by ours and silently never
+    // run. default-react-v18's Toggle destructures onClick for the same
+    // reason and calls it from handleToggle.
+    onclick,
     ...rest
   }: Props = $props();
 
@@ -31,7 +36,7 @@
 
   const currentPressed = $derived(isControlled ? pressed! : internalPressed);
 
-  function handleClick() {
+  function handleClick(event: MouseEvent & { currentTarget: HTMLButtonElement }) {
     if (disabled) return;
 
     const next = !currentPressed;
@@ -39,6 +44,7 @@
       internalPressed = next;
     }
     onPressedChange?.(next);
+    onclick?.(event);
   }
 </script>
 

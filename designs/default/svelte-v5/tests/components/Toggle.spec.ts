@@ -123,5 +123,80 @@ describe("Toggle", () => {
       render(Toggle, { props: { pressed: true, "data-state": "bogus" } });
       expect(screen.getByRole("button")).toHaveAttribute("data-state", "pressed");
     });
+
+    // `onclick` is NOT a component invariant — the invariants are the data-*
+    // attributes, aria-pressed and disabled. default-react-v18's Toggle
+    // destructures onClick and calls it from handleToggle; the Svelte cell
+    // must do the same or the handler is silently swallowed by the spread.
+    it("invokes a consumer onclick handler in addition to onPressedChange", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { onclick, onPressedChange, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onPressedChange).toHaveBeenCalledWith(true);
+      expect(onclick).toHaveBeenCalledOnce();
+    });
+
+    it("passes the click event to the consumer onclick handler", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { onclick, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onclick.mock.calls[0]?.[0]).toBeInstanceOf(MouseEvent);
+    });
+
+    // Mirrors React, which returns before calling onClick when disabled.
+    it("does not invoke consumer onclick when disabled", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { disabled: true, onclick, children: "Toggle" } });
+      await user.click(screen.getByRole("button"));
+      expect(onclick).not.toHaveBeenCalled();
+    });
+  });
+
+  // Svelte relies on the <button>'s native keyboard-generated click, so Enter
+  // and Space run the full handleClick path. default-react-v18's Toggle
+  // instead calls preventDefault() in its own onKeyDown and emits the change
+  // directly, so its consumer onClick does NOT fire for keyboard activation.
+  // That divergence is documented in docs/component-standard.md; these tests
+  // pin the Svelte side so it cannot drift silently.
+  describe("keyboard activation", () => {
+    it("toggles on Enter", async () => {
+      const user = userEvent.setup();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { onPressedChange, children: "Toggle" } });
+      screen.getByRole("button").focus();
+      await user.keyboard("{Enter}");
+      expect(onPressedChange).toHaveBeenCalledWith(true);
+    });
+
+    it("toggles on Space", async () => {
+      const user = userEvent.setup();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { onPressedChange, children: "Toggle" } });
+      screen.getByRole("button").focus();
+      await user.keyboard(" ");
+      expect(onPressedChange).toHaveBeenCalledWith(true);
+    });
+
+    it("invokes consumer onclick on keyboard activation (diverges from React)", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { onclick, children: "Toggle" } });
+      screen.getByRole("button").focus();
+      await user.keyboard("{Enter}");
+      expect(onclick).toHaveBeenCalledOnce();
+    });
+
+    it("does not toggle on Enter when disabled", async () => {
+      const user = userEvent.setup();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { disabled: true, onPressedChange, children: "Toggle" } });
+      screen.getByRole("button").focus();
+      await user.keyboard("{Enter}");
+      expect(onPressedChange).not.toHaveBeenCalled();
+    });
   });
 });
