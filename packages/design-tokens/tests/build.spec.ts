@@ -29,6 +29,40 @@ describe("design token generation", () => {
     expect(outputs.css).toContain("--ds-z-modal:");
   });
 
+  // Tag referenced --ds-radius-full behind a var() fallback, so the pill shape
+  // it was designed for silently never rendered. Components now reference it
+  // without a fallback, which makes this token load-bearing.
+  it("defines --ds-radius-full as a pill radius", () => {
+    const outputs = buildTokenOutputs();
+
+    expect(outputs.css).toContain("--ds-radius-full: 9999px;");
+    expect(outputs.json.tokens.radius["ds-radius-full"]).toBe("9999px");
+  });
+
+  // brand-600/700 are raw ramp steps and are deliberately theme-invariant,
+  // so --ds-color-accent-contrast (which IS theme-aware) is the wrong ink for
+  // them: in dark theme it resolves to near-black, ~1.9:1 on brand-700. They
+  // need their own, equally theme-invariant, contrast partners.
+  it("gives the theme-invariant brand ramp theme-invariant contrast partners", () => {
+    const outputs = buildTokenOutputs();
+
+    expect(outputs.json.tokens.color["ds-color-brand-600-contrast"]).toBe("#ffffff");
+    expect(outputs.json.tokens.color["ds-color-brand-700-contrast"]).toBe("#ffffff");
+    expect(outputs.json.themes.dark.color["ds-color-brand-700-contrast"]).toBe("#ffffff");
+  });
+
+  // Components used to hover primary buttons to --ds-color-brand-600, a fixed
+  // ramp step. In dark theme accent is *lighter* than brand-600, so hover made
+  // the button darker — backwards. A semantic hover token fixes it per theme.
+  it("exposes a theme-aware --ds-color-accent-hover", () => {
+    const outputs = buildTokenOutputs();
+
+    expect(outputs.json.tokens.color["ds-color-accent-hover"]).toBe(
+      "var(--ds-color-brand-600)",
+    );
+    expect(outputs.json.themes.dark.color["ds-color-accent-hover"]).toContain("72%");
+  });
+
   it("exposes tokens and themes in JSON form", () => {
     const outputs = buildTokenOutputs();
 

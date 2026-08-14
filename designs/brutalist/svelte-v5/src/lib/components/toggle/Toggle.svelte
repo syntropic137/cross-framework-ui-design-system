@@ -1,11 +1,14 @@
 <script lang="ts">
   import type { ToggleContract } from "@syntropic137/contracts";
   import type { Snippet } from "svelte";
+  import type { HTMLButtonAttributes } from "svelte/elements";
   import "./toggle.css";
 
-  interface Props extends ToggleContract {
-    children?: Snippet | string;
-  }
+  // Same additive native-attribute surface as the default cell.
+  type Props = Omit<HTMLButtonAttributes, "children" | "type" | "disabled"> &
+    ToggleContract & {
+      children?: Snippet | string;
+    };
 
   let {
     pressed,
@@ -13,6 +16,8 @@
     onPressedChange,
     disabled = false,
     children,
+    class: className = "",
+    ...rest
   }: Props = $props();
 
   // isControlled is $derived so Svelte tracks `pressed` reactively
@@ -36,12 +41,14 @@
   }
 </script>
 
+<!-- `{...rest}` first: the attributes below are component invariants. -->
 <button
+  {...rest}
   type="button"
   aria-pressed={currentPressed}
   {disabled}
   data-state={currentPressed ? "pressed" : "unpressed"}
-  class="brutal-toggle{currentPressed ? ' brutal-toggle--pressed' : ''}{disabled ? ' brutal-toggle--disabled' : ''}"
+  class="brutal-toggle{currentPressed ? ' brutal-toggle--pressed' : ''}{disabled ? ' brutal-toggle--disabled' : ''} {className}"
   onclick={handleClick}
 >
   <span class="brutal-toggle__track" aria-hidden="true">
