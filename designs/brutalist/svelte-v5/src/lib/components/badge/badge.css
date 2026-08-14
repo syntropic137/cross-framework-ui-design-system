@@ -8,7 +8,7 @@
     border: 3px solid var(--ds-color-fg);
     background: var(--ds-color-bg);
     color: var(--ds-color-fg);
-    font-family: var(--ds-font-mono, monospace);
+    font-family: var(--ds-font-mono);
     font-weight: 700;
     box-shadow: 4px 4px 0 var(--ds-color-fg);
     text-transform: uppercase;

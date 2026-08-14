@@ -1,11 +1,16 @@
 <script lang="ts">
   import type { ToggleContract } from "@syntropic137/contracts";
   import type { Snippet } from "svelte";
+  import type { HTMLButtonAttributes } from "svelte/elements";
   import "./toggle.css";
 
-  interface Props extends ToggleContract {
-    children?: Snippet | string;
-  }
+  // Same additive native-attribute surface as default-react-v18's Toggle,
+  // which spreads `...rest` onto its <button>. Needed so an icon-only toggle
+  // can carry an `aria-label`.
+  type Props = Omit<HTMLButtonAttributes, "children" | "type" | "disabled"> &
+    ToggleContract & {
+      children?: Snippet | string;
+    };
 
   let {
     pressed,
@@ -13,6 +18,7 @@
     onPressedChange,
     disabled = false,
     children,
+    ...rest
   }: Props = $props();
 
   // isControlled is $derived so Svelte tracks `pressed` reactively
@@ -36,7 +42,9 @@
   }
 </script>
 
+<!-- `{...rest}` first: the attributes below are component invariants. -->
 <button
+  {...rest}
   type="button"
   aria-pressed={currentPressed}
   {disabled}

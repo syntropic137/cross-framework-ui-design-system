@@ -7,7 +7,12 @@ button[data-variant] {
   gap: var(--ds-space-2);
   font-family: var(--ds-font-sans);
   font-size: var(--ds-text-sm);
-  font-weight: 500;
+  /* 600, not 500: the type stack is system fonts only (no @font-face
+     anywhere in this repo), and classic Segoe UI on Windows has no Medium —
+     CSS font matching resolves 500 down to 400 there, so 500 is a silent
+     no-op on a large share of users. 600 is a real weight in every family in
+     the stack. */
+  font-weight: 600;
   border-radius: var(--ds-radius-md);
   border: 1px solid transparent;
   padding: var(--ds-space-2) var(--ds-space-4);
@@ -20,6 +25,16 @@ button[data-variant] {
   white-space: nowrap;
   text-decoration: none;
   line-height: 1;
+}
+
+/* This package ships no global base.css (default-react-v18 has one), so the
+   focus ring has to live on the component. outline-offset places the ring in
+   the container's background rather than against the button fill, which is
+   what keeps it visible on a primary/danger button whose own colour is close
+   to the ring's. */
+button[data-variant]:focus-visible {
+  outline: var(--ds-focus-ring);
+  outline-offset: 2px;
 }
 
 button[data-variant]:disabled {
@@ -36,17 +51,25 @@ button[data-variant="primary"] {
 }
 
 button[data-variant="primary"]:hover:not(:disabled) {
-  background-color: var(--ds-color-brand-600);
+  /* Semantic hover token, not the raw --ds-color-brand-600 ramp step: that
+     step is darker than the dark theme's accent, so hovering to it made
+     dark-mode primary buttons run backwards. */
+  background-color: var(--ds-color-accent-hover);
 }
 
 button[data-variant="secondary"] {
-  background-color: var(--ds-color-surface);
+  /* surface-raised, not surface: `surface` is Card's own background, so a
+     secondary button sitting on a card would be the same colour as the card
+     and read as flat text with a hairline. */
+  background-color: var(--ds-color-surface-raised);
   color: var(--ds-color-fg);
   border-color: var(--ds-color-border);
 }
 
 button[data-variant="secondary"]:hover:not(:disabled) {
-  background-color: var(--ds-color-surface-raised);
+  /* An ink wash over the resting fill, so the hover step is visible whatever
+     the resting fill resolves to in the current theme. */
+  background-color: color-mix(in oklab, var(--ds-color-surface-raised), var(--ds-color-fg) 8%);
 }
 
 button[data-variant="ghost"] {
@@ -55,7 +78,11 @@ button[data-variant="ghost"] {
 }
 
 button[data-variant="ghost"]:hover:not(:disabled) {
-  background-color: var(--ds-color-surface);
+  /* A translucent ink wash rather than a named surface: a ghost button has no
+     background of its own, so its hover must be visible over *whatever* is
+     behind it — page, card, or a raised panel. A fixed surface token is
+     invisible on any container that already uses that token. */
+  background-color: color-mix(in oklab, var(--ds-color-fg) 8%, transparent);
 }
 
 button[data-variant="danger"] {

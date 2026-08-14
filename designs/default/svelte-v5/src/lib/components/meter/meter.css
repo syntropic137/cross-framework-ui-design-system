@@ -4,8 +4,15 @@
   display: block;
   inline-size: 100%;
   block-size: var(--ds-space-3);
-  background: var(--ds-color-surface);
-  border: 1px solid var(--ds-color-border);
+  /* surface-raised, not surface: `surface` is what Card paints itself with, so
+     a track in that colour vanishes into any card and an empty meter reads as
+     a hairline instead of a control. The three-level scale is
+     bg = page, surface = card, surface-raised = thing-on-a-card. */
+  background: var(--ds-color-surface-raised);
+  /* --ds-color-border alone is only ~1.15:1 against a card, well under the
+     3:1 WCAG 1.4.11 needs for a control boundary. Mixing 40% of the fg colour
+     in reaches 3.4:1 (light) / 3.5:1 (dark) and follows the theme. */
+  border: 1px solid color-mix(in oklab, var(--ds-color-border), var(--ds-color-fg) 40%);
   border-radius: var(--ds-radius-md);
   overflow: hidden;
 }
@@ -15,4 +22,35 @@
   background: var(--ds-color-accent);
   border-radius: inherit;
   transition: width var(--ds-duration-base) var(--ds-ease);
+}
+
+/* --- Tones ---
+   The public way to recolour the fill. Consumers must not reach in with
+   `:global(.meter__fill) { background: … }` — that override breaks silently
+   if the class is renamed. */
+
+.meter[data-tone="accent"] .meter__fill {
+  background: var(--ds-color-accent);
+}
+
+.meter[data-tone="neutral"] .meter__fill {
+  background: var(--ds-color-text-muted);
+}
+
+.meter[data-tone="success"] .meter__fill {
+  background: var(--ds-color-success);
+}
+
+.meter[data-tone="warning"] .meter__fill {
+  background: var(--ds-color-warning);
+}
+
+.meter[data-tone="danger"] .meter__fill {
+  background: var(--ds-color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meter__fill {
+    transition: none;
+  }
 }

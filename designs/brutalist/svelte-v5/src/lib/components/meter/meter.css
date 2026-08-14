@@ -14,6 +14,35 @@
     block-size: 100%;
     background: var(--ds-color-accent);
     border-inline-end: 3px solid var(--ds-color-fg);
-    transition: width var(--ds-duration-base, 0.15s) var(--ds-ease, ease);
+    transition: width var(--ds-duration-base) var(--ds-ease);
+  }
+
+  /* --- Tones --- mirrors designs/default/svelte-v5 so MeterContract's `tone`
+     behaves the same in both cells. */
+
+  .brutal-meter[data-tone="accent"] .brutal-meter__fill {
+    background: var(--ds-color-accent);
+  }
+
+  .brutal-meter[data-tone="neutral"] .brutal-meter__fill {
+    background: var(--ds-color-text-muted);
+  }
+
+  .brutal-meter[data-tone="success"] .brutal-meter__fill {
+    background: var(--ds-color-success);
+  }
+
+  .brutal-meter[data-tone="warning"] .brutal-meter__fill {
+    background: var(--ds-color-warning);
+  }
+
+  .brutal-meter[data-tone="danger"] .brutal-meter__fill {
+    background: var(--ds-color-danger);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brutal-meter__fill {
+      transition: none;
+    }
   }
 }

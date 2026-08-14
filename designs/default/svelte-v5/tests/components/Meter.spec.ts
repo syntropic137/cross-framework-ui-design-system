@@ -41,4 +41,22 @@ describe("Meter", () => {
     render(Meter, { props: { value: 0.5, label: "Disk usage" } });
     expect(screen.getByRole("meter")).toHaveAttribute("aria-label", "Disk usage");
   });
+
+  // `tone` exists so consumers can recolour the fill (e.g. green for a
+  // completed key result) through the public API instead of reaching into
+  // `.meter__fill` with a :global() override that breaks on any rename.
+  describe("tone", () => {
+    it("defaults data-tone to accent", () => {
+      render(Meter, { props: { value: 0.5 } });
+      expect(screen.getByRole("meter")).toHaveAttribute("data-tone", "accent");
+    });
+
+    it.each(["neutral", "success", "warning", "danger", "accent"] as const)(
+      "applies data-tone=%s from the tone prop",
+      (tone) => {
+        render(Meter, { props: { value: 0.5, tone } });
+        expect(screen.getByRole("meter")).toHaveAttribute("data-tone", tone);
+      },
+    );
+  });
 });
