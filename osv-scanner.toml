@@ -1,20 +1,24 @@
 # OSV Scanner ignore configuration.
 #
+# There are currently NO ignored advisories. The scan is fully blocking.
+#
+# History, kept because the reasoning is the useful part:
+#
 # The repo migrated off @storybook/test-runner to @storybook/addon-vitest
 # (Storybook stories run as browser tests via Vitest + Playwright). That removed
 # the wait-on -> axios / joi / uuid dev-dependency tree entirely, so those
 # package overrides are gone: those vulnerabilities are ELIMINATED, not ignored.
 #
-# Only esbuild remains below — it ships with vite 6 / Storybook 10 at build time
-# and the advisory does not apply here. The scan stays BLOCKING for every other
-# package and for any new advisory outside this one. Review by the date below.
-
-# esbuild's Deno module loader is vulnerable to RCE via NPM_CONFIG_REGISTRY
-# (GHSA-gv7w-rqvm-qjhr). This does NOT apply here: esbuild is used via vite and
-# Storybook at BUILD time under Node, never through the Deno loader. The fix
-# (0.28.1) is also unreachable — vite 6 / Storybook 10 pin esbuild to ^0.25.
-# Ignored by specific ID so any *other* esbuild advisory still fails the scan.
-[[IgnoredVulns]]
-id = "GHSA-gv7w-rqvm-qjhr"
-ignoreUntil = 2026-09-01
-reason = "esbuild Deno-loader RCE; not applicable (used via vite/Node at build time, not Deno). Pinned to ^0.25 by vite 6 / Storybook 10."
+# GHSA-gv7w-rqvm-qjhr (esbuild Deno-loader RCE) was ignored here on the grounds
+# that esbuild is used via vite and Storybook at BUILD time under Node, never
+# through the Deno loader, and that the fix was unreachable because vite 6 /
+# Storybook 10 pin esbuild to ^0.25. The scanner now reports that ignore as
+# UNUSED and does not flag esbuild 0.25.12, so the advisory no longer matches
+# what is installed. A dead ignore erodes the meaning of this file, so it is
+# removed rather than carried. If esbuild is ever flagged again the scan will
+# block, which is the intended posture — re-add an entry then, with fresh
+# reasoning and a fresh review date.
+#
+# Everything else is fixed at source via pnpm.overrides in package.json rather
+# than ignored here. Prefer that: an override removes the vulnerable code, an
+# ignore only removes the warning.
