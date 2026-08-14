@@ -28,6 +28,13 @@ export const baseTokens: TokenCategories = {
     "ds-color-brand":     "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 50%)",
     "ds-color-brand-600": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 40%)",
     "ds-color-brand-700": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 32%)",
+    // The brand ramp is deliberately theme-invariant: these are fixed
+    // reference points, not semantic roles. Their ink must therefore be
+    // theme-invariant too. --ds-color-accent-contrast is NOT a valid partner
+    // for them — it flips to near-black in dark theme (~1.9:1 on brand-700).
+    // White holds 8.2:1 on brand-600 and 10.6:1 on brand-700 in every theme.
+    "ds-color-brand-600-contrast": "#ffffff",
+    "ds-color-brand-700-contrast": "#ffffff",
 
     "ds-color-bg":              "#ffffff",
     "ds-color-fg":              "#0b0c0e",
@@ -43,6 +50,10 @@ export const baseTokens: TokenCategories = {
 
     "ds-color-accent":          "var(--ds-color-brand)",
     "ds-color-accent-contrast": "#ffffff",
+    // Semantic hover partner for accent. Components must use this rather than
+    // reaching into the raw ramp: brand-600 is *darker* than the dark theme's
+    // accent, so hovering to it made dark-mode buttons run backwards.
+    "ds-color-accent-hover":    "var(--ds-color-brand-600)",
 
     "ds-color-danger":           "#e5484d",
     "ds-color-danger-contrast":  "#ffffff",
@@ -74,7 +85,11 @@ export const baseTokens: TokenCategories = {
   radius: {
     "ds-radius-sm": "6px",
     "ds-radius-md": "10px",
-    "ds-radius-lg": "14px"
+    "ds-radius-lg": "14px",
+    // Pill sentinel, not a scalable size: a value larger than any element's
+    // half-height so border-radius clamps to a full semicircle. Deliberately
+    // px rather than rem — it must not track the root font-size knob.
+    "ds-radius-full": "9999px"
   },
   shadow: {
     "ds-shadow-sm": "0 1px 2px rgba(0,0,0,.06)",
@@ -119,6 +134,8 @@ export const themeDefinitions: ThemeDefinition[] = [
         "ds-color-border":         "#1f2633",
         "ds-color-accent":         "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 62%)",
         "ds-color-accent-contrast":"#0a0b0e",
+        // Lighter than accent, not darker — hover moves away from the page.
+        "ds-color-accent-hover":   "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 72%)",
         "ds-color-danger":         "#ff6369",
         "ds-color-success":        "#3dd68c",
         "ds-color-warning":        "#ff8b3d",

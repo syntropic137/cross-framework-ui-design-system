@@ -1,0 +1,25 @@
+/* Card base styles */
+.card {
+  background: var(--ds-color-surface);
+  color: var(--ds-color-fg);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  padding: var(--ds-space-4);
+}
+
+.card[data-state="interactive"] {
+  cursor: pointer;
+}
+
+.card[data-state="interactive"]:hover {
+  box-shadow: var(--ds-shadow-md);
+}
+
+/* An interactive card is only reachable when the consumer makes it focusable
+   (tabindex + a button/link role). This rule means that when they do, the
+   focus ring matches every other interactive component in the system. */
+.card[data-state="interactive"]:focus-visible {
+  outline: var(--ds-focus-ring);
+  outline-offset: 2px;
+}
