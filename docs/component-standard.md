@@ -51,6 +51,18 @@ This is additive under the rule above, and it is not optional: without it an ico
 
 Attributes the component itself owns (`data-variant`, `data-size`, `data-state`, `aria-pressed` on `Toggle`, `disabled`/`aria-busy` derived from `loading`) are invariants. In Svelte, spread `{...rest}` **first** so those attributes win; a consumer must not be able to desynchronise a component from its own state.
 
+The consumer's event handlers are **not** invariants. A component that owns a handler for an event must pull the consumer's handler out of `rest` and invoke it, rather than letting its own attribute overwrite the spread one. `Toggle` does this for `onclick` / `onClick`: the spread makes the prop type-accepted, so silently dropping it would fail at runtime while type-checking cleanly.
+
+`class` is typed `ClassValue` (`string | ClassArray | ClassDictionary`) in Svelte and may legitimately be passed as an object or array. Merge it with the array form — `class={["card", className]}`, which Svelte resolves with clsx semantics — never by string interpolation, which renders the non-string forms as `[object Object]`.
+
+### Known parity divergences
+
+These are real differences between adapters. They are documented rather than fixed because closing them would change already-shipped behaviour; treat them as constraints when writing swap-safe app code.
+
+- **Keyboard activation of `Toggle`.** The Svelte cells rely on the `<button>`'s native keyboard-generated click, so Enter/Space runs the full click path and a consumer `onclick` fires. `default-react-v18` calls `preventDefault()` in its own `onKeyDown` and emits the change directly, so its consumer `onClick` does **not** fire for keyboard activation. Side effects belong in `onPressedChange`, which behaves identically on both.
+- **`Card` interactive state.** React marks it with the class `card--interactive`; the Svelte cells use `data-state="interactive"`, per the cell convention. Consumer CSS targeting one will not match the other.
+- **`Card` is Svelte-only in the brutalist design.** `brutalist/svelte-v5` exports `Card`; `brutalist/react-v18` has no `Card`, so that import does not survive a swap.
+
 ## Planned Contracts
 
 The following contract files exist but are not required in the current release surface:
@@ -79,7 +91,7 @@ Some current React components are useful implementation exports but are not part
 
 `Card` also has a `default-svelte-v5` implementation (`designs/default/svelte-v5/src/lib/components/card/Card.svelte`), ported from `default-react-v18`'s `Card`: same `interactive` boolean, no variant/tone, and the same native attribute pass-through with the consumer's `class` merged rather than dropped. Like its React counterpart, it is exported directly from the package's `index.ts` and is **not** part of `svelteV5ContractAdapter`, since it has no contract in `packages/contracts/src`.
 
-The port is not attribute-identical: React marks the interactive state with the class `card--interactive`, the Svelte cells with `data-state="interactive"`, per the cell convention. Consumer CSS that targets one will not match the other, so style overrides do not survive a swap — target the `card` class or a passed-in class instead.
+The port is not attribute-identical, and `Card` is Svelte-only in the brutalist design — see "Known parity divergences" above. Target the `card` class or a passed-in class rather than the interactive-state marker if a style override has to survive a swap.
 
 Keep these documented as implementation extras until they either receive contracts or are intentionally removed from the public standard.
 

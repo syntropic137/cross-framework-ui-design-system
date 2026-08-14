@@ -15,14 +15,17 @@
     children?: Snippet | string;
   };
 
-  let { interactive = false, children, class: className = "", ...rest }: Props = $props();
+  let { interactive = false, children, class: className, ...rest }: Props = $props();
 </script>
 
 <!-- `{...rest}` first: class and data-state below are component invariants.
-     The consumer's class is merged rather than dropped. -->
+     The consumer's class is merged rather than dropped. The array form is
+     required, not stylistic: `class` is typed ClassValue, so a consumer may
+     legitimately pass an object or array, and string interpolation would
+     render those as "[object Object]". Svelte applies clsx semantics. -->
 <div
   {...rest}
-  class="brutal-card {className}"
+  class={["brutal-card", className]}
   data-state={interactive ? "interactive" : "static"}
 >
   {#if typeof children === "string"}

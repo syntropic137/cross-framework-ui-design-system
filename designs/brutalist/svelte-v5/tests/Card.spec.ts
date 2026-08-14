@@ -35,7 +35,10 @@ describe("Card (brutalist)", () => {
       expect(screen.getByTestId("summary-card")).toHaveAttribute("id", "summary");
     });
 
-    it("forwards role and tabindex so an interactive card is reachable", () => {
+    // Forwarding role + tabindex is necessary but NOT sufficient for keyboard
+    // operation: a focusable div does not activate on Enter/Space by itself.
+    // Card carries no key handling, so the consumer must supply onkeydown too.
+    it("forwards role and tabindex so an interactive card can be focused", () => {
       render(Card, {
         props: { interactive: true, role: "button", tabindex: 0, children: "Open" }
       });
@@ -55,6 +58,25 @@ describe("Card (brutalist)", () => {
       const el = screen.getByText("Body");
       expect(el).toHaveClass("brutal-card");
       expect(el).toHaveClass("featured");
+    });
+
+    // `class` is typed ClassValue (string | ClassArray | ClassDictionary), so
+    // the object and array forms are valid Svelte and must not be coerced to
+    // "[object Object]" by string interpolation.
+    it("supports the object form of class", () => {
+      render(Card, { props: { class: { featured: true, muted: false }, children: "Body" } });
+      const el = screen.getByText("Body");
+      expect(el).toHaveClass("brutal-card");
+      expect(el).toHaveClass("featured");
+      expect(el).not.toHaveClass("muted");
+    });
+
+    it("supports the array form of class", () => {
+      render(Card, { props: { class: ["featured", "wide"], children: "Body" } });
+      const el = screen.getByText("Body");
+      expect(el).toHaveClass("brutal-card");
+      expect(el).toHaveClass("featured");
+      expect(el).toHaveClass("wide");
     });
 
     it("does not let rest props clobber data-state", () => {

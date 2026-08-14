@@ -129,5 +129,42 @@ describe("Toggle (brutalist)", () => {
       render(Toggle, { props: { pressed: true, "aria-pressed": "false" } });
       expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
     });
+
+    // `class` is typed ClassValue (string | ClassArray | ClassDictionary), so
+    // the object and array forms are valid Svelte and must not be coerced to
+    // "[object Object]" by string interpolation.
+    it("supports the object form of class", () => {
+      render(Toggle, { props: { class: { featured: true, muted: false }, children: "T" } });
+      const btn = screen.getByRole("button");
+      expect(btn).toHaveClass("brutal-toggle");
+      expect(btn).toHaveClass("featured");
+      expect(btn).not.toHaveClass("muted");
+    });
+  });
+
+  // Svelte relies on the <button>'s native keyboard-generated click, so Enter
+  // and Space run the full handleClick path. default-react-v18's Toggle
+  // instead calls preventDefault() in its own onKeyDown and emits the change
+  // directly, so its consumer onClick does NOT fire for keyboard activation.
+  // That divergence is documented in docs/component-standard.md; these tests
+  // pin the Svelte side so it cannot drift silently.
+  describe("keyboard activation", () => {
+    it("toggles on Enter", async () => {
+      const user = userEvent.setup();
+      const onPressedChange = vi.fn();
+      render(Toggle, { props: { onPressedChange, children: "Toggle" } });
+      screen.getByRole("button").focus();
+      await user.keyboard("{Enter}");
+      expect(onPressedChange).toHaveBeenCalledWith(true);
+    });
+
+    it("invokes consumer onclick on keyboard activation (diverges from React)", async () => {
+      const user = userEvent.setup();
+      const onclick = vi.fn();
+      render(Toggle, { props: { onclick, children: "Toggle" } });
+      screen.getByRole("button").focus();
+      await user.keyboard("{Enter}");
+      expect(onclick).toHaveBeenCalledOnce();
+    });
   });
 });
