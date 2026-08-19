@@ -1,12 +1,21 @@
 /* Parallax base styles (brutalist). No transition — the step change IS the
-   aesthetic; easing between steps would defeat the point. */
-.parallax {
-  will-change: transform;
-}
+   aesthetic; easing between steps would defeat the point.
 
-@media (prefers-reduced-motion: reduce) {
-  .parallax {
-    will-change: auto;
-    transform: none !important;
+   Namespaced `brutal-` and wrapped in @layer components like every other
+   component in this cell. Both is deliberate: apps/tauri-harness-svelte loads
+   the default and brutalist stylesheets into the same document, so a bare
+   `.parallax` here would collide with the default cell's rule, and an
+   unlayered `transform: none !important` would outrank every layered
+   brutalist rule. */
+@layer components {
+  .brutal-parallax {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brutal-parallax {
+      will-change: auto;
+      transform: none !important;
+    }
   }
 }

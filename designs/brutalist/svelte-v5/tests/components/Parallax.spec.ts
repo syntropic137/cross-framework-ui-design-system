@@ -77,7 +77,7 @@ describe("Parallax (brutalist)", () => {
     stubMatchMedia(false);
     window.scrollY = 600;
     const { container } = render(Parallax, { props: { speed: 0.5, children: "x" } });
-    const el = container.querySelector(".parallax") as HTMLElement;
+    const el = container.querySelector(".brutal-parallax") as HTMLElement;
     expect(el.style.transform).toBe("translate3d(0, -288px, 0)");
   });
 

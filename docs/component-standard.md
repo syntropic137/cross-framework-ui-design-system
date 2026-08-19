@@ -42,12 +42,14 @@ Framework packages may add framework-native composition props such as React `chi
 
 ### Native Attribute Pass-Through
 
-Components that render a single interactive host element **must** accept that element's full native attribute surface in addition to their contract props, and spread it onto the host:
+Components that render a single host element **must** accept that element's full native attribute surface in addition to their contract props, and spread it onto the host. This applies to non-interactive components too (`Card`, `Meter`, `Tag`), not only focusable controls:
 
 - React: `ButtonHTMLAttributes<HTMLButtonElement> & ButtonContract`, spreading `...rest`.
 - Svelte: `Omit<HTMLButtonAttributes, "children" | "type" | "disabled"> & ButtonContract`, spreading `{...rest}`.
 
 This is additive under the rule above, and it is not optional: without it an icon-only control cannot carry an `aria-label`, and `role` / `tabindex` / `aria-selected` / `aria-controls` / `aria-expanded` / `aria-pressed` cannot be expressed — which forces consumers to hand-roll a bare element and lose the design entirely.
+
+A component that renders an ARIA `role` must be nameable by the consumer, which makes pass-through an accessibility requirement rather than a convenience. `Meter` renders `role="meter"`: given no `label` and no way to accept `aria-labelledby`, it would ship a role with no accessible name. Where a contract prop and a native attribute express the same thing, the contract prop wins when set, but must not erase the native one when unset — `Meter` resolves `aria-label={label ?? ariaLabel}` for exactly this reason, since an attribute written after the spread with an `undefined` value removes it.
 
 Attributes the component itself owns (`data-variant`, `data-size`, `data-state`, `aria-pressed` on `Toggle`, `disabled`/`aria-busy` derived from `loading`) are invariants. In Svelte, spread `{...rest}` **first** so those attributes win; a consumer must not be able to desynchronise a component from its own state.
 
@@ -118,7 +120,7 @@ Applications that want one swap point should use a local app module and change o
 - Use generated design tokens from `@syntropic137/design-tokens`.
 - Token references use the `--ds-*` naming scheme.
 - Raw brand colors belong in token definitions, not component CSS.
-- Reference tokens **without** `var()` fallbacks. A fallback makes a missing token render acceptably instead of failing, which is how `--ds-radius-full` stayed undefined for the entire life of `Tag`.
+- Reference tokens **without** `var()` fallbacks. A fallback makes a missing token render acceptably instead of failing, so the component quietly ships the fallback's shape and nothing surfaces the gap — `--ds-radius-full` behind a fallback would turn `Tag`'s pill into an ordinary rounded rectangle with no signal that the token had gone missing.
 - `--ds-color-surface` is **Card's** background. A control that paints a resting or hover fill with it is invisible on a card, which is the common case; use `--ds-color-surface-raised` for a thing-on-a-card. The scale is `bg` = page, `surface` = card, `surface-raised` = thing-on-a-card, `overlay` = scrim.
 - A component with no background of its own (a ghost button) must express hover as a translucent ink wash — `color-mix(in oklab, var(--ds-color-fg) 8%, transparent)` — not a named surface, so it stays visible over any container.
 - `--ds-color-brand`, `-600` and `-700` are raw ramp steps and are theme-invariant. Do not pair them with `--ds-color-accent-contrast`, which is theme-aware and flips to near-black in dark theme; use `--ds-color-brand-600-contrast` / `--ds-color-brand-700-contrast`. For hover states use the semantic `--ds-color-accent-hover`, never a ramp step: `brand-600` is darker than the dark theme's accent, so hovering to it runs backwards.

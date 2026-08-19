@@ -48,7 +48,7 @@
   });
 </script>
 
-<div class="parallax" style="transform: translate3d(0, {offset}px, 0)">
+<div class="brutal-parallax" style="transform: translate3d(0, {offset}px, 0)">
   {#if typeof children === "string"}
     {children}
   {:else}
