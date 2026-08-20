@@ -29,9 +29,9 @@ describe("design token generation", () => {
     expect(outputs.css).toContain("--ds-z-modal:");
   });
 
-  // Tag referenced --ds-radius-full behind a var() fallback, so the pill shape
-  // it was designed for silently never rendered. Components now reference it
-  // without a fallback, which makes this token load-bearing.
+  // Tag references --ds-radius-full without a var() fallback, which makes this
+  // token load-bearing: if the build ever stops emitting it, Tag's pill shape
+  // breaks visibly rather than degrading to a rounded rectangle in silence.
   it("defines --ds-radius-full as a pill radius", () => {
     const outputs = buildTokenOutputs();
 

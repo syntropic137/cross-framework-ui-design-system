@@ -59,4 +59,66 @@ describe("Meter", () => {
       },
     );
   });
+
+  // Required by docs/component-standard.md "Native Attribute Pass-Through".
+  // Meter renders role="meter", so it MUST be nameable by the consumer: with
+  // no `label` and no way to pass aria-labelledby it ships an ARIA role with
+  // no accessible name at all.
+  describe("attribute pass-through", () => {
+    it("forwards id and data-* attributes", () => {
+      render(Meter, { props: { value: 0.5, id: "disk", "data-testid": "disk-meter" } });
+      expect(screen.getByTestId("disk-meter")).toHaveAttribute("id", "disk");
+    });
+
+    it("names the meter via aria-labelledby from a visible heading", () => {
+      render(Meter, { props: { value: 0.5, "aria-labelledby": "disk-heading" } });
+      expect(screen.getByRole("meter")).toHaveAttribute("aria-labelledby", "disk-heading");
+    });
+
+    // `label` is the contract prop and wins, but an undefined `label` must not
+    // erase a consumer-supplied aria-label — the attribute is written after
+    // the spread, and in Svelte an undefined value removes an attribute.
+    it("keeps a consumer aria-label when no label prop is given", () => {
+      render(Meter, { props: { value: 0.5, "aria-label": "Quota used" } });
+      expect(screen.getByRole("meter")).toHaveAttribute("aria-label", "Quota used");
+    });
+
+    it("prefers the label prop over a consumer aria-label", () => {
+      render(Meter, { props: { value: 0.5, label: "Disk", "aria-label": "Quota used" } });
+      expect(screen.getByRole("meter")).toHaveAttribute("aria-label", "Disk");
+    });
+
+    // ARIA resolves aria-labelledby ahead of aria-label, so a consumer that
+    // points at a visible heading wins over the `label` string. Documented in
+    // docs/component-standard.md; pinned here so the attribute survives and
+    // the precedence is not "fixed" by mistake.
+    it("still forwards aria-labelledby when label is also set", () => {
+      render(Meter, { props: { value: 0.5, label: "Disk", "aria-labelledby": "heading" } });
+      const el = screen.getByRole("meter");
+      expect(el).toHaveAttribute("aria-labelledby", "heading");
+      expect(el).toHaveAttribute("aria-label", "Disk");
+    });
+
+    it("merges a consumer class", () => {
+      render(Meter, { props: { value: 0.5, class: "wide" } });
+      expect(screen.getByRole("meter")).toHaveClass("wide");
+    });
+
+    it("supports the object form of class", () => {
+      render(Meter, { props: { value: 0.5, class: { wide: true, narrow: false } } });
+      const el = screen.getByRole("meter");
+      expect(el).toHaveClass("wide");
+      expect(el).not.toHaveClass("narrow");
+    });
+
+    it("does not let rest props clobber the component's own aria-valuenow", () => {
+      render(Meter, { props: { value: 0.5, "aria-valuenow": 999 } });
+      expect(screen.getByRole("meter")).toHaveAttribute("aria-valuenow", "0.5");
+    });
+
+    it("does not let rest props clobber data-tone", () => {
+      render(Meter, { props: { value: 0.5, tone: "accent", "data-tone": "bogus" } });
+      expect(screen.getByRole("meter")).toHaveAttribute("data-tone", "accent");
+    });
+  });
 });

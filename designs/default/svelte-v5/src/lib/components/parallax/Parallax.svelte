@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
+  import type { HTMLAttributes } from "svelte/elements";
   import "./parallax.css";
   import { offsetFor } from "./offset.js";
 
@@ -10,13 +11,16 @@
   // Intended for DECORATIVE layers inside a fixed-position container. The
   // offset is negative as the page scrolls, so the layer drifts upward more
   // slowly than real content.
-  interface Props {
+  // Native attribute pass-through per docs/component-standard.md. `style` is
+  // deliberately excluded: the transform below is the component's entire
+  // reason to exist, and a consumer style attribute would overwrite it.
+  type Props = Omit<HTMLAttributes<HTMLDivElement>, "children" | "style"> & {
     /** Fraction of normal scroll motion: 0 = pinned, 1 = moves with content. */
     speed?: number;
     children?: Snippet | string;
-  }
+  };
 
-  let { speed = 0.2, children }: Props = $props();
+  let { speed = 0.2, children, class: className, ...rest }: Props = $props();
 
   let offset = $state(0);
 
@@ -53,7 +57,8 @@
   });
 </script>
 
-<div class="parallax" style="transform: translate3d(0, {offset}px, 0)">
+<!-- `{...rest}` first: the class and the scroll transform are invariants. -->
+<div {...rest} class={["parallax", className]} style="transform: translate3d(0, {offset}px, 0)">
   {#if typeof children === "string"}
     {children}
   {:else}
