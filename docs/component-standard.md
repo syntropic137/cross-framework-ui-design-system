@@ -49,7 +49,11 @@ Components that render a single host element **must** accept that element's full
 
 This is additive under the rule above, and it is not optional: without it an icon-only control cannot carry an `aria-label`, and `role` / `tabindex` / `aria-selected` / `aria-controls` / `aria-expanded` / `aria-pressed` cannot be expressed — which forces consumers to hand-roll a bare element and lose the design entirely.
 
-A component that renders an ARIA `role` must be nameable by the consumer, which makes pass-through an accessibility requirement rather than a convenience. `Meter` renders `role="meter"`: given no `label` and no way to accept `aria-labelledby`, it would ship a role with no accessible name. Where a contract prop and a native attribute express the same thing, the contract prop wins when set, but must not erase the native one when unset — `Meter` resolves `aria-label={label ?? ariaLabel}` for exactly this reason, since an attribute written after the spread with an `undefined` value removes it.
+A component that renders an ARIA `role` must be nameable by the consumer, which makes pass-through an accessibility requirement rather than a convenience. `Meter` renders `role="meter"`: given no `label` and no way to accept `aria-labelledby`, it would ship a role with no accessible name.
+
+Where a contract prop and a native attribute set the *same* attribute, the contract prop wins when set but must not erase the native one when unset — `Meter` resolves `aria-label={label ?? ariaLabel}` for exactly this reason, since an attribute written after the spread with an `undefined` value removes it.
+
+That precedence is per-attribute, **not** over the accessible name as a whole. `aria-labelledby` outranks `aria-label` in ARIA's name computation, so a consumer passing `aria-labelledby` names the element from the referenced node even when `label` is also set. This is intended — pointing at a visible heading is a deliberate, more specific act than passing a string — but it means `label` is the default name, not a guaranteed one. Do not set both and expect `label` to appear.
 
 Attributes the component itself owns (`data-variant`, `data-size`, `data-state`, `aria-pressed` on `Toggle`, `disabled`/`aria-busy` derived from `loading`) are invariants. In Svelte, spread `{...rest}` **first** so those attributes win; a consumer must not be able to desynchronise a component from its own state.
 

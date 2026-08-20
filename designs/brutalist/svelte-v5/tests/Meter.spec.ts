@@ -70,6 +70,17 @@ describe("Meter (brutalist)", () => {
       expect(screen.getByRole("meter")).toHaveAttribute("aria-label", "Disk");
     });
 
+    // ARIA resolves aria-labelledby ahead of aria-label, so a consumer that
+    // points at a visible heading wins over the `label` string. Documented in
+    // docs/component-standard.md; pinned here so the attribute survives and
+    // the precedence is not "fixed" by mistake.
+    it("still forwards aria-labelledby when label is also set", () => {
+      render(Meter, { props: { value: 0.5, label: "Disk", "aria-labelledby": "heading" } });
+      const el = screen.getByRole("meter");
+      expect(el).toHaveAttribute("aria-labelledby", "heading");
+      expect(el).toHaveAttribute("aria-label", "Disk");
+    });
+
     it("merges a consumer class", () => {
       render(Meter, { props: { value: 0.5, class: "wide" } });
       expect(screen.getByRole("meter")).toHaveClass("wide");
