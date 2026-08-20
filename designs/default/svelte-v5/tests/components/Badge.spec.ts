@@ -53,4 +53,33 @@ describe("Badge", () => {
     const el = screen.getByText("Tag");
     expect(el.tagName.toLowerCase()).toBe("span");
   });
+
+  // Required by docs/component-standard.md "Native Attribute Pass-Through";
+  // default-react-v18's Badge already accepts HTMLAttributes, so without this
+  // a React Badge carrying an id or aria-label cannot swap to the Svelte cell.
+  describe("attribute pass-through", () => {
+    it("forwards id and data-* attributes", () => {
+      render(Badge, { props: { children: "New", id: "b1", "data-testid": "badge" } });
+      expect(screen.getByTestId("badge")).toHaveAttribute("id", "b1");
+    });
+
+    it("forwards aria-label", () => {
+      render(Badge, { props: { children: "3", "aria-label": "3 unread" } });
+      expect(screen.getByLabelText("3 unread")).toBeInTheDocument();
+    });
+
+    it("merges a consumer class", () => {
+      render(Badge, { props: { children: "New", class: "pinned" } });
+      expect(screen.getByText("New")).toHaveClass("pinned");
+    });
+
+    it("does not let rest props clobber data-variant or data-tone", () => {
+      render(Badge, {
+        props: { children: "New", variant: "solid", tone: "danger", "data-variant": "x", "data-tone": "y" },
+      });
+      const el = screen.getByText("New");
+      expect(el).toHaveAttribute("data-variant", "solid");
+      expect(el).toHaveAttribute("data-tone", "danger");
+    });
+  });
 });

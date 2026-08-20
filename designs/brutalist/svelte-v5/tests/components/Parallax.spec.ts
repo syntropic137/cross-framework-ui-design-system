@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/svelte";
 import { offsetFor, STEP_PX } from "../../src/lib/components/parallax/offset.js";
 import Parallax from "../../src/lib/components/parallax/Parallax.svelte";
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const PARALLAX_CLASS = "brutal-parallax";
 
 function stubMatchMedia(reduced: boolean) {
   Object.defineProperty(window, "matchMedia", {
@@ -77,7 +82,7 @@ describe("Parallax (brutalist)", () => {
     stubMatchMedia(false);
     window.scrollY = 600;
     const { container } = render(Parallax, { props: { speed: 0.5, children: "x" } });
-    const el = container.querySelector(".parallax") as HTMLElement;
+    const el = container.querySelector(".brutal-parallax") as HTMLElement;
     expect(el.style.transform).toBe("translate3d(0, -288px, 0)");
   });
 
@@ -93,5 +98,63 @@ describe("Parallax (brutalist)", () => {
     // @ts-expect-error deliberately removing the API
     delete window.matchMedia;
     expect(() => render(Parallax, { props: { children: "x" } })).not.toThrow();
+  });
+
+  // Required by docs/component-standard.md "Native Attribute Pass-Through".
+  // `style` is excluded from the surface on purpose: the scroll transform is
+  // the component's whole point and must not be overwritable.
+  describe("attribute pass-through", () => {
+    it("forwards id and data-* attributes", () => {
+      stubMatchMedia(true);
+      const { container } = render(Parallax, {
+        props: { children: "x", id: "hero", "data-testid": "hero-layer" },
+      });
+      const el = container.querySelector("#hero") as HTMLElement;
+      expect(el).toHaveAttribute("data-testid", "hero-layer");
+    });
+
+    it("merges a consumer class alongside the component class", () => {
+      stubMatchMedia(true);
+      const { container } = render(Parallax, { props: { children: "x", class: "layer-2" } });
+      const el = container.querySelector(".layer-2") as HTMLElement;
+      expect(el).toHaveClass(PARALLAX_CLASS);
+    });
+
+    it("keeps its own transform, which a consumer cannot replace", () => {
+      stubMatchMedia(false);
+      window.scrollY = 0;
+      const { container } = render(Parallax, { props: { children: "x", class: "layer-2" } });
+      const el = container.querySelector(`.${PARALLAX_CLASS}`) as HTMLElement;
+      expect(el.style.transform).toContain("translate3d");
+    });
+  });
+});
+
+// The component/stylesheet pair can drift silently: every behavioural test
+// above reads the inline transform, so renaming the class in the markup while
+// leaving the CSS on `.parallax` would keep them all green while shipping an
+// unstyled, unlayered component that collides with the default cell.
+describe("stylesheet", () => {
+  const css = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "../../src/lib/components/parallax/parallax.css"),
+    "utf8",
+  );
+
+  // Comments are stripped first: the file's own header explains why the bare
+  // selector is wrong, and that prose would otherwise match the guard.
+  const rules = css.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  it("targets the namespaced class, not the default cell's bare .parallax", () => {
+    expect(rules).toContain(".brutal-parallax");
+    expect(rules).not.toMatch(/(^|[^-\w])\.parallax\b/m);
+  });
+
+  it("is wrapped in @layer components like the rest of the cell", () => {
+    expect(css).toContain("@layer components");
+  });
+
+  it("still disables the transform under reduced motion", () => {
+    expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(css).toContain("transform: none !important");
   });
 });

@@ -64,10 +64,10 @@ describe("token discipline", () => {
     "toggle/toggle.css",
   ];
 
-  // A `var(--ds-x, fallback)` renders fine even when --ds-x does not exist,
-  // so an undefined token never surfaces. --ds-radius-full was missing for
-  // the entire life of Tag for exactly this reason. No fallbacks: a missing
-  // token must fail loudly.
+  // A `var(--ds-x, fallback)` renders fine even when --ds-x does not exist, so
+  // an undefined token never surfaces: the component quietly ships the
+  // fallback's shape instead of the designed one, and nothing in CI notices.
+  // No fallbacks — a missing token must fail loudly.
   it.each(ALL)("%s references --ds-* tokens without fallbacks", (file) => {
     const offenders = css(file).match(/var\(--ds-[a-z0-9-]+\s*,/g) ?? [];
     expect(offenders).toEqual([]);

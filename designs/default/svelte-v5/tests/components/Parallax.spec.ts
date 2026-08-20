@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/svelte";
 import { offsetFor } from "../../src/lib/components/parallax/offset.js";
 import Parallax from "../../src/lib/components/parallax/Parallax.svelte";
 
+const PARALLAX_CLASS = "parallax";
+
 // jsdom does not implement matchMedia. Every test that mounts Parallax must
 // install a stub first, or the component's guard is the only thing under test.
 function stubMatchMedia(reduced: boolean) {
@@ -112,5 +114,34 @@ describe("Parallax", () => {
     // @ts-expect-error deliberately removing the API
     delete window.matchMedia;
     expect(() => render(Parallax, { props: { children: "x" } })).not.toThrow();
+  });
+
+  // Required by docs/component-standard.md "Native Attribute Pass-Through".
+  // `style` is excluded from the surface on purpose: the scroll transform is
+  // the component's whole point and must not be overwritable.
+  describe("attribute pass-through", () => {
+    it("forwards id and data-* attributes", () => {
+      stubMatchMedia(true);
+      const { container } = render(Parallax, {
+        props: { children: "x", id: "hero", "data-testid": "hero-layer" },
+      });
+      const el = container.querySelector("#hero") as HTMLElement;
+      expect(el).toHaveAttribute("data-testid", "hero-layer");
+    });
+
+    it("merges a consumer class alongside the component class", () => {
+      stubMatchMedia(true);
+      const { container } = render(Parallax, { props: { children: "x", class: "layer-2" } });
+      const el = container.querySelector(".layer-2") as HTMLElement;
+      expect(el).toHaveClass(PARALLAX_CLASS);
+    });
+
+    it("keeps its own transform, which a consumer cannot replace", () => {
+      stubMatchMedia(false);
+      window.scrollY = 0;
+      const { container } = render(Parallax, { props: { children: "x", class: "layer-2" } });
+      const el = container.querySelector(`.${PARALLAX_CLASS}`) as HTMLElement;
+      expect(el.style.transform).toContain("translate3d");
+    });
   });
 });
