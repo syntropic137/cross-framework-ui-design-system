@@ -67,7 +67,7 @@
     "storybook": "^10.4.5",
     "typescript": "^5.9.2",
     "vite": "^6.4.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public",

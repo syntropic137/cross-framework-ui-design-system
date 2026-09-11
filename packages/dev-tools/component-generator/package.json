@@ -28,7 +28,7 @@
     "@types/node": "^20.8.0",
     "eslint": "^9.39.4",
     "typescript": "^5.2.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "files": [
     "dist",
