@@ -17,37 +17,16 @@
 //   DRY_RUN=1 node scripts/publish-packages.mjs   # pack only, publish nothing
 
 import { execSync } from "node:child_process";
-import { readFileSync, existsSync, readdirSync, mkdtempSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
+import { findPublishable } from "./lib/publishable-packages.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dryRun = process.env.DRY_RUN === "1";
 
-function pkgDirs() {
-  const out = [];
-  const scan = (rel, depth) => {
-    const abs = join(root, rel);
-    if (!existsSync(abs)) return;
-    for (const name of readdirSync(abs, { withFileTypes: true })) {
-      if (!name.isDirectory()) continue;
-      const childRel = join(rel, name.name);
-      if (existsSync(join(root, childRel, "package.json"))) out.push(childRel);
-      if (depth > 0) scan(childRel, depth - 1);
-    }
-  };
-  scan("packages", 1);
-  scan("designs", 1);
-  return out;
-}
-
-const publishable = pkgDirs()
-  .map((dir) => {
-    const pkg = JSON.parse(readFileSync(join(root, dir, "package.json"), "utf8"));
-    return { dir, name: pkg.name, version: pkg.version, isPrivate: pkg.private };
-  })
-  .filter((p) => p.isPrivate === false);
+const publishable = findPublishable(root);
 
 if (publishable.length === 0) {
   console.error('No publishable packages (none with "private": false).');
