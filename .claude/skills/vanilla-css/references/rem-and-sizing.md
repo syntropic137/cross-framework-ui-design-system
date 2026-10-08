@@ -44,8 +44,15 @@ Honest tradeoffs of 62.5% (per the source research):
 - The "everything is times ten" mapping is a small ongoing cognitive cost.
 
 The conservative alternative is to leave the root at the browser default and size in
-rem anyway (accepting px math). Both are accessible; this design system uses the 62.5%
-knob for the easy math.
+rem anyway (accepting px math). Both are accessible.
+
+**This design system's packages use the browser default.** The published packages
+(`@syntropic137/design-tokens` and every design cell) never set `font-size` on
+`:root` or `html`, and their `rem` values assume the 16px default (`0.875rem` is
+14px). Consumers keep that default; mixing a 62.5% root with these packages shrinks
+them by about 37%. An app that wants the 62.5% knob for its own CSS must not apply it
+to pages that render design-system components. A test in
+`packages/design-tokens/tests/build.spec.ts` keeps root font-size out of the token CSS.
 
 ## rem versus em versus px versus %
 
