@@ -19,10 +19,9 @@ the practical map and the pre-publish checklist.
 ## Zero-dependency foundation
 
 `design-contracts` and `design-tokens` are the foundation every consumer pulls in, so they
-carry **zero runtime dependencies** — auditable to nothing. Today this holds by
-construction (both packages declare no `dependencies`) but is **not yet enforced**: the
-plan is a check (extending `design-system:verify`) that fails CI if either package
-declares a runtime dependency, tracked in `rcl-tws.9`. The design *cells* are
+carry **zero runtime dependencies** — auditable to nothing. This is enforced:
+`scripts/package-publish.test.mjs` (run by `test:verify` in `pnpm qa`) fails if either
+package declares `dependencies` or `peerDependencies`. The design *cells* are
 deliberately not zero-dep: the react cells carry `clsx` and `default-svelte-v5` carries
 `bits-ui`; the zero-dep guarantee is scoped to `design-contracts` and `design-tokens`.
 
