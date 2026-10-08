@@ -5,9 +5,28 @@ lockstep (see ADR-0009). Newest first.
 
 <!-- releases -->
 
-## Unreleased
+## 0.1.1 - 2026-10-08
 
-- **Breaking:** only `@syntropic137/design-contracts` and `@syntropic137/design-tokens` publish to npm; the four `designs/` component implementations are now private reference examples (ADR-0008).
+First release through the automated pipeline (main -> `release` PR, release gate,
+OIDC trusted publishing from the `npm-publish` environment). 0.1.0 was a one-time
+local bootstrap publish.
+
+- **Breaking:** only `@syntropic137/design-contracts` and `@syntropic137/design-tokens`
+  publish to npm; the four `designs/` component implementations are private
+  reference examples (ADR-0008, updated in place).
+- Release gate (`pnpm release:gate`, `.github/workflows/release-gate.yml`): refuses
+  mixed versions, invalid semver, an existing `v<version>` tag, a version already
+  on npm, a missing CHANGELOG heading, and any `designs/` package that becomes
+  publishable.
+- Publish script: provenance only in CI, public registry pinned for lookup and
+  publish, package set checked before publishing.
+- Security: `SECURITY.md` documents the release model; `CODEOWNERS` covers the
+  release-sensitive paths; dependency advisories cleared via pnpm overrides
+  (`braces` ignore dated, expires 2027-01-08).
+- `@syntropic137/design-tokens/names`: typed token-name list (`TokenName`,
+  `tokenNames`, `isTokenName()`, `cssVar()`).
+- Root font size: the packages never set it; guidance assumes the 16px default.
+- The verify gate ships as `design-system-verify` and runs from a consumer repo.
 
 ### Breaking: `@syntropic137/contracts` is now `@syntropic137/design-contracts`
 
@@ -28,6 +47,10 @@ The exported API (`RequiredComponentContracts`, `requiredContractNames`,
 `componentContractStatus`, every `*Contract` type) is unchanged. The source
 directory stays at `packages/contracts/`. `@syntropic137/design-tokens` keeps its
 name.
+
+## Unreleased
+
+- _Nothing yet._
 
 ## 0.1.0 - 2026-06-15
 
