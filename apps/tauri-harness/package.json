@@ -11,7 +11,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-contracts": "workspace:^",
     "@syntropic137/design-tokens": "workspace:^",
     "@syntropic137/default-react-v18": "workspace:^",
     "@syntropic137/brutalist-react-v18": "workspace:^",

@@ -12,7 +12,7 @@ long-lived to leak, and every package gets a signed provenance attestation.
 
 **The 6 packages this publishes:**
 
-- `@syntropic137/contracts`
+- `@syntropic137/design-contracts`
 - `@syntropic137/design-tokens`
 - `@syntropic137/default-react-v18`
 - `@syntropic137/default-svelte-v5`
@@ -74,7 +74,7 @@ For each package: open `https://www.npmjs.com/package/@syntropic137/<name>` ->
 | Workflow filename | `release.yml` |
 | Environment | leave blank |
 
-- [ ] contracts
+- [ ] design-contracts
 - [ ] design-tokens
 - [ ] default-react-v18
 - [ ] default-svelte-v5

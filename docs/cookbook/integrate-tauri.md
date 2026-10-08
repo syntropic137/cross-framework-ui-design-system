@@ -22,7 +22,7 @@ pnpm tauri init        # answers: dist dir = ../dist, dev url = http://localhost
 Add the design-system packages:
 
 ```bash
-pnpm add @syntropic137/contracts \
+pnpm add @syntropic137/design-contracts \
          @syntropic137/design-tokens \
          @syntropic137/default-svelte-v5
 ```
@@ -58,7 +58,7 @@ swaps a one-line change (see [swap-designs.md](./swap-designs.md)).
 
 ```ts
 // src/ui/adapter.ts
-import type { RequiredComponentContracts } from "@syntropic137/contracts";
+import type { RequiredComponentContracts } from "@syntropic137/design-contracts";
 import { svelteV5ContractAdapter as defaultAdapter } from "@syntropic137/default-svelte-v5";
 
 // ⚠️ Gotcha #2 — component CSS is NOT auto-injected.
@@ -85,7 +85,7 @@ element syntax:
 <!-- src/App.svelte -->
 <script lang="ts">
   import type { Component } from "svelte";
-  import type { ButtonContract } from "@syntropic137/contracts";
+  import type { ButtonContract } from "@syntropic137/design-contracts";
   import { ui } from "./ui/adapter.js";
 
   const Button = ui.button as Component<ButtonContract & { children?: any }>;

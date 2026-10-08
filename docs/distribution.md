@@ -8,7 +8,7 @@ the practical map and the pre-publish checklist.
 
 | Package | Publishes? | Runtime deps | Notes |
 | --- | --- | --- | --- |
-| `@syntropic137/contracts` | ✅ public | **none** (enforced) | framework-neutral API |
+| `@syntropic137/design-contracts` | ✅ public | **none** (enforced) | framework-neutral API |
 | `@syntropic137/design-tokens` | ✅ public | **none** (enforced) | tokens CSS + JSON |
 | `@syntropic137/<design>-react-v18` | ✅ public | `clsx` only | `react`/`react-dom` are peers |
 | `@syntropic137/<design>-svelte-v5` | ✅ public | `bits-ui` (`default` cell today) | `svelte` is a peer; cell deps audited in `rcl-tws.9` |
@@ -18,13 +18,13 @@ the practical map and the pre-publish checklist.
 
 ## Zero-dependency foundation
 
-`contracts` and `design-tokens` are the foundation every consumer pulls in, so they
+`design-contracts` and `design-tokens` are the foundation every consumer pulls in, so they
 carry **zero runtime dependencies** — auditable to nothing. Today this holds by
 construction (both packages declare no `dependencies`) but is **not yet enforced**: the
 plan is a check (extending `design-system:verify`) that fails CI if either package
 declares a runtime dependency, tracked in `rcl-tws.9`. The design *cells* are
 deliberately not zero-dep: the react cells carry `clsx` and `default-svelte-v5` carries
-`bits-ui`; the zero-dep guarantee is scoped to `contracts` and `design-tokens`.
+`bits-ui`; the zero-dep guarantee is scoped to `design-contracts` and `design-tokens`.
 
 The verify gate itself ([ADR-0005](./adrs/ADR-0005-enforcement-gate.md)) is likewise
 zero-dep (Node built-ins only) for the same reason.
@@ -116,7 +116,7 @@ Once published, external apps install exactly as in the
 [cookbook](./cookbook/integrate-tauri.md):
 
 ```bash
-pnpm add @syntropic137/contracts @syntropic137/design-tokens \
+pnpm add @syntropic137/design-contracts @syntropic137/design-tokens \
          @syntropic137/default-svelte-v5
 ```
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ToggleContract } from "@syntropic137/contracts";
+  import type { ToggleContract } from "@syntropic137/design-contracts";
   import type { Snippet } from "svelte";
   import type { HTMLButtonAttributes } from "svelte/elements";
   import "./toggle.css";

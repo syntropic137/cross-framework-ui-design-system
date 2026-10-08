@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ButtonContract } from "@syntropic137/contracts";
+  import type { ButtonContract } from "@syntropic137/design-contracts";
   import type { Snippet } from "svelte";
   import type { HTMLButtonAttributes } from "svelte/elements";
   import "./button.css";
