@@ -132,3 +132,4 @@ function cloneTokens(tokens: TokenCategories): TokenCategories {
 }
 
 export { baseTokens, themeDefinitions } from "./token-data.js";
+export * from "./names.js";
