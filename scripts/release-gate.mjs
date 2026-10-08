@@ -121,15 +121,38 @@ export function checkRegistry(version, results) {
 /** Escape a string for literal use inside a RegExp. */
 const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** CHANGELOG lines outside fenced code blocks (``` or ~~~). */
+/**
+ * CHANGELOG lines that are prose: outside fenced code blocks and HTML comments.
+ * CommonMark rules: a fence opens with >= 3 backticks or tildes (up to 3 spaces
+ * indent) and closes only on a line of the same character, at least as long,
+ * followed by nothing but spaces/tabs. An HTML comment block opens on a line
+ * starting with `<!--` and runs to the line containing `-->` (or end of file).
+ */
 function proseLines(markdown) {
   const out = [];
-  let fence = null;
+  let fence = null; // the opening marker, e.g. "~~~~"
+  let inComment = false;
   for (const line of markdown.split(/\r?\n/)) {
-    const m = /^ {0,3}(`{3,}|~{3,})/.exec(line);
-    if (fence === null && m) fence = m[1];
-    else if (fence !== null && m && m[1][0] === fence[0] && m[1].length >= fence.length) fence = null;
-    else if (fence === null) out.push(line);
+    if (fence !== null) {
+      const close = /^ {0,3}(`{3,}|~{3,})[ \t]*$/.exec(line);
+      if (close && close[1][0] === fence[0] && close[1].length >= fence.length) fence = null;
+      continue;
+    }
+    if (inComment) {
+      if (line.includes("-->")) inComment = false;
+      continue;
+    }
+    const open = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if (open) {
+      fence = open[1];
+      continue;
+    }
+    const comment = /^ {0,3}<!--/.exec(line);
+    if (comment) {
+      inComment = !line.slice(comment[0].length).includes("-->");
+      continue;
+    }
+    out.push(line);
   }
   return out;
 }

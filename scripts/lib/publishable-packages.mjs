@@ -5,22 +5,66 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-/** Package dirs under the workspace globs (packages/*, packages/*\/*, designs/*\/*). */
-export function pkgDirs(root) {
+/**
+ * The `packages:` globs from pnpm-workspace.yaml. A minimal reader for the flat
+ * list form this repo uses; anything it cannot read is an error, not an empty set.
+ */
+export function workspaceGlobs(yamlText) {
+  const globs = [];
+  let inPackages = false;
+  for (const raw of yamlText.split(/\r?\n/)) {
+    const line = raw.replace(/\s+#.*$/, "");
+    if (/^\S/.test(line)) {
+      inPackages = /^packages:\s*$/.test(line);
+      continue;
+    }
+    if (!inPackages || line.trim() === "") continue;
+    const m = /^\s+-\s+(["']?)(!?[A-Za-z0-9_.@*\/-]+)\1\s*$/.exec(line);
+    if (!m) throw new Error(`pnpm-workspace.yaml: cannot parse packages entry ${JSON.stringify(raw)}`);
+    globs.push(m[2]);
+  }
+  if (globs.length === 0) throw new Error("pnpm-workspace.yaml: no packages globs found");
+  return globs;
+}
+
+const SKIP_DIRS = new Set(["node_modules", ".git"]);
+
+/** Dirs (relative to root) matching one glob: literal segments, `*` and `**`. */
+function expandGlob(root, glob) {
+  const segs = glob.replace(/\/+$/, "").split("/").filter(Boolean);
   const out = [];
-  const scan = (rel, depth) => {
+  const subdirs = (rel) => {
     const abs = join(root, rel);
-    if (!existsSync(abs)) return;
-    for (const name of readdirSync(abs, { withFileTypes: true })) {
-      if (!name.isDirectory()) continue;
-      const childRel = join(rel, name.name);
-      if (existsSync(join(root, childRel, "package.json"))) out.push(childRel);
-      if (depth > 0) scan(childRel, depth - 1);
+    if (!existsSync(abs)) return [];
+    return readdirSync(abs, { withFileTypes: true })
+      .filter((d) => d.isDirectory() && !SKIP_DIRS.has(d.name))
+      .map((d) => (rel ? `${rel}/${d.name}` : d.name));
+  };
+  const walk = (rel, i) => {
+    if (i === segs.length) return void out.push(rel);
+    const seg = segs[i];
+    if (seg === "**") {
+      walk(rel, i + 1);
+      for (const d of subdirs(rel)) walk(d, i);
+    } else if (seg.includes("*")) {
+      const re = new RegExp(`^${seg.split("*").map((p) => p.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join("[^/]*")}$`);
+      for (const d of subdirs(rel)) if (re.test(d.split("/").pop())) walk(d, i + 1);
+    } else {
+      const next = rel ? `${rel}/${seg}` : seg;
+      if (existsSync(join(root, next))) walk(next, i + 1);
     }
   };
-  scan("packages", 1);
-  scan("designs", 1);
+  walk("", 0);
   return out;
+}
+
+/** Package dirs matched by the pnpm-workspace.yaml globs (`!` globs exclude). */
+export function pkgDirs(root) {
+  const globs = workspaceGlobs(readFileSync(join(root, "pnpm-workspace.yaml"), "utf8"));
+  const include = new Set();
+  for (const g of globs.filter((g) => !g.startsWith("!"))) for (const d of expandGlob(root, g)) include.add(d);
+  for (const g of globs.filter((g) => g.startsWith("!"))) for (const d of expandGlob(root, g.slice(1))) include.delete(d);
+  return [...include].filter((d) => existsSync(join(root, d, "package.json"))).sort();
 }
 
 /** Every package with `"private": false`, as { dir, name, version }. */
