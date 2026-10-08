@@ -1,6 +1,7 @@
 # OSV Scanner ignore configuration.
 #
-# There are currently NO ignored advisories. The scan is fully blocking.
+# One advisory is ignored (braces, no fix exists; see the entry at the bottom).
+# Everything else is fully blocking.
 #
 # History, kept because the reasoning is the useful part:
 #
@@ -22,3 +23,17 @@
 # Everything else is fixed at source via pnpm.overrides in package.json rather
 # than ignored here. Prefer that: an override removes the vulnerable code, an
 # ignore only removes the warning.
+
+# GHSA-vfj7-8cjw-p6xm: braces <=3.0.3, stack-exhaustion DoS via deeply nested
+# brace patterns. There is NO fixed release: 3.0.3 is the latest braces on npm
+# and the advisory lists last_affected=3.0.3, so no override can remove it.
+# Reached only through dev tooling (stylelint -> micromatch/fast-glob, and
+# @typescript-eslint/typescript-estree 8.44 -> fast-glob). Those expand globs
+# written in this repo's own config and CLI args, never untrusted input, and
+# never ship in a published package. Even stylelint 17.x still depends on
+# micromatch -> braces, so there is no upgrade path either.
+# Revisit by the date below, or as soon as braces publishes a fix.
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+ignoreUntil = 2027-01-08
+reason = "braces has no fixed version (last_affected 3.0.3); dev-only glob expansion of repo-controlled patterns via stylelint/typescript-eslint"
