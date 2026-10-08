@@ -49,6 +49,16 @@ The packaging and pipeline are wired in-repo (ADR-0009). Done:
       `"private": false` with `"publishConfig": { "access": "public", "provenance":
       true }` and a `repository` field; apps, dashboard, and generator are
       `"private": true`, and the publish script skips anything not publishable.
+- [x] **Foundation packages consumable from outside the workspace**:
+      `@syntropic137/design-contracts` and `@syntropic137/design-tokens` carry
+      `exports` (with `types` and a `./package.json` entry), a `files` allowlist,
+      `sideEffects`, `description` and `repository.directory` for provenance.
+      `design-tokens` adds `./css` and the browser-safe, typed `./names` subpath.
+      `scripts/package-publish.test.mjs` (part of `test:verify`) packs both,
+      unpacks them into a clean consumer, and proves every export resolves at
+      runtime and type-checks under `NodeNext`.
+- [x] **Lockstep guard**: `publish:packages` refuses to publish when the
+      publishable packages are not on one version.
 - [x] **Release workflow + version tooling**: `.github/workflows/release.yml`,
       `scripts/bump-version.mjs`, and the `version:bump` / `publish:packages` scripts.
 

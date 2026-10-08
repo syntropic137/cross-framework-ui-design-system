@@ -54,6 +54,16 @@ if (publishable.length === 0) {
   process.exit(1);
 }
 
+// Versions move in lockstep (ADR-0008/0009) and the release tag is derived from
+// one of them, so refuse to publish a mixed set rather than tag the wrong version.
+const versions = new Set(publishable.map((p) => p.version));
+if (versions.size !== 1) {
+  console.error("Publishable packages are not on one lockstep version:");
+  for (const p of publishable) console.error(`  ${p.name}@${p.version}`);
+  console.error("Run `pnpm version:bump <semver>` to realign them.");
+  process.exit(1);
+}
+
 // A version already on the registry should not be re-published (npm would error and
 // wedge a partially-completed release). `npm view` exits non-zero / prints nothing
 // when the exact version is absent.
