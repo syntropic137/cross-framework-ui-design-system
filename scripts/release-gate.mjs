@@ -171,7 +171,7 @@ export function realIo(root) {
 function printTable(rows) {
   const headers = ["package", "version", "npm"];
   const widths = headers.map((h) => Math.max(h.length, ...rows.map((r) => String(r[h]).length)));
-  const line = (cells) => cells.map((c, i) => String(c).padEnd(widths[i])).join("  ");
+  const line = (cells) => cells.map((c, i) => String(c).padEnd(widths[i])).join("  ").trimEnd();
   console.log(line(headers));
   console.log(line(widths.map((w) => "-".repeat(w))));
   for (const r of rows) console.log(line(headers.map((h) => r[h])));
