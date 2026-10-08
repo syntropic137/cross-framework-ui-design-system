@@ -34,6 +34,7 @@ import {
   pkgDirs,
   workspaceGlobs,
   EXPECTED_PACKAGES,
+  REFERENCE_PACKAGES,
 } from './lib/publishable-packages.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -61,19 +62,17 @@ const REAL_DIRS = [
   'designs/brutalist/react-v18',
   'designs/brutalist/svelte-v5',
 ];
+const REAL_NAMES = [...EXPECTED_PACKAGES, ...REFERENCE_PACKAGES];
+/** The real layout: two public foundations, four private reference implementations. */
 const realManifests = (over = {}) =>
   Object.fromEntries(
-    REAL_DIRS.map((dir, i) => [dir, { name: EXPECTED_PACKAGES[i], version: '0.2.0', private: false, ...over[dir] }]),
+    REAL_DIRS.map((dir, i) => [
+      dir,
+      { name: REAL_NAMES[i], version: '0.2.0', private: !dir.startsWith('packages/'), ...over[dir] },
+    ]),
   );
 
-const NAMES = [
-  '@syntropic137/design-contracts',
-  '@syntropic137/design-tokens',
-  '@syntropic137/default-react-v18',
-  '@syntropic137/default-svelte-v5',
-  '@syntropic137/brutalist-react-v18',
-  '@syntropic137/brutalist-svelte-v5',
-];
+const NAMES = ['@syntropic137/design-contracts', '@syntropic137/design-tokens'];
 const pkgs = (version) => NAMES.map((name) => ({ name, version }));
 
 /** What `npm view --json` prints on failure (stdout), as observed on npm 10. */
@@ -103,8 +102,9 @@ const io = (over = {}) => ({
   ...over,
 });
 
-it('fixture names are exactly EXPECTED_PACKAGES', () => {
+it('fixture names are exactly EXPECTED_PACKAGES (the two foundations)', () => {
   assert.deepEqual([...NAMES].sort(), [...EXPECTED_PACKAGES].sort());
+  assert.equal(EXPECTED_PACKAGES.length, 2);
 });
 
 it("discovery over this repo's real manifests is exactly EXPECTED_PACKAGES", () => {
@@ -195,27 +195,59 @@ describe('checkPackageSet', () => {
     assert.match(p[0], /design-tokens" is declared by 2/);
   });
   it('fails a package excluded by losing "private": false (real discovery on disk)', () => {
-    withWorkspace(realManifests({ [REAL_DIRS[3]]: { private: true } }), (root) => {
+    withWorkspace(realManifests({ [REAL_DIRS[1]]: { private: true } }), (root) => {
       const found = findPublishable(root);
-      assert.equal(found.length, 5);
+      assert.equal(found.length, 1);
       const p = checkPackageSet(found);
       assert.equal(p.length, 1);
-      assert.match(p[0], new RegExp(`${EXPECTED_PACKAGES[3]} was not discovered`));
-      // ...and the whole gate fails, even though the remaining five are clean.
+      assert.match(p[0], new RegExp(`${EXPECTED_PACKAGES[1]} was not discovered`));
+      // ...and the whole gate fails, even though the remaining one is clean.
       assert.equal(runGate(io({ packages: found })).problems.length, 1);
     });
   });
 });
 
+describe('reference implementations never publish', () => {
+  it('the real layout discovers exactly the two foundations', () => {
+    withWorkspace(realManifests(), (root) => {
+      assert.deepEqual(findPublishable(root).map((p) => p.name).sort(), [...EXPECTED_PACKAGES].sort());
+      assert.deepEqual(checkPackageSet(findPublishable(root)), []);
+    });
+  });
+  for (const [i, dir] of REAL_DIRS.entries()) {
+    if (!dir.startsWith('designs/')) continue;
+    const name = REAL_NAMES[i];
+    it(`fails when ${name} is flipped to "private": false, naming it`, () => {
+      withWorkspace(realManifests({ [dir]: { private: false } }), (root) => {
+        const found = findPublishable(root);
+        assert.equal(found.length, 3);
+        const p = checkPackageSet(found);
+        assert.equal(p.length, 1);
+        assert.match(p[0], new RegExp(`reference implementation "${name.replace('/', '\\/')}" is publishable`));
+        assert.equal(runGate(io({ packages: found })).problems.length, 1);
+      });
+    });
+  }
+  it('fails a new, unlisted designs/ package that is publishable', () => {
+    const manifests = realManifests();
+    manifests['designs/neon/react-v18'] = { name: '@syntropic137/neon-react-v18', version: '0.2.0', private: false };
+    withWorkspace(manifests, (root) => {
+      const p = checkPackageSet(findPublishable(root));
+      assert.equal(p.length, 1);
+      assert.match(p[0], /reference implementation "@syntropic137\/neon-react-v18" is publishable/);
+    });
+  });
+});
+
 describe('checkLockstep', () => {
-  it('fails six null versions instead of passing', () => {
+  it('fails two null versions instead of passing', () => {
     const { version, problems } = checkLockstep(pkgs(null));
     assert.equal(version, null);
-    assert.equal(problems.length, 6);
+    assert.equal(problems.length, 2);
     assert.match(problems[0], /has no valid version \(got null\)/);
   });
   it('fails missing, empty and non-string versions', () => {
-    const set = pkgs('0.2.0');
+    const set = [...pkgs('0.2.0'), { name: '@syntropic137/extra', version: '0.2.0' }];
     set[0] = { name: set[0].name };
     set[1] = { ...set[1], version: '' };
     set[2] = { ...set[2], version: 2 };
@@ -228,12 +260,13 @@ describe('checkLockstep', () => {
   });
   it('fails a mixed set, naming every package', () => {
     const mixed = pkgs('0.2.0');
-    mixed[3] = { ...mixed[3], version: '0.1.9' };
+    mixed[1] = { ...mixed[1], version: '0.1.9' };
     const { version, problems } = checkLockstep(mixed);
     assert.equal(version, null);
     assert.equal(problems.length, 1);
     assert.match(problems[0], /0\.2\.0, 0\.1\.9/);
-    assert.match(problems[0], /default-svelte-v5@0\.1\.9/);
+    assert.match(problems[0], /design-contracts@0\.2\.0/);
+    assert.match(problems[0], /design-tokens@0\.1\.9/);
   });
   it('fails an empty set', () => {
     assert.equal(checkLockstep([]).problems.length, 1);
@@ -352,7 +385,7 @@ describe('npm invocation', () => {
     set[0] = { ...set[0], name: '--registry=https://evil.example/' };
     const r = runGate(io({ packages: set, npmView: (n) => (queried.push(n), E404) }));
     assert.ok(!queried.includes('--registry=https://evil.example/'));
-    assert.equal(queried.length, 5);
+    assert.equal(queried.length, 1);
     assert.ok(r.problems.some((p) => /not a valid scoped npm package name/.test(p)));
   });
 });
@@ -364,11 +397,11 @@ describe('checkRegistry', () => {
   it('reports one line per published package and per error', () => {
     const results = NAMES.map((name) => ({ name, result: 'absent' }));
     results[0].result = 'published';
-    results[2].result = { error: 'ENOTFOUND' };
+    results[1].result = { error: 'ENOTFOUND' };
     const p = checkRegistry('0.2.0', results);
     assert.equal(p.length, 2);
     assert.match(p[0], /contracts@0\.2\.0 is already on npm/);
-    assert.match(p[1], /default-react-v18@0\.2\.0 failed: ENOTFOUND/);
+    assert.match(p[1], /design-tokens@0\.2\.0 failed: ENOTFOUND/);
   });
 });
 
@@ -432,7 +465,7 @@ describe('runGate', () => {
     const r = runGate(io());
     assert.deepEqual(r.problems, []);
     assert.equal(r.version, '0.2.0');
-    assert.equal(r.rows.length, 6);
+    assert.equal(r.rows.length, 2);
     assert.ok(r.rows.every((row) => row.npm === 'absent'));
   });
 
@@ -472,7 +505,7 @@ describe('runGate', () => {
 
   it('fails loudly when the registry cannot be reached, one line per package', () => {
     const r = runGate(io({ npmView: () => NETWORK }));
-    assert.equal(r.problems.length, 6);
+    assert.equal(r.problems.length, 2);
     assert.ok(r.problems.every((p) => /npm registry check .* failed: .*ENOTFOUND/.test(p)));
   });
 

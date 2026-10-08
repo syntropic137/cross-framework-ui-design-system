@@ -7,6 +7,8 @@ lockstep (see ADR-0009). Newest first.
 
 ## Unreleased
 
+- **Breaking:** only `@syntropic137/design-contracts` and `@syntropic137/design-tokens` publish to npm; the four `designs/` component implementations are now private reference examples (ADR-0008).
+
 ### Breaking: `@syntropic137/contracts` is now `@syntropic137/design-contracts`
 
 The component-contract package is renamed before its first publish (ADR-0010).

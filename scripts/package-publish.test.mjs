@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { findLockstep, REFERENCE_PACKAGES } from './lib/publishable-packages.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -74,26 +75,26 @@ describe('foundation package manifests', () => {
     });
   }
 
-  it('keeps every publishable package on one lockstep version', () => {
-    const versions = new Map();
-    const scan = (rel, depth) => {
-      const abs = path.join(ROOT, rel);
-      if (!fs.existsSync(abs)) return;
-      for (const entry of fs.readdirSync(abs, { withFileTypes: true })) {
-        if (!entry.isDirectory()) continue;
-        const child = path.join(rel, entry.name);
-        const manifest = path.join(ROOT, child, 'package.json');
-        if (fs.existsSync(manifest)) {
-          const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-          if (pkg.private === false) versions.set(pkg.name, pkg.version);
-        }
-        if (depth > 0) scan(child, depth - 1);
-      }
-    };
-    scan('packages', 1);
-    scan('designs', 1);
+  it('keeps every lockstep package (foundations + reference implementations) on one version', () => {
+    const all = findLockstep(ROOT);
+    assert.equal(all.length, 6, all.map((p) => p.name).join(', '));
+    const versions = new Map(all.map((p) => [p.name, p.version]));
     assert.equal(new Set(versions.values()).size, 1, JSON.stringify(Object.fromEntries(versions)));
   });
+});
+
+describe('reference implementations stay private', () => {
+  const refs = findLockstep(ROOT).filter((p) => p.dir.startsWith('designs/'));
+  it('finds exactly the four designs/ packages', () => {
+    assert.deepEqual(refs.map((p) => p.name).sort(), [...REFERENCE_PACKAGES].sort());
+  });
+  for (const { dir, name } of refs) {
+    it(`${name} is "private": true with no publishConfig`, () => {
+      const pkg = readManifest(dir);
+      assert.equal(pkg.private, true);
+      assert.equal(pkg.publishConfig, undefined);
+    });
+  }
 });
 
 describe('packed tarballs work from a clean consumer', () => {

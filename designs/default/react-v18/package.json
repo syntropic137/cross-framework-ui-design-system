@@ -1,7 +1,7 @@
 {
   "name": "@syntropic137/default-react-v18",
   "version": "0.1.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -68,10 +68,6 @@
     "typescript": "^5.9.2",
     "vite": "^6.4.3",
     "vitest": "^4.1.11"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   },
   "repository": {
     "type": "git",

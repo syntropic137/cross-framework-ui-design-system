@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Lockstep version bump for every publishable design-system package.
+// Lockstep version bump for every design-system package.
 // Zero dependencies (Node built-ins only), matching the repo's zero-dep ethos.
 //
 // Usage:
@@ -7,15 +7,17 @@
 //   pnpm version:bump 0.2.0
 //
 // What it does:
-//   - Sets `version` to <semver> in every package whose package.json has
-//     `"private": false` (the publishable set: contracts, design-tokens, and
-//     every design cell), plus the repo root package.json.
+//   - Sets `version` to <semver> in every lockstep package: the publishable
+//     foundations (`"private": false`: design-contracts, design-tokens) and the
+//     private reference implementations under designs/*/* (which never publish,
+//     ADR-0008), plus the repo root package.json.
 //   - Prepends a dated CHANGELOG.md section stub for the new version.
 // What it does NOT do: git add / commit / tag. That happens in the release PR.
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { findLockstep } from "./lib/publishable-packages.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const version = process.argv[2];
@@ -25,34 +27,15 @@ if (!version || !/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) {
   process.exit(1);
 }
 
-// Discover package.json files under the workspace globs (packages/*, packages/*/*, designs/*/*).
-function pkgDirs() {
-  const out = [];
-  const scan = (rel, depth) => {
-    const abs = join(root, rel);
-    if (!existsSync(abs)) return;
-    for (const name of readdirSync(abs, { withFileTypes: true })) {
-      if (!name.isDirectory()) continue;
-      const childRel = join(rel, name.name);
-      if (existsSync(join(root, childRel, "package.json"))) out.push(childRel);
-      if (depth > 0) scan(childRel, depth - 1);
-    }
-  };
-  scan("packages", 1); // packages/* and packages/*/*
-  scan("designs", 1); // designs/*/*
-  return out;
-}
-
 const write = (file, obj) => writeFileSync(file, JSON.stringify(obj, null, 2) + "\n");
 
 const bumped = [];
-for (const rel of pkgDirs()) {
-  const file = join(root, rel, "package.json");
+for (const { dir, isPrivate } of findLockstep(root)) {
+  const file = join(root, dir, "package.json");
   const pkg = JSON.parse(readFileSync(file, "utf8"));
-  if (pkg.private !== false) continue; // only publishable packages
   pkg.version = version;
   write(file, pkg);
-  bumped.push(pkg.name);
+  bumped.push(`${pkg.name}${isPrivate === false ? "" : " (private, not published)"}`);
 }
 
 // Root package.json (private) tracks the same line for humans.
@@ -78,6 +61,6 @@ if (existsSync(changelogFile)) {
   writeFileSync(changelogFile, `# Changelog\n\n<!-- releases -->\n\n${entry}`);
 }
 
-console.log(`Bumped ${bumped.length} publishable packages + root to ${version}:`);
+console.log(`Bumped ${bumped.length} lockstep packages + root to ${version}:`);
 for (const n of bumped) console.log(`  ${n}`);
 console.log(`Wrote CHANGELOG.md entry for ${version}. Edit it, then open the release PR.`);
