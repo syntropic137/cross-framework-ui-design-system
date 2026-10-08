@@ -22,9 +22,13 @@
     },
     "./package.json": "./package.json"
   },
+  "bin": {
+    "design-system-verify": "./bin/verify-design-system.mjs"
+  },
   "files": [
     "dist",
     "src",
+    "bin",
     "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
