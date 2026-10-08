@@ -158,6 +158,12 @@ node scripts/publish-packages.mjs   # packs + npm publish using your npm login
 After that, add the trusted publisher to each package; every later release then goes
 through the workflow with zero tokens.
 
+## Security
+
+The release security model (OIDC trusted publishing, the `npm-publish`
+environment approval, branch rulesets, the release gate) and how to report a
+vulnerability are in [`SECURITY.md`](../SECURITY.md).
+
 ## Consuming the published packages
 
 Once published, external apps install exactly as in the

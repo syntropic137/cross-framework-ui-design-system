@@ -197,4 +197,4 @@ docs/
 - [`AGENTS.md`](AGENTS.md) — Canonical contributor instructions (CI gate, conventions, commit format, beads workflow). Read this first.
 - [`docs/component-standard.md`](docs/component-standard.md) — Component contract standard, required vs. planned components, adapter compliance checklist.
 - [`docs/adrs/`](docs/adrs/) — Architecture decisions: ADR-0001 monorepo, ADR-0002 token generation, ADR-0003 component generator, ADR-0004 design-first matrix.
-- [`SECURITY.md`](SECURITY.md) — Security posture and dependency advisory controls.
+- [`SECURITY.md`](SECURITY.md) — Vulnerability reporting, release security model (OIDC publish, gates, approvals), dependency hygiene.
