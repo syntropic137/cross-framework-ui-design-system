@@ -1,6 +1,6 @@
 {
   "name": "@syntropic137/design-tokens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Design tokens for the Syntropic137 cross-framework design system: layered --ds-* CSS custom properties, a JSON snapshot and a typed token name list. Zero runtime dependencies.",
   "keywords": [
     "design-system",
