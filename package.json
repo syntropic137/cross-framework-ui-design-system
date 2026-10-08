@@ -10,7 +10,7 @@
     "test": "pnpm -r test",
     "format": "pnpm -r format",
     "build": "pnpm --filter @syntropic137/design-tokens tokens:build && pnpm -r build",
-    "test:verify": "node --test scripts/verify-design-system.test.mjs",
+    "test:verify": "node --test scripts/verify-design-system.test.mjs scripts/release-gate.test.mjs",
     "qa": "pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm design-system:verify && pnpm test:verify && pnpm storybook:test",
     "check": "pnpm qa",
     "storybook": "pnpm --filter @syntropic137/default-react-v18 storybook",
@@ -22,7 +22,8 @@
     "tui": "node --experimental-strip-types --disable-warning=ExperimentalWarning packages/dev-tools/dashboard/src/cli.ts",
     "design-system:verify": "node scripts/verify-design-system.mjs",
     "version:bump": "node scripts/bump-version.mjs",
-    "publish:packages": "node scripts/publish-packages.mjs"
+    "publish:packages": "node scripts/publish-packages.mjs",
+    "release:gate": "node scripts/release-gate.mjs"
   },
   "engines": {
     "node": ">=18.18.0",
