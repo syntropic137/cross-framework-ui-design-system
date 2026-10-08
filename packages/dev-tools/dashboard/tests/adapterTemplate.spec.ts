@@ -10,7 +10,7 @@ describe("renderAdapterModule", () => {
 
   it("imports the chosen library's adapter and the contract manifest", () => {
     expect(out).toContain('import { reactV18ContractAdapter } from "@syntropic137/default-react-v18";');
-    expect(out).toContain('import type { RequiredComponentContracts } from "@syntropic137/contracts";');
+    expect(out).toContain('import type { RequiredComponentContracts } from "@syntropic137/design-contracts";');
   });
 
   it("exports a `ui` const constrained by the contract surface", () => {

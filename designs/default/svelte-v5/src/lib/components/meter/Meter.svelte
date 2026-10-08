@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { MeterContract } from "@syntropic137/contracts";
+  import type { MeterContract } from "@syntropic137/design-contracts";
   import type { HTMLAttributes } from "svelte/elements";
   import "./meter.css";
 

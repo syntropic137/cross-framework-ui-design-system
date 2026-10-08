@@ -5,7 +5,7 @@
  *   - @layer components scoping (predictable specificity, no !important)
  *   - 100% token-driven color (passes verify-design-system.mjs CHECK B)
  *   - color-mix derived shades from tokens (theme-aware, still gate-safe)
- *   - rem sizing throughout (root is 62.5% → 1rem = 10px); 1px only for the hairline rule
+ *   - rem sizing throughout (root left at the 16px default → 1rem = 16px); 1px only for the hairline rule
  *   - local custom property (--notice-accent) as the one knob variants flip
  *   - intent variants via modifier classes; state via the real attribute
  *   - mobile-first: stacks by default, goes inline at a container width
@@ -34,7 +34,7 @@
     padding-block: var(--ds-space-3);
     padding-inline: var(--ds-space-4);
     border: 1px solid color-mix(in oklab, var(--notice-accent), var(--ds-color-border) 40%);
-    border-inline-start: 0.4rem solid var(--notice-accent);
+    border-inline-start: 0.25rem solid var(--notice-accent);
     border-radius: var(--ds-radius-md);
 
     background: color-mix(in oklab, var(--notice-accent), var(--ds-color-bg) 90%);
@@ -48,8 +48,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: 2.4rem;
-    block-size: 2.4rem;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
     border-radius: 50%;
     font-size: var(--ds-text-sm);
     font-weight: 700;
@@ -77,8 +77,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: 2.8rem;
-    block-size: 2.8rem;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
     padding: 0;
     border: 0;
     border-radius: var(--ds-radius-sm);
@@ -108,7 +108,7 @@
   .notice[hidden] { display: none; }
 
   /* Container-driven: when the notice itself is narrow, stack the dismiss below. */
-  @container (max-width: 28rem) {
+  @container (max-width: 17.5rem) {
     .notice {
       grid-template-columns: auto 1fr;
     }

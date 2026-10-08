@@ -8,7 +8,7 @@ below, then jump to the recipe you need.
 
 The system is a **design × framework matrix**. Three layers:
 
-1. **`@syntropic137/contracts`** — a framework-neutral API. It says *what* a
+1. **`@syntropic137/design-contracts`** — a framework-neutral API. It says *what* a
    `Button` or `Badge` accepts (props, variants), not *how* it looks or which
    framework renders it.
 2. **`@syntropic137/design-tokens`** — the visual foundation as CSS custom
@@ -35,7 +35,7 @@ framework  (how)   ─┘     (default/brutalist × react/svelte)
 ```bash
 # 1. Add the layers you need (inside a workspace; for external apps see
 #    docs/distribution.md for the published-package story).
-pnpm add @syntropic137/contracts \
+pnpm add @syntropic137/design-contracts \
          @syntropic137/design-tokens \
          @syntropic137/default-svelte-v5   # pick your cell
 

@@ -63,6 +63,16 @@ describe("design token generation", () => {
     expect(outputs.json.themes.dark.color["ds-color-accent-hover"]).toContain("72%");
   });
 
+  // Consumers keep the browser's 16px root (1rem = 16px) and the design cells'
+  // rem values assume it. If the token layer ever set a root font-size (the
+  // 62.5% trick), every consumer's rem-sized UI would shrink by ~37%.
+  it("never sets a root font-size", () => {
+    const outputs = buildTokenOutputs();
+
+    expect(outputs.css).not.toMatch(/(^|[\s;{])font-size\s*:/);
+    expect(outputs.css).not.toMatch(/(^|\s)html\s*\{/);
+  });
+
   it("exposes tokens and themes in JSON form", () => {
     const outputs = buildTokenOutputs();
 

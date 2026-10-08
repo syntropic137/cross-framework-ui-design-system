@@ -74,12 +74,12 @@ importers:
       '@syntropic137/brutalist-react-v18':
         specifier: workspace:^
         version: link:../../designs/brutalist/react-v18
-      '@syntropic137/contracts':
-        specifier: workspace:^
-        version: link:../../packages/contracts
       '@syntropic137/default-react-v18':
         specifier: workspace:^
         version: link:../../designs/default/react-v18
+      '@syntropic137/design-contracts':
+        specifier: workspace:^
+        version: link:../../packages/contracts
       '@syntropic137/design-tokens':
         specifier: workspace:^
         version: link:../../packages/design-tokens
@@ -120,12 +120,12 @@ importers:
       '@syntropic137/brutalist-svelte-v5':
         specifier: workspace:^
         version: link:../../designs/brutalist/svelte-v5
-      '@syntropic137/contracts':
-        specifier: workspace:^
-        version: link:../../packages/contracts
       '@syntropic137/default-svelte-v5':
         specifier: workspace:^
         version: link:../../designs/default/svelte-v5
+      '@syntropic137/design-contracts':
+        specifier: workspace:^
+        version: link:../../packages/contracts
       '@syntropic137/design-tokens':
         specifier: workspace:^
         version: link:../../packages/design-tokens
@@ -154,7 +154,7 @@ importers:
 
   designs/brutalist/react-v18:
     dependencies:
-      '@syntropic137/contracts':
+      '@syntropic137/design-contracts':
         specifier: workspace:^
         version: link:../../../packages/contracts
       '@syntropic137/design-tokens':
@@ -212,7 +212,7 @@ importers:
 
   designs/brutalist/svelte-v5:
     dependencies:
-      '@syntropic137/contracts':
+      '@syntropic137/design-contracts':
         specifier: workspace:^
         version: link:../../../packages/contracts
     devDependencies:
@@ -270,7 +270,7 @@ importers:
 
   designs/default/react-v18:
     dependencies:
-      '@syntropic137/contracts':
+      '@syntropic137/design-contracts':
         specifier: workspace:^
         version: link:../../../packages/contracts
       clsx:
@@ -358,7 +358,7 @@ importers:
 
   designs/default/svelte-v5:
     dependencies:
-      '@syntropic137/contracts':
+      '@syntropic137/design-contracts':
         specifier: workspace:^
         version: link:../../../packages/contracts
       bits-ui:

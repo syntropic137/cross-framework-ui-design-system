@@ -1,0 +1,212 @@
+/**
+ * package-publish.test.mjs
+ *
+ * Proves the two foundation packages are publishable and usable from outside
+ * this workspace: the manifests carry what npm and consumers need, and the
+ * packed tarballs resolve every declared export, at runtime and for TypeScript.
+ *
+ * Needs a prior `pnpm build` (the qa gate runs build before this).
+ * Zero external dependencies: Node built-ins, plus the repo's own pnpm and tsc.
+ */
+
+import { after, before, describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { findLockstep, REFERENCE_PACKAGES } from './lib/publishable-packages.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..');
+const REPO_URL = 'git+https://github.com/syntropic137/cross-framework-ui-design-system.git';
+
+const FOUNDATION = [
+  { dir: 'packages/contracts', name: '@syntropic137/design-contracts' },
+  { dir: 'packages/design-tokens', name: '@syntropic137/design-tokens' },
+];
+
+const readManifest = (dir) =>
+  JSON.parse(fs.readFileSync(path.join(ROOT, dir, 'package.json'), 'utf8'));
+
+/** Every file path an `exports` map points at, flattened across conditions. */
+function exportTargets(exportsField) {
+  const out = [];
+  const walk = (value) => {
+    if (typeof value === 'string') out.push(value);
+    else if (value && typeof value === 'object') Object.values(value).forEach(walk);
+  };
+  walk(exportsField);
+  return out;
+}
+
+describe('foundation package manifests', () => {
+  for (const { dir, name } of FOUNDATION) {
+    describe(name, () => {
+      const pkg = readManifest(dir);
+
+      it('has the published name and is public', () => {
+        assert.equal(pkg.name, name);
+        assert.equal(pkg.private, false);
+        assert.deepEqual(pkg.publishConfig, { access: 'public', provenance: true });
+      });
+
+      it('declares ESM, types, an exports map and a files allowlist', () => {
+        assert.equal(pkg.type, 'module');
+        assert.ok(pkg.types, 'types is set');
+        assert.ok(pkg.exports?.['.'], 'exports["."] is set');
+        assert.ok(pkg.exports['.'].types, 'exports["."] has a types condition');
+        assert.ok(pkg.exports['./package.json'], 'exports exposes ./package.json');
+        assert.ok(Array.isArray(pkg.files) && pkg.files.includes('dist'), 'files ships dist');
+      });
+
+      it('points repository at this repo and directory (needed for provenance)', () => {
+        assert.equal(pkg.repository?.url, REPO_URL);
+        assert.equal(pkg.repository?.directory, dir);
+        assert.equal(pkg.license, 'MIT');
+        assert.ok(pkg.description, 'description is set');
+      });
+
+      it('has zero runtime dependencies', () => {
+        assert.deepEqual(Object.keys(pkg.dependencies ?? {}), []);
+        assert.deepEqual(Object.keys(pkg.peerDependencies ?? {}), []);
+      });
+    });
+  }
+
+  it('keeps every lockstep package (foundations + reference implementations) on one version', () => {
+    const all = findLockstep(ROOT);
+    assert.equal(all.length, 6, all.map((p) => p.name).join(', '));
+    const versions = new Map(all.map((p) => [p.name, p.version]));
+    assert.equal(new Set(versions.values()).size, 1, JSON.stringify(Object.fromEntries(versions)));
+  });
+});
+
+describe('reference implementations stay private', () => {
+  const refs = findLockstep(ROOT).filter((p) => p.dir.startsWith('designs/'));
+  it('finds exactly the four designs/ packages', () => {
+    assert.deepEqual(refs.map((p) => p.name).sort(), [...REFERENCE_PACKAGES].sort());
+  });
+  for (const { dir, name } of refs) {
+    it(`${name} is "private": true with no publishConfig`, () => {
+      const pkg = readManifest(dir);
+      assert.equal(pkg.private, true);
+      assert.equal(pkg.publishConfig, undefined);
+    });
+  }
+});
+
+describe('packed tarballs work from a clean consumer', () => {
+  let tmp;
+  let consumer;
+
+  before(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ds-pack-test-'));
+    consumer = path.join(tmp, 'consumer');
+    fs.mkdirSync(consumer);
+    fs.writeFileSync(
+      path.join(consumer, 'package.json'),
+      JSON.stringify({ name: 'consumer', private: true, type: 'module' })
+    );
+
+    // Pack exactly what npm would receive, then unpack it into the consumer's
+    // node_modules (no registry, no network: both packages have zero deps).
+    for (const { dir, name } of FOUNDATION) {
+      const out = execFileSync('pnpm', ['pack', '--pack-destination', tmp], {
+        cwd: path.join(ROOT, dir),
+        encoding: 'utf8',
+      });
+      const tgz = out.trim().split('\n').filter(Boolean).pop();
+      const target = path.join(consumer, 'node_modules', ...name.split('/'));
+      fs.mkdirSync(target, { recursive: true });
+      execFileSync('tar', ['xzf', tgz, '-C', target, '--strip-components=1']);
+    }
+  });
+
+  after(() => {
+    if (tmp) fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it('ships every file the exports maps point at', () => {
+    for (const { name } of FOUNDATION) {
+      const installed = path.join(consumer, 'node_modules', ...name.split('/'));
+      const pkg = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
+      for (const target of exportTargets(pkg.exports)) {
+        assert.ok(fs.existsSync(path.join(installed, target)), `${name} is missing ${target}`);
+      }
+      assert.ok(!fs.existsSync(path.join(installed, 'tests')), `${name} must not ship tests`);
+    }
+  });
+
+  it('imports at runtime through the exports maps (ESM and require)', () => {
+    const script = `
+      import { componentContractStatus } from '@syntropic137/design-contracts';
+      import { tokenNames, cssVar } from '@syntropic137/design-tokens/names';
+      import { createRequire } from 'node:module';
+      const require = createRequire(import.meta.url);
+      const cssPath = require.resolve('@syntropic137/design-tokens/css');
+      if (componentContractStatus.button !== 'required') throw new Error('contracts');
+      if (!tokenNames.includes('ds-color-accent')) throw new Error('names');
+      if (cssVar('ds-color-accent') !== 'var(--ds-color-accent)') throw new Error('cssVar');
+      if (!cssPath.endsWith('design-tokens.css')) throw new Error('css');
+      console.log('ok');
+    `;
+    const result = spawnSync('node', ['--input-type=module', '-e', script], {
+      cwd: consumer,
+      encoding: 'utf8',
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout.trim(), 'ok');
+  });
+
+  it('ships the design-system-verify bin, runnable through a .bin symlink', () => {
+    const installed = path.join(consumer, 'node_modules', '@syntropic137', 'design-contracts');
+    const pkg = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
+    const target = path.join(installed, pkg.bin['design-system-verify']);
+    assert.ok(fs.existsSync(target), 'bin target ships');
+
+    // npm links bins into node_modules/.bin as symlinks; the gate must still
+    // recognise that it was invoked directly.
+    const binDir = path.join(consumer, 'node_modules', '.bin');
+    fs.mkdirSync(binDir, { recursive: true });
+    const link = path.join(binDir, 'design-system-verify');
+    fs.symlinkSync(target, link);
+    const result = spawnSync('node', [link, '--help'], { cwd: consumer, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Usage: design-system-verify/);
+  });
+
+  it('type-checks against the shipped declarations', () => {
+    fs.writeFileSync(
+      path.join(consumer, 'index.ts'),
+      [
+        "import type { ButtonContract } from '@syntropic137/design-contracts';",
+        "import { cssVar, type TokenName } from '@syntropic137/design-tokens/names';",
+        "const variant: ButtonContract['variant'] = 'primary';",
+        "const name: TokenName = 'ds-color-accent';",
+        "const ref: 'var(--ds-color-accent)' = cssVar('ds-color-accent');",
+        '// @ts-expect-error - unknown token names must not compile',
+        "cssVar('ds-color-nope');",
+        'export { variant, name, ref };',
+      ].join('\n')
+    );
+    fs.writeFileSync(
+      path.join(consumer, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: {
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
+          target: 'ES2022',
+          strict: true,
+          noEmit: true,
+          skipLibCheck: false,
+        },
+        files: ['index.ts'],
+      })
+    );
+    const tsc = path.join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc');
+    const result = spawnSync('node', [tsc, '-p', consumer], { encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+  });
+});

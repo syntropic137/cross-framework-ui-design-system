@@ -12,7 +12,7 @@ The system is organized in layers:
 
 | Layer | Package / Path | Role |
 |---|---|---|
-| **Contract** | `packages/contracts` → `@syntropic137/contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
+| **Contract** | `packages/contracts` → `@syntropic137/design-contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
 | **Design tokens** | `packages/design-tokens` → `@syntropic137/design-tokens` | Token definitions → generated `--ds-*` CSS custom properties; light/dark/… themes via `@layer` |
 | **Design cells** | `designs/<design>/<framework>/` → `@syntropic137/<design>-<framework>` | One package per (design × framework) cell; each exports a `*ContractAdapter` + `./styles.css` |
 | **Dev tools** | `packages/dev-tools/{component-generator,dashboard}` | Component scaffolding CLI + TUI dashboard |
@@ -92,7 +92,7 @@ Runtime light/dark theme toggle is implemented in the harness by flipping `data-
 
 ## The Enforcement Gate (`design-system:verify`)
 
-`scripts/verify-design-system.mjs` (invoked via `pnpm design-system:verify`) runs four checks across every discovered `designs/<design>/<framework>/` cell:
+The gate ships with `@syntropic137/design-contracts` as the `design-system-verify` bin (`packages/contracts/bin/verify-design-system.mjs`); `pnpm design-system:verify` runs it against this repo through `scripts/verify-design-system.mjs`. It runs four checks across every discovered `designs/<design>/<framework>/` cell:
 
 | Check | What it verifies |
 |---|---|
@@ -101,7 +101,18 @@ Runtime light/dark theme toggle is implemented in the harness by flipping `data-
 | **C — Contract conformance** | `pnpm -r typecheck` exits 0 (TypeScript enforces every adapter against `RequiredComponentContracts`) |
 | **D — Adapter export presence** | Each cell has a `contract-adapter.ts` that `export const *ContractAdapter` |
 
-`pnpm test:verify` runs the gate's own unit tests (Node built-in test runner). Both checks are included in `pnpm qa`.
+`pnpm test:verify` runs the gate's own unit tests and the package publish tests (Node built-in test runner). Both checks are included in `pnpm qa`.
+
+### Running the gate in another repo
+
+Consumers run the same checks against their own packages:
+
+```bash
+pnpm add -D @syntropic137/design-contracts @syntropic137/design-tokens
+pnpm exec design-system-verify --package packages/ui/my-design --typecheck "pnpm -r typecheck"
+```
+
+`--designs <dir>` scans a `<dir>/<design>/<cell>/` layout instead, `--tokens <file>` points at a token stylesheet (the default resolves `@syntropic137/design-tokens/css` from the repo), and `--no-typecheck` skips check C when typecheck is its own CI step. `--help` lists every option.
 
 ---
 
@@ -162,7 +173,7 @@ designs/
     react-v18/             @syntropic137/brutalist-react-v18 — brutalist React 18 cell
     svelte-v5/             @syntropic137/brutalist-svelte-v5 — brutalist Svelte 5 cell
 packages/
-  contracts/               @syntropic137/contracts — framework-neutral prop contracts
+  contracts/               @syntropic137/design-contracts — framework-neutral prop contracts
   design-tokens/           @syntropic137/design-tokens — token source → generated CSS/JSON
   dev-tools/
     component-generator/   @syntropic137/component-generator — scaffolding CLI
@@ -171,8 +182,9 @@ apps/
   tauri-harness/           React 18 example app (Tauri)
   tauri-harness-svelte/    Svelte 5 example app (Tauri) — demonstrates design swap + theming
 scripts/
-  verify-design-system.mjs   Enforcement gate (design-system:verify)
+  verify-design-system.mjs   In-repo entry for the gate (design-system:verify)
   verify-design-system.test.mjs  Gate unit tests (test:verify)
+  package-publish.test.mjs   Pack-and-consume tests for the foundation packages (test:verify)
 docs/
   adrs/                    Architecture Decision Records
   component-standard.md    Component contract standard and compliance checklist

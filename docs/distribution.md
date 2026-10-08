@@ -8,23 +8,35 @@ the practical map and the pre-publish checklist.
 
 | Package | Publishes? | Runtime deps | Notes |
 | --- | --- | --- | --- |
-| `@syntropic137/contracts` | ✅ public | **none** (enforced) | framework-neutral API |
+| `@syntropic137/design-contracts` | ✅ public | **none** (enforced) | framework-neutral API |
 | `@syntropic137/design-tokens` | ✅ public | **none** (enforced) | tokens CSS + JSON |
-| `@syntropic137/<design>-react-v18` | ✅ public | `clsx` only | `react`/`react-dom` are peers |
-| `@syntropic137/<design>-svelte-v5` | ✅ public | `bits-ui` (`default` cell today) | `svelte` is a peer; cell deps audited in `rcl-tws.9` |
+| `@syntropic137/<design>-react-v18` | 🚫 private | `clsx` only | reference implementation; `react`/`react-dom` are peers |
+| `@syntropic137/<design>-svelte-v5` | 🚫 private | `bits-ui` (`default` cell today) | reference implementation; `svelte` is a peer |
 | `apps/tauri-harness*` | 🚫 private | — | demo apps, not products |
 | `@syntropic137/component-generator` | 🚫 private | — | internal dev tool |
 | `@syntropic137/dashboard` | 🚫 private | — | internal dev tool |
 
+### What is published and why
+
+Only the two foundation packages publish. The component implementations under
+`designs/` (`@syntropic137/default-react-v18`, `default-svelte-v5`,
+`brutalist-react-v18`, `brutalist-svelte-v5`) are `"private": true` reference
+examples and never publish. The principle: any component library, in any
+framework, implements the design contracts and consumes the tokens. That gives
+build-time type checking of compatibility, and lets themes and component sets be
+swapped under any UI that depends on the contracts. Styling is vanilla CSS from the
+tokens, with no framework-specific styling layer. The release gate fails if a
+`designs/` package ever becomes publishable again
+([ADR-0008](./adrs/ADR-0008-npm-distribution.md#decision-update-2026-10-08)).
+
 ## Zero-dependency foundation
 
-`contracts` and `design-tokens` are the foundation every consumer pulls in, so they
-carry **zero runtime dependencies** — auditable to nothing. Today this holds by
-construction (both packages declare no `dependencies`) but is **not yet enforced**: the
-plan is a check (extending `design-system:verify`) that fails CI if either package
-declares a runtime dependency, tracked in `rcl-tws.9`. The design *cells* are
+`design-contracts` and `design-tokens` are the foundation every consumer pulls in, so they
+carry **zero runtime dependencies** — auditable to nothing. This is enforced:
+`scripts/package-publish.test.mjs` (run by `test:verify` in `pnpm qa`) fails if either
+package declares `dependencies` or `peerDependencies`. The design *cells* are
 deliberately not zero-dep: the react cells carry `clsx` and `default-svelte-v5` carries
-`bits-ui`; the zero-dep guarantee is scoped to `contracts` and `design-tokens`.
+`bits-ui`; the zero-dep guarantee is scoped to `design-contracts` and `design-tokens`.
 
 The verify gate itself ([ADR-0005](./adrs/ADR-0005-enforcement-gate.md)) is likewise
 zero-dep (Node built-ins only) for the same reason.
@@ -45,10 +57,22 @@ The packaging and pipeline are wired in-repo (ADR-0009). Done:
 
 - [x] **`exports` map on `@syntropic137/design-tokens`** (`.`,
       `./generated/design-tokens.css`, `./generated/design-tokens.json`).
-- [x] **Normalized `private` / `publishConfig`.** The 6 publishable packages are
+- [x] **Normalized `private` / `publishConfig`.** The 2 publishable packages are
       `"private": false` with `"publishConfig": { "access": "public", "provenance":
-      true }` and a `repository` field; apps, dashboard, and generator are
-      `"private": true`, and the publish script skips anything not publishable.
+      true }` and a `repository` field; the 4 `designs/` reference implementations,
+      apps, dashboard, and generator are `"private": true` with no `publishConfig`,
+      and the publish script skips anything not publishable.
+- [x] **Foundation packages consumable from outside the workspace**:
+      `@syntropic137/design-contracts` and `@syntropic137/design-tokens` carry
+      `exports` (with `types` and a `./package.json` entry), a `files` allowlist,
+      `sideEffects`, `description` and `repository.directory` for provenance.
+      `design-tokens` adds `./css` and the browser-safe, typed `./names` subpath.
+      `scripts/package-publish.test.mjs` (part of `test:verify`) packs both,
+      unpacks them into a clean consumer, and proves every export resolves at
+      runtime and type-checks under `NodeNext`.
+- [x] **Lockstep guard**: `publish:packages` refuses to publish when the
+      publishable packages are not on one version; `package-publish.test.mjs`
+      also holds the private `designs/` packages on that version.
 - [x] **Release workflow + version tooling**: `.github/workflows/release.yml`,
       `scripts/bump-version.mjs`, and the `version:bump` / `publish:packages` scripts.
 
@@ -56,27 +80,27 @@ Manual prerequisites (cannot be done from the repo; blockers for the first live
 publish):
 
 - [x] **npm org `syntropic137`** exists, so the `@syntropic137` scope is publishable.
-- [ ] **Configure npm trusted publishing (OIDC)** for each of the 6 packages, so no
+- [ ] **Configure npm trusted publishing (OIDC)** for each of the 2 packages, so no
       token is stored. See "Trusted publishing (OIDC) setup" below, including the
       one-time first-publish bootstrap.
 - [ ] **Protect the `release` branch**: require `ci.yml` green and a review before
       merge. This is what turns the `main` -> `release` PR into a real gate.
-- [ ] (Optional) confirm `dist/*.d.ts` ship for the react cells (ADR-0004 emission)
-      before the first publish.
 
 ## Release flow
 
 The model is **release branch + gate + publish-on-merge** (ADR-0009):
 
-1. **Bump** the lockstep version on `main`: `pnpm version:bump 0.2.0` (updates every
-   publishable package + root, seeds a CHANGELOG entry). Edit the CHANGELOG entry.
+1. **Bump** the lockstep version on `main`: `pnpm version:bump 0.2.0` (updates both
+   publishable packages, the 4 private `designs/` packages + root, seeds a CHANGELOG entry). Edit the CHANGELOG entry.
 2. **Open the release PR** `main` -> `release`. `ci.yml` runs the full `pnpm qa` gate
    on it, and `release-gate.yml` runs the release gate (below); this PR is the
    release gate.
 3. **Merge.** `.github/workflows/release.yml` re-runs `pnpm qa`, then
-   `pnpm publish:packages` publishes the 6 public packages, tags `vX.Y.Z`, and cuts a
-   GitHub Release. A guard skips publish if the tag already exists, so re-pushing
-   `release` is idempotent.
+   `pnpm publish:packages` publishes the 2 public packages (with provenance in CI;
+   the one-time local bootstrap publishes without it), tags `vX.Y.Z`, and cuts a
+   GitHub Release. The script skips every version the registry already has, and the
+   tag + Release step is skipped when the tag exists, so re-pushing `release` is
+   idempotent.
 
 ### Release gate
 
@@ -84,9 +108,10 @@ The model is **release branch + gate + publish-on-merge** (ADR-0009):
 dispatch). It runs `pnpm release:gate` (`scripts/release-gate.mjs`, zero-dep) and
 fails, one line per problem, unless all of these hold for the version being released:
 
-- the 6 publishable packages are on one lockstep version, and it is valid semver;
+- exactly the 2 foundation packages are publishable (a `designs/` package with
+  `"private": false` fails the gate, named), on one lockstep version that is valid semver;
 - no tag `v<version>` exists, locally or on origin;
-- none of the 6 packages has `<version>` on npm (`404` is the pass; a registry or
+- neither package has `<version>` on npm (`404` is the pass; a registry or
   network error fails the gate, it is never skipped);
 - `CHANGELOG.md` has a `## <version>` or `## [<version>]` heading (a lingering
   `## Unreleased` does not count).
@@ -117,11 +142,11 @@ credentials. Nothing long-lived to leak, and provenance is attached automaticall
 
 Configure once per package on npmjs.com: the package's **Settings -> Trusted
 Publishers -> GitHub Actions**, with repository
-`syntropic137/cross-framework-ui-design-system` and workflow file
-`.github/workflows/release.yml`.
+`syntropic137/cross-framework-ui-design-system` and workflow filename
+`release.yml` (the filename only, not the path).
 
 **First-publish bootstrap.** A trusted publisher is attached to a package that already
-exists, but these 6 packages are not on npm yet. Do a one-time first publish to create
+exists, but these 2 packages may not be on npm yet. Do a one-time first publish to create
 each, then add the trusted publisher for all future automated releases:
 
 ```bash
@@ -139,9 +164,11 @@ Once published, external apps install exactly as in the
 [cookbook](./cookbook/integrate-tauri.md):
 
 ```bash
-pnpm add @syntropic137/contracts @syntropic137/design-tokens \
-         @syntropic137/default-svelte-v5
+pnpm add @syntropic137/design-contracts @syntropic137/design-tokens
 ```
+
+Components come from your own library (or a copy of a `designs/` reference
+implementation) that implements the contracts and styles itself from the tokens.
 
 There is also a planned **shadcn-style source export** (`rcl-tws.3`) for consumers
 who prefer to copy component source in rather than depend on the package.

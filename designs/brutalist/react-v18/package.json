@@ -1,7 +1,7 @@
 {
   "name": "@syntropic137/brutalist-react-v18",
   "version": "0.1.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -18,12 +18,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "rimraf dist tsconfig.build.tsbuildinfo && pnpm --filter @syntropic137/contracts build && vite build && tsc --build tsconfig.build.json",
+    "build": "rimraf dist tsconfig.build.tsbuildinfo && pnpm --filter @syntropic137/design-contracts build && vite build && tsc --build tsconfig.build.json",
     "clean": "rimraf dist",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"tests/**/*.ts?(x)\"",
-    "typecheck": "pnpm --filter @syntropic137/contracts build && tsc --noEmit",
-    "test": "pnpm --filter @syntropic137/contracts build && vitest run --project=unit",
-    "test:watch": "pnpm --filter @syntropic137/contracts build && vitest --project=unit",
+    "typecheck": "pnpm --filter @syntropic137/design-contracts build && tsc --noEmit",
+    "test": "pnpm --filter @syntropic137/design-contracts build && vitest run --project=unit",
+    "test:watch": "pnpm --filter @syntropic137/design-contracts build && vitest --project=unit",
     "format": "prettier --check \"src/**/*.{ts,tsx}\" \"tests/**/*.ts?(x)\""
   },
   "peerDependencies": {
@@ -31,7 +31,7 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-contracts": "workspace:^",
     "@syntropic137/design-tokens": "workspace:^",
     "clsx": "^2.1.1"
   },
@@ -51,10 +51,6 @@
     "typescript": "^5.9.2",
     "vite": "^6.4.3",
     "vitest": "^4.1.11"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   },
   "repository": {
     "type": "git",

@@ -15,6 +15,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Must match the Trusted Publisher config on npmjs.com for every package
+    # (same shape as syntropic137-setup's publish.yml).
+    environment: npm-publish
     permissions:
       contents: write # create the git tag + GitHub Release
       id-token: write # npm provenance (OIDC attestation)
@@ -27,7 +30,7 @@ jobs:
           version: 9
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
@@ -48,7 +51,7 @@ jobs:
         run: |
           if git rev-parse "v${{ steps.v.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "v${{ steps.v.outputs.version }} already released; skipping publish."
+            echo "v${{ steps.v.outputs.version }} tag exists; skipping tag and GitHub Release (publish still runs, the script skips published versions)."
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
@@ -56,10 +59,13 @@ jobs:
       # OIDC id-token (permissions.id-token: write, above) for short-lived publish
       # credentials, provided a trusted publisher is configured on npmjs.com for each
       # package and points at this repo + workflow. Provenance is attached automatically.
+      # Not gated on the tag: publish-packages.mjs already skips every version the
+      # registry has, so a re-run is a no-op per package. Gating it on the tag made
+      # a stale tag (v0.1.0 exists but nothing is published) block publishing forever.
       - name: Publish to npm via OIDC trusted publishing
-        if: steps.tag.outputs.exists == 'false'
         run: |
-          npm install -g npm@latest   # npm >= 11.5.1 required for OIDC trusted publishing
+          npm install -g npm@11.7.0   # pinned; OIDC trusted publishing needs >= 11.5.1
+          echo "node $(node -v) npm $(npm -v)"
           pnpm publish:packages
       - name: Tag and create GitHub Release
         if: steps.tag.outputs.exists == 'false'
@@ -67,6 +73,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="v${{ steps.v.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "$VERSION" -m "$VERSION"
           git push origin "$VERSION"
           gh release create "$VERSION" --title "$VERSION" --notes "See CHANGELOG.md for details."
