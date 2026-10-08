@@ -83,9 +83,11 @@ The model is **release branch + gate + publish-on-merge** (ADR-0009):
    on it, and `release-gate.yml` runs the release gate (below); this PR is the
    release gate.
 3. **Merge.** `.github/workflows/release.yml` re-runs `pnpm qa`, then
-   `pnpm publish:packages` publishes the 6 public packages, tags `vX.Y.Z`, and cuts a
-   GitHub Release. A guard skips publish if the tag already exists, so re-pushing
-   `release` is idempotent.
+   `pnpm publish:packages` publishes the 6 public packages (with provenance in CI;
+   the one-time local bootstrap publishes without it), tags `vX.Y.Z`, and cuts a
+   GitHub Release. The script skips every version the registry already has, and the
+   tag + Release step is skipped when the tag exists, so re-pushing `release` is
+   idempotent.
 
 ### Release gate
 

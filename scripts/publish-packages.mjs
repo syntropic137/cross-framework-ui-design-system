@@ -31,6 +31,9 @@ const dryRun = process.env.DRY_RUN === "1";
 // refuses `--provenance` there, so provenance is on in CI and off locally.
 const inCi = process.env.GITHUB_ACTIONS === "true";
 const provenanceFlag = inCi ? "--provenance" : "--provenance=false";
+// Always talk to the public registry, for both the lookup and the publish, so a
+// user or scoped registry override in npm config cannot redirect either.
+const registryFlags = "--registry=https://registry.npmjs.org/ --@syntropic137:registry=https://registry.npmjs.org/";
 
 const publishable = findPublishable(root);
 
@@ -53,7 +56,7 @@ if (lockstep.problems.length > 0) {
 // when the exact version is absent.
 function alreadyPublished(name, version) {
   try {
-    const v = execSync(`npm view ${name}@${version} version`, {
+    const v = execSync(`npm view ${registryFlags} -- ${name}@${version} version`, {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
@@ -85,10 +88,10 @@ for (const pkg of publishable) {
   console.log(`packed ${pkg.name}@${pkg.version} -> ${tgz}`);
 
   if (dryRun) {
-    console.log(`[dry-run] would run: npm publish "${tgz}" ${provenanceFlag} --access public`);
+    console.log(`[dry-run] would run: npm publish "${tgz}" ${provenanceFlag} --access public ${registryFlags}`);
     continue;
   }
-  execSync(`npm publish "${tgz}" ${provenanceFlag} --access public`, { cwd: root, stdio: "inherit" });
+  execSync(`npm publish "${tgz}" ${provenanceFlag} --access public ${registryFlags}`, { cwd: root, stdio: "inherit" });
   console.log(`published ${pkg.name}@${pkg.version}`);
   published += 1;
 }

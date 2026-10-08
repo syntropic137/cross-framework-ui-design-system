@@ -74,6 +74,10 @@ For each package: open `https://www.npmjs.com/package/@syntropic137/<name>` ->
 | Workflow filename | `release.yml` |
 | Environment | `npm-publish` (the job runs in that GitHub environment; create it under repo Settings -> Environments if it does not exist) |
 
+After adding the publisher, check the package's **Publishing access**: a newly
+added trusted publisher may default to staged publishing. It must be allowed to
+run `npm publish` directly, or release.yml will fail on the first real release.
+
 - [ ] design-contracts
 - [ ] design-tokens
 - [ ] default-react-v18
