@@ -35,8 +35,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./names": {
+      "types": "./dist/names.d.ts",
+      "default": "./dist/names.js"
+    },
+    "./css": "./generated/design-tokens.css",
     "./generated/design-tokens.css": "./generated/design-tokens.css",
-    "./generated/design-tokens.json": "./generated/design-tokens.json"
+    "./generated/design-tokens.json": "./generated/design-tokens.json",
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",
