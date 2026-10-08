@@ -20,7 +20,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { findPublishable, checkLockstep } from "./lib/publishable-packages.mjs";
+import { findPublishable, checkLockstep, checkPackageSet } from "./lib/publishable-packages.mjs";
 
 // Semver 2.0.0 (https://semver.org), the official regex.
 const SEMVER =
@@ -44,26 +44,67 @@ export function checkTag(version, localTags, remoteTags) {
   ];
 }
 
+/** The only registry the release publishes to; every query names it explicitly. */
+export const NPM_REGISTRY = "https://registry.npmjs.org/";
+const SCOPE = "@syntropic137";
+
+// npm's validate-npm-package-name rules for a scoped name (lowercase, url-safe).
+const SCOPED_NAME = /^@[a-z0-9-~][a-z0-9-._~]*\/[a-z0-9-~][a-z0-9-._~]*$/;
+
+export function checkPackageName(name) {
+  return typeof name === "string" && SCOPED_NAME.test(name)
+    ? []
+    : [`package name ${JSON.stringify(name)} is not a valid scoped npm package name`];
+}
+
 /**
- * Classify one `npm view <name>@<version> version` result.
+ * argv for `npm view`. Pins the registry (global and the @syntropic137 scope, so
+ * user/project .npmrc overrides cannot redirect the query) and ends options with
+ * `--` so a name can never be read as a flag.
+ */
+export function npmViewArgs(name, version) {
+  return [
+    "view",
+    "--json",
+    `--registry=${NPM_REGISTRY}`,
+    `--${SCOPE}:registry=${NPM_REGISTRY}`,
+    "--",
+    `${name}@${version}`,
+    "version",
+  ];
+}
+
+/** The spawn env with every npm_config_*registry override removed (npm reads env case-insensitively). */
+export function npmViewEnv(env) {
+  return Object.fromEntries(
+    Object.entries(env).filter(([k]) => !/^npm_config_.*registry$/i.test(k)),
+  );
+}
+
+/**
+ * Classify one `npm view --json <name>@<version> version` result.
  * Returns "published" | "absent" | { error: string }.
- * E404 (package or version missing) is the only non-zero exit that means "absent".
+ * Only a structured `{ "error": { "code": "E404" } }` means "absent"; anything
+ * else that is not the exact version (empty output, other codes, junk) is an error.
  */
 export function classifyNpmView(version, { status, stdout = "", stderr = "", error }) {
   if (error) return { error: String(error.message ?? error) };
-  if (status === 0) {
-    const out = stdout.trim();
-    if (out === version) return "published";
-    if (out === "") return "absent";
+  const out = stdout.trim();
+  let parsed;
+  try {
+    parsed = JSON.parse(out);
+  } catch {
+    const hint = out || stderr.trim().split("\n")[0] || `exit ${status}`;
+    return { error: `unparseable npm view output (exit ${status}): ${JSON.stringify(hint.slice(0, 200))}` };
+  }
+  const code = parsed && typeof parsed === "object" && parsed.error ? parsed.error.code : undefined;
+  if (status === 0 && code === undefined) {
+    if (parsed === version) return "published";
     return { error: `unexpected npm view output: ${JSON.stringify(out.slice(0, 200))}` };
   }
-  if (/\bE404\b/.test(stderr)) return "absent";
-  const firstLine =
-    stderr
-      .split("\n")
-      .map((l) => l.replace(/^npm (error|ERR!)\s*/, "").trim())
-      .find(Boolean) ?? `exit ${status}`;
-  return { error: firstLine };
+  if (status !== 0 && code === "E404") return "absent";
+  const summary = parsed?.error?.summary ? `: ${String(parsed.error.summary).split("\n")[0]}` : "";
+  return { error: `${code ?? `exit ${status}`}${summary}` };
 }
 
 /** `results`: [{ name, result }] where result comes from classifyNpmView. */
@@ -80,12 +121,28 @@ export function checkRegistry(version, results) {
 /** Escape a string for literal use inside a RegExp. */
 const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+/** CHANGELOG lines outside fenced code blocks (``` or ~~~). */
+function proseLines(markdown) {
+  const out = [];
+  let fence = null;
+  for (const line of markdown.split(/\r?\n/)) {
+    const m = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if (fence === null && m) fence = m[1];
+    else if (fence !== null && m && m[1][0] === fence[0] && m[1].length >= fence.length) fence = null;
+    else if (fence === null) out.push(line);
+  }
+  return out;
+}
+
 export function checkChangelog(version, changelog) {
   if (changelog === null) return ["CHANGELOG.md is missing"];
   const v = reEscape(version);
-  const heading = new RegExp(`^##\\s+(?:${v}|\\[${v}\\])(?=\\s|$)`, "m");
-  if (heading.test(changelog)) return [];
-  const unreleased = /^##\s+\[?unreleased\]?\s*$/im.test(changelog);
+  // Heading marker and version on the same line; `[ \t]` (not `\s`) so a
+  // newline cannot bridge "##" to a version on the next line.
+  const heading = new RegExp(`^##[ \t]+(?:${v}|\\[${v}\\])(?=[ \t]|$)`);
+  const lines = proseLines(changelog);
+  if (lines.some((l) => heading.test(l))) return [];
+  const unreleased = lines.some((l) => /^##[ \t]+\[?unreleased\]?[ \t]*$/i.test(l));
   return [
     `CHANGELOG.md has no "## ${version}" heading` +
       (unreleased ? ' (found "## Unreleased"; rename it to the release version)' : ""),
@@ -101,13 +158,14 @@ export function checkChangelog(version, changelog) {
  *   changelog(): string | null
  */
 export function runGate(io) {
-  const problems = [];
+  const problems = [...checkPackageSet(io.packages)];
   const lock = checkLockstep(io.packages);
   problems.push(...lock.problems);
   if (lock.version === null) return { version: null, problems, rows: [] };
 
   const version = lock.version;
-  problems.push(...checkSemver(version));
+  const semverProblems = checkSemver(version);
+  problems.push(...semverProblems);
 
   let remote = [];
   try {
@@ -117,11 +175,19 @@ export function runGate(io) {
   }
   problems.push(...checkTag(version, io.localTags(), remote));
 
-  const results = io.packages.map((p) => ({
-    name: p.name,
-    result: classifyNpmView(version, io.npmView(p.name, version)),
-  }));
-  problems.push(...checkRegistry(version, results));
+  // Only well-formed names and a valid version ever reach the npm argv; anything
+  // else is already a failing problem, so it is reported, not queried.
+  const results = [];
+  for (const p of io.packages) {
+    const nameProblems = checkPackageName(p.name);
+    problems.push(...nameProblems);
+    if (nameProblems.length > 0 || semverProblems.length > 0) {
+      results.push({ name: p.name, result: "not checked" });
+      continue;
+    }
+    results.push({ name: p.name, result: classifyNpmView(version, io.npmView(p.name, version)) });
+  }
+  problems.push(...checkRegistry(version, results.filter((r) => r.result !== "not checked")));
   problems.push(...checkChangelog(version, io.changelog()));
 
   const rows = results.map(({ name, result }) => ({
@@ -136,8 +202,8 @@ export function runGate(io) {
 // Real IO
 // ---------------------------------------------------------------------------
 
-function run(cmd, args, cwd) {
-  return spawnSync(cmd, args, { cwd, encoding: "utf8" });
+function run(cmd, args, cwd, env = process.env) {
+  return spawnSync(cmd, args, { cwd, env, encoding: "utf8" });
 }
 
 export function realIo(root) {
@@ -159,7 +225,7 @@ export function realIo(root) {
         .map((ref) => ref.replace(/^refs\/tags\//, "").replace(/\^\{\}$/, ""));
     },
     npmView(name, version) {
-      return run("npm", ["view", `${name}@${version}`, "version"], root);
+      return run("npm", npmViewArgs(name, version), root, npmViewEnv(process.env));
     },
     changelog() {
       const f = join(root, "CHANGELOG.md");
