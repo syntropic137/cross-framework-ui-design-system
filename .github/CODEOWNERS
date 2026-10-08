@@ -1,12 +1,32 @@
-# CI/CD workflows — arbitrary code execution risk. Any change here can exfiltrate
-# secrets or backdoor the pipeline. Require maintainer review.
-/.github/                       @NeuralEmpowerment
+# Release- and supply-chain-sensitive paths. A change to any of these can alter
+# what gets published to npm, how it is published, or what code runs in CI and
+# in consumers' builds. They require review by the repository owner.
+# See SECURITY.md ("Release security model").
 
-# Dependency manifests and lock file — supply chain entry points. Changes here
-# alter what code runs in CI and in consumers' builds.
-/package.json                   @NeuralEmpowerment
-/pnpm-lock.yaml                 @NeuralEmpowerment
-/packages/**/package.json       @NeuralEmpowerment
+# CI/CD workflows: arbitrary code execution in CI, including the OIDC publish job.
+/.github/                               @NeuralEmpowerment
 
-# Component generator — runs on developer machines and scaffolds source files.
-/packages/dev-tools/            @NeuralEmpowerment
+# Release, publish, gate and verify scripts.
+/scripts/                               @NeuralEmpowerment
+
+# Security policy and the vulnerability-scan ignore list.
+/SECURITY.md                            @NeuralEmpowerment
+/osv-scanner.toml                       @NeuralEmpowerment
+
+# Dependency manifests and lock file: supply-chain entry points.
+/package.json                           @NeuralEmpowerment
+/pnpm-workspace.yaml                    @NeuralEmpowerment
+/pnpm-lock.yaml                         @NeuralEmpowerment
+/packages/**/package.json               @NeuralEmpowerment
+
+# Manifests of the two published packages (also covered above; listed
+# explicitly because they decide what ships).
+/packages/contracts/package.json        @NeuralEmpowerment
+/packages/design-tokens/package.json    @NeuralEmpowerment
+
+# Release documentation that operators follow.
+/docs/publishing-setup.md               @NeuralEmpowerment
+/docs/distribution.md                   @NeuralEmpowerment
+
+# Component generator: runs on developer machines and scaffolds source files.
+/packages/dev-tools/                    @NeuralEmpowerment
