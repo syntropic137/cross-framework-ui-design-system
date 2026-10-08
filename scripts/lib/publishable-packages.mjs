@@ -35,12 +35,56 @@ export function findPublishable(root) {
 }
 
 /**
- * Lockstep check (ADR-0008/0009): every publishable package carries one version.
- * Returns { version, problems }; `version` is null unless exactly one version exists.
+ * The exact set of packages a release publishes. Discovery is asserted against
+ * this list so a package that silently loses `"private": false` (or is renamed or
+ * duplicated) fails the release instead of dropping out of it.
+ */
+export const EXPECTED_PACKAGES = Object.freeze([
+  "@syntropic137/contracts",
+  "@syntropic137/design-tokens",
+  "@syntropic137/default-react-v18",
+  "@syntropic137/default-svelte-v5",
+  "@syntropic137/brutalist-react-v18",
+  "@syntropic137/brutalist-svelte-v5",
+]);
+
+/** Problems when the discovered set differs from `expected` (missing, unexpected, duplicated). */
+export function checkPackageSet(packages, expected = EXPECTED_PACKAGES) {
+  const problems = [];
+  const names = packages.map((p) => p.name);
+  const counts = new Map();
+  for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
+  for (const [n, c] of counts) {
+    if (c > 1) problems.push(`package ${JSON.stringify(n)} is declared by ${c} publishable packages`);
+  }
+  for (const n of counts.keys()) {
+    if (!expected.includes(n))
+      problems.push(`unexpected publishable package ${JSON.stringify(n)} (not in EXPECTED_PACKAGES)`);
+  }
+  for (const n of expected) {
+    if (!counts.has(n))
+      problems.push(`expected package ${n} was not discovered as publishable ("private": false)`);
+  }
+  return problems;
+}
+
+/**
+ * Lockstep check (ADR-0008/0009): every publishable package carries one version,
+ * and that version is a non-empty string. Returns { version, problems }; `version`
+ * is null unless exactly one valid version exists.
  */
 export function checkLockstep(packages) {
   if (packages.length === 0) {
     return { version: null, problems: ['no publishable packages (none with "private": false)'] };
+  }
+  const invalid = packages.filter((p) => typeof p.version !== "string" || p.version.trim() === "");
+  if (invalid.length > 0) {
+    return {
+      version: null,
+      problems: invalid.map(
+        (p) => `package ${p.name} has no valid version (got ${JSON.stringify(p.version ?? null)})`,
+      ),
+    };
   }
   const versions = [...new Set(packages.map((p) => p.version))];
   if (versions.length === 1) return { version: versions[0], problems: [] };

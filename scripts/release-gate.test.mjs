@@ -10,6 +10,9 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
   checkSemver,
@@ -18,8 +21,17 @@ import {
   checkRegistry,
   checkChangelog,
   runGate,
+  checkPackageName,
+  npmViewArgs,
+  npmViewEnv,
+  NPM_REGISTRY,
 } from './release-gate.mjs';
-import { checkLockstep } from './lib/publishable-packages.mjs';
+import {
+  checkLockstep,
+  checkPackageSet,
+  findPublishable,
+  EXPECTED_PACKAGES,
+} from './lib/publishable-packages.mjs';
 
 const NAMES = [
   '@syntropic137/contracts',
@@ -31,13 +43,20 @@ const NAMES = [
 ];
 const pkgs = (version) => NAMES.map((name) => ({ name, version }));
 
-const E404 = { status: 1, stdout: '', stderr: 'npm error code E404\nnpm error 404 Not Found\n' };
+/** What `npm view --json` prints on failure (stdout), as observed on npm 10. */
+const jsonError = (code, summary = '', detail = '') =>
+  JSON.stringify({ error: { code, summary, detail } }, null, 2) + '\n';
+const E404 = {
+  status: 1,
+  stdout: jsonError('E404', 'Not Found - GET https://registry.npmjs.org/x - Not found'),
+  stderr: 'npm error code E404\n',
+};
 const NETWORK = {
   status: 1,
-  stdout: '',
-  stderr: 'npm error code ENOTFOUND\nnpm error network request to https://registry.npmjs.org failed\n',
+  stdout: jsonError('ENOTFOUND', 'request to https://registry.npmjs.org failed'),
+  stderr: 'npm error code ENOTFOUND\n',
 };
-const published = (v) => ({ status: 0, stdout: `${v}\n`, stderr: '' });
+const published = (v) => ({ status: 0, stdout: `${JSON.stringify(v)}\n`, stderr: '' });
 
 const CHANGELOG = '# Changelog\n\n<!-- releases -->\n\n## 0.2.0 - 2026-10-08\n\n- stuff\n\n## 0.1.0 - 2026-06-15\n';
 
@@ -51,7 +70,76 @@ const io = (over = {}) => ({
   ...over,
 });
 
+it('fixture names are exactly EXPECTED_PACKAGES', () => {
+  assert.deepEqual([...NAMES].sort(), [...EXPECTED_PACKAGES].sort());
+});
+
+describe('checkPackageSet', () => {
+  it('passes the exact expected set', () => assert.deepEqual(checkPackageSet(pkgs('0.2.0')), []));
+  it('fails a missing package', () => {
+    const p = checkPackageSet(pkgs('0.2.0').slice(1));
+    assert.equal(p.length, 1);
+    assert.match(p[0], /expected package @syntropic137\/contracts was not discovered/);
+  });
+  it('fails a renamed package (one unexpected, one missing)', () => {
+    const set = pkgs('0.2.0');
+    set[0] = { ...set[0], name: '@syntropic137/design-contracts' };
+    const p = checkPackageSet(set);
+    assert.equal(p.length, 2);
+    assert.match(p.join('\n'), /unexpected publishable package "@syntropic137\/design-contracts"/);
+    assert.match(p.join('\n'), /expected package @syntropic137\/contracts was not discovered/);
+  });
+  it('fails a duplicated package', () => {
+    const set = [...pkgs('0.2.0'), { name: '@syntropic137/design-tokens', version: '0.2.0' }];
+    const p = checkPackageSet(set);
+    assert.equal(p.length, 1);
+    assert.match(p[0], /design-tokens" is declared by 2/);
+  });
+  it('fails a package excluded by losing "private": false (real discovery on disk)', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'release-gate-set-'));
+    const dirs = [
+      'packages/contracts',
+      'packages/design-tokens',
+      'designs/default/react-v18',
+      'designs/default/svelte-v5',
+      'designs/brutalist/react-v18',
+      'designs/brutalist/svelte-v5',
+    ];
+    dirs.forEach((dir, i) => {
+      fs.mkdirSync(path.join(root, dir), { recursive: true });
+      const manifest = { name: EXPECTED_PACKAGES[i], version: '0.2.0', private: i === 3 ? true : false };
+      fs.writeFileSync(path.join(root, dir, 'package.json'), JSON.stringify(manifest));
+    });
+    try {
+      const found = findPublishable(root);
+      assert.equal(found.length, 5);
+      const p = checkPackageSet(found);
+      assert.equal(p.length, 1);
+      assert.match(p[0], new RegExp(`${EXPECTED_PACKAGES[3]} was not discovered`));
+      // ...and the whole gate fails, even though the remaining five are clean.
+      assert.equal(runGate(io({ packages: found })).problems.length, 1);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('checkLockstep', () => {
+  it('fails six null versions instead of passing', () => {
+    const { version, problems } = checkLockstep(pkgs(null));
+    assert.equal(version, null);
+    assert.equal(problems.length, 6);
+    assert.match(problems[0], /has no valid version \(got null\)/);
+  });
+  it('fails missing, empty and non-string versions', () => {
+    const set = pkgs('0.2.0');
+    set[0] = { name: set[0].name };
+    set[1] = { ...set[1], version: '' };
+    set[2] = { ...set[2], version: 2 };
+    const { version, problems } = checkLockstep(set);
+    assert.equal(version, null);
+    assert.equal(problems.length, 3);
+  });
   it('passes one shared version', () => {
     assert.deepEqual(checkLockstep(pkgs('0.2.0')), { version: '0.2.0', problems: [] });
   });
@@ -98,8 +186,33 @@ describe('checkTag', () => {
 
 describe('classifyNpmView', () => {
   it('E404 is absent', () => assert.equal(classifyNpmView('0.2.0', E404), 'absent'));
-  it('exit 0 with no output is absent', () =>
-    assert.equal(classifyNpmView('0.2.0', { status: 0, stdout: '\n', stderr: '' }), 'absent'));
+  it('exit 0 with no output is an error, never absent', () => {
+    const r = classifyNpmView('0.2.0', { status: 0, stdout: '\n', stderr: '' });
+    assert.equal(typeof r, 'object');
+    assert.match(r.error, /unparseable/);
+  });
+  it('an E500 whose diagnostics mention E404 is an error', () => {
+    const r = classifyNpmView('0.2.0', {
+      status: 1,
+      stdout: jsonError('E500', 'Internal Server Error - GET https://registry.npmjs.org/x/E404', 'see /E404'),
+      stderr: 'npm error code E404\nnpm error 404 nope\n',
+    });
+    assert.match(r.error, /^E500/);
+  });
+  it('plain-text E404 on stderr without a structured code is an error', () => {
+    const r = classifyNpmView('0.2.0', { status: 1, stdout: '', stderr: 'npm error code E404\n' });
+    assert.ok(r.error);
+  });
+  it('a structured E404 with exit 0 is an error (inconsistent npm output)', () => {
+    assert.ok(classifyNpmView('0.2.0', { status: 0, stdout: jsonError('E404'), stderr: '' }).error);
+  });
+  it('a structured error with a misleading summary uses the code, not the text', () => {
+    const r = classifyNpmView('0.2.0', { status: 1, stdout: jsonError('EAI_AGAIN', 'E404 Not Found'), stderr: '' });
+    assert.match(r.error, /^EAI_AGAIN/);
+  });
+  it('an array result (range match) is an error', () => {
+    assert.ok(classifyNpmView('0.2.0', { status: 0, stdout: '["0.2.0","0.2.1"]', stderr: '' }).error);
+  });
   it('exit 0 echoing the version is published', () =>
     assert.equal(classifyNpmView('0.2.0', published('0.2.0')), 'published'));
   it('a network error is an error, never absent', () => {
@@ -108,7 +221,7 @@ describe('classifyNpmView', () => {
     assert.match(r.error, /ENOTFOUND/);
   });
   it('a non-404 HTTP error is an error', () => {
-    const r = classifyNpmView('0.2.0', { status: 1, stdout: '', stderr: 'npm error code E500\n' });
+    const r = classifyNpmView('0.2.0', { status: 1, stdout: jsonError('E500'), stderr: 'npm error code E500\n' });
     assert.match(r.error, /E500/);
   });
   it('a spawn failure is an error', () => {
@@ -116,7 +229,48 @@ describe('classifyNpmView', () => {
     assert.match(r.error, /ENOENT/);
   });
   it('unexpected output is an error', () => {
-    assert.ok(classifyNpmView('0.2.0', { status: 0, stdout: '0.1.0\n', stderr: '' }).error);
+    assert.ok(classifyNpmView('0.2.0', { status: 0, stdout: '"0.1.0"\n', stderr: '' }).error);
+  });
+});
+
+describe('npm invocation', () => {
+  it('accepts every expected name', () => {
+    for (const n of EXPECTED_PACKAGES) assert.deepEqual(checkPackageName(n), []);
+  });
+  for (const bad of ['--registry=https://evil.example/', '-g', 'contracts', '@Syntropic137/X', '@a/b c', '', null])
+    it(`rejects name ${JSON.stringify(bad)}`, () => assert.equal(checkPackageName(bad).length, 1));
+
+  it('ends options with -- before the positional spec', () => {
+    const args = npmViewArgs('@syntropic137/contracts', '0.2.0');
+    const dd = args.indexOf('--');
+    assert.ok(dd > 0);
+    assert.deepEqual(args.slice(dd + 1), ['@syntropic137/contracts@0.2.0', 'version']);
+    assert.ok(args.slice(0, dd).includes('--json'));
+  });
+  it('pins the npmjs registry globally and for the @syntropic137 scope', () => {
+    assert.equal(NPM_REGISTRY, 'https://registry.npmjs.org/');
+    const args = npmViewArgs('@syntropic137/contracts', '0.2.0');
+    assert.ok(args.includes('--registry=https://registry.npmjs.org/'));
+    assert.ok(args.includes('--@syntropic137:registry=https://registry.npmjs.org/'));
+  });
+  it('strips registry overrides from the spawn env, any case, keeps the rest', () => {
+    const env = npmViewEnv({
+      PATH: '/bin',
+      npm_config_registry: 'https://private.example/',
+      NPM_CONFIG_REGISTRY: 'https://private.example/',
+      'npm_config_@syntropic137:registry': 'https://private.example/',
+      npm_config_cache: '/c',
+    });
+    assert.deepEqual(env, { PATH: '/bin', npm_config_cache: '/c' });
+  });
+  it('runGate never queries npm for an invalid name, and fails it', () => {
+    const queried = [];
+    const set = pkgs('0.2.0');
+    set[0] = { ...set[0], name: '--registry=https://evil.example/' };
+    const r = runGate(io({ packages: set, npmView: (n) => (queried.push(n), E404) }));
+    assert.ok(!queried.includes('--registry=https://evil.example/'));
+    assert.equal(queried.length, 5);
+    assert.ok(r.problems.some((p) => /not a valid scoped npm package name/.test(p)));
   });
 });
 
@@ -155,6 +309,17 @@ describe('checkChangelog', () => {
     assert.equal(checkChangelog('0.2.0', '## 0x2y0\n').length, 1);
   });
   it('fails a missing CHANGELOG.md', () => assert.equal(checkChangelog('0.2.0', null).length, 1));
+  it('does not let "##" on one line pair with the version on the next', () => {
+    assert.equal(checkChangelog('0.2.0', '##\n0.2.0\n').length, 1);
+    assert.equal(checkChangelog('0.2.0', '##   \n0.2.0 - 2026-10-08\n').length, 1);
+  });
+  it('ignores headings inside fenced code blocks', () => {
+    assert.equal(checkChangelog('0.2.0', '# C\n\n```md\n## 0.2.0\n```\n').length, 1);
+    assert.equal(checkChangelog('0.2.0', '~~~\n## [0.2.0]\n~~~\n').length, 1);
+  });
+  it('still finds the heading after a closed fence', () => {
+    assert.deepEqual(checkChangelog('0.2.0', '```\nx\n```\n\n## 0.2.0\n'), []);
+  });
   it('ignores a version mentioned outside a level-2 heading', () => {
     assert.equal(checkChangelog('0.2.0', '### 0.2.0\n- bumped to 0.2.0\n').length, 1);
   });
@@ -212,16 +377,23 @@ describe('runGate', () => {
   it('collects every problem, one line each', () => {
     const r = runGate(
       io({
-        packages: pkgs('0.2'),
-        localTags: () => ['v0.2'],
-        npmView: (name) => (name.endsWith('tokens') ? published('0.2') : E404),
+        packages: pkgs('0.3.0'),
+        localTags: () => ['v0.3.0'],
+        npmView: (name) => (name.endsWith('tokens') ? published('0.3.0') : E404),
         changelog: () => '## Unreleased\n\n- x\n',
       }),
     );
-    assert.equal(r.problems.length, 4);
+    assert.equal(r.problems.length, 3);
+    assert.match(r.problems[0], /tag v0\.3\.0 already exists/);
+    assert.match(r.problems[1], /design-tokens@0\.3\.0 is already on npm/);
+    assert.match(r.problems[2], /Unreleased/);
+  });
+
+  it('an invalid semver fails and never reaches npm', () => {
+    let viewed = 0;
+    const r = runGate(io({ packages: pkgs('0.2'), npmView: () => (viewed++, E404), changelog: () => '## 0.2\n' }));
+    assert.equal(viewed, 0);
+    assert.equal(r.problems.length, 1);
     assert.match(r.problems[0], /not valid semver/);
-    assert.match(r.problems[1], /tag v0\.2 already exists/);
-    assert.match(r.problems[2], /design-tokens@0\.2 is already on npm/);
-    assert.match(r.problems[3], /Unreleased/);
   });
 });
