@@ -33,7 +33,7 @@
     "svelte": ">=5.0.0"
   },
   "dependencies": {
-    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-contracts": "workspace:^",
     "bits-ui": "^1.0.0"
   },
   "devDependencies": {

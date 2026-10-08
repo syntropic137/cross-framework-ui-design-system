@@ -7,7 +7,7 @@
 ## Context
 
 The design system targets multiple frameworks (React 18, Svelte 5, later Vue) behind one
-framework-neutral contract (`@syntropic137/contracts`). We need to support **multiple visual
+framework-neutral contract (`@syntropic137/design-contracts`). We need to support **multiple visual
 designs** (e.g. a `default` design, a `shadcn`-style design, a `brutalist` design), where:
 
 - A **design** is a coherent look/behavior that can span several frameworks.

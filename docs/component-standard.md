@@ -1,6 +1,6 @@
 # Component Standard
 
-Tracks the canonical, framework-neutral component contract surface for the design system. The source of truth is `@syntropic137/contracts`; this document explains the standard, release status, and implementation expectations.
+Tracks the canonical, framework-neutral component contract surface for the design system. The source of truth is `@syntropic137/design-contracts`; this document explains the standard, release status, and implementation expectations.
 
 ## Versioning
 

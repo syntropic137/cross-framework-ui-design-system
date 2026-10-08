@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import type {
   AssertRequiredComponentProps,
   RequiredComponentAdapter,
-} from "@syntropic137/contracts";
+} from "@syntropic137/design-contracts";
 import { Badge } from "./components/Badge.js";
 import { Button } from "./components/Button.js";
 import { Toggle } from "./components/Toggle.js";

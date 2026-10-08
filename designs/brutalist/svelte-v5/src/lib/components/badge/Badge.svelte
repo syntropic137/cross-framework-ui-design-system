@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BadgeContract } from "@syntropic137/contracts";
+  import type { BadgeContract } from "@syntropic137/design-contracts";
   import type { Snippet } from "svelte";
   import type { HTMLAttributes } from "svelte/elements";
   import "./badge.css";

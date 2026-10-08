@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { requiredContractNames } from "@syntropic137/contracts";
+import { requiredContractNames } from "@syntropic137/design-contracts";
 import { reactV18ContractAdapter } from "../src/contract-adapter.js";
 
 describe("reactV18ContractAdapter (brutalist)", () => {

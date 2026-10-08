@@ -10,7 +10,7 @@ The system should be consumable by external apps via npm, not only inside this
 workspace. We need to decide *what* publishes, *how* it's versioned, and how we
 keep the supply-chain posture the user cares about — specifically a
 **zero-dependency** guarantee for the two foundational packages
-(`@syntropic137/contracts`, `@syntropic137/design-tokens`).
+(`@syntropic137/design-contracts`, `@syntropic137/design-tokens`).
 
 Current state is inconsistent and not publish-ready: `private` flags differ across
 packages (contracts `false`, design-tokens `true`, default-react-v18 `true`,
@@ -23,7 +23,7 @@ breaks under strict `exports` resolution once published.
 
 **What publishes (public):**
 
-- `@syntropic137/contracts` — framework-neutral API. **Zero runtime deps.**
+- `@syntropic137/design-contracts` — framework-neutral API. **Zero runtime deps.**
 - `@syntropic137/design-tokens` — tokens CSS/JSON. **Zero runtime deps.**
 - The design cells `@syntropic137/<design>-<framework>` — framework as a
   `peerDependency` (react/react-dom, or svelte), tokens/contracts as peer or

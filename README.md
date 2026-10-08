@@ -12,7 +12,7 @@ The system is organized in layers:
 
 | Layer | Package / Path | Role |
 |---|---|---|
-| **Contract** | `packages/contracts` → `@syntropic137/contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
+| **Contract** | `packages/contracts` → `@syntropic137/design-contracts` | Framework-neutral prop contracts and the `RequiredComponentContracts` type that every adapter must satisfy |
 | **Design tokens** | `packages/design-tokens` → `@syntropic137/design-tokens` | Token definitions → generated `--ds-*` CSS custom properties; light/dark/… themes via `@layer` |
 | **Design cells** | `designs/<design>/<framework>/` → `@syntropic137/<design>-<framework>` | One package per (design × framework) cell; each exports a `*ContractAdapter` + `./styles.css` |
 | **Dev tools** | `packages/dev-tools/{component-generator,dashboard}` | Component scaffolding CLI + TUI dashboard |
@@ -162,7 +162,7 @@ designs/
     react-v18/             @syntropic137/brutalist-react-v18 — brutalist React 18 cell
     svelte-v5/             @syntropic137/brutalist-svelte-v5 — brutalist Svelte 5 cell
 packages/
-  contracts/               @syntropic137/contracts — framework-neutral prop contracts
+  contracts/               @syntropic137/design-contracts — framework-neutral prop contracts
   design-tokens/           @syntropic137/design-tokens — token source → generated CSS/JSON
   dev-tools/
     component-generator/   @syntropic137/component-generator — scaffolding CLI

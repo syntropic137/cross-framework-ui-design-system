@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@syntropic137/contracts": "workspace:^",
+    "@syntropic137/design-contracts": "workspace:^",
     "@syntropic137/design-tokens": "workspace:^",
     "@syntropic137/default-svelte-v5": "workspace:^",
     "@syntropic137/brutalist-svelte-v5": "workspace:^",

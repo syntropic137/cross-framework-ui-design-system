@@ -35,7 +35,7 @@ both cells and pick one from an env var. This is what the reference apps do:
 
 ```ts
 // src/ui/adapter.ts
-import type { RequiredComponentContracts } from "@syntropic137/contracts";
+import type { RequiredComponentContracts } from "@syntropic137/design-contracts";
 import { svelteV5ContractAdapter as defaultAdapter } from "@syntropic137/default-svelte-v5";
 import { svelteV5ContractAdapter as brutalistAdapter } from "@syntropic137/brutalist-svelte-v5";
 

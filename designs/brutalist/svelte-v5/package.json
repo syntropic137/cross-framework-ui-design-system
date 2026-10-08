@@ -60,6 +60,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@syntropic137/contracts": "workspace:^"
+    "@syntropic137/design-contracts": "workspace:^"
   }
 }

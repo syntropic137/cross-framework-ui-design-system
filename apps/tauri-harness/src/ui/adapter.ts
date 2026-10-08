@@ -5,7 +5,7 @@
 // The canonical swap is just changing one package specifier or env var —
 // the adapter contract guarantees both designs are structurally identical.
 // Both adapters satisfy RequiredComponentAdapter, so TypeScript enforces the swap.
-import type { RequiredComponentContracts } from "@syntropic137/contracts";
+import type { RequiredComponentContracts } from "@syntropic137/design-contracts";
 import { reactV18ContractAdapter as defaultAdapter } from "@syntropic137/default-react-v18";
 import { reactV18ContractAdapter as brutalistAdapter } from "@syntropic137/brutalist-react-v18";
 
