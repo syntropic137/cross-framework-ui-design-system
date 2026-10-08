@@ -159,6 +159,23 @@ describe('packed tarballs work from a clean consumer', () => {
     assert.equal(result.stdout.trim(), 'ok');
   });
 
+  it('ships the design-system-verify bin, runnable through a .bin symlink', () => {
+    const installed = path.join(consumer, 'node_modules', '@syntropic137', 'design-contracts');
+    const pkg = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
+    const target = path.join(installed, pkg.bin['design-system-verify']);
+    assert.ok(fs.existsSync(target), 'bin target ships');
+
+    // npm links bins into node_modules/.bin as symlinks; the gate must still
+    // recognise that it was invoked directly.
+    const binDir = path.join(consumer, 'node_modules', '.bin');
+    fs.mkdirSync(binDir, { recursive: true });
+    const link = path.join(binDir, 'design-system-verify');
+    fs.symlinkSync(target, link);
+    const result = spawnSync('node', [link, '--help'], { cwd: consumer, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Usage: design-system-verify/);
+  });
+
   it('type-checks against the shipped declarations', () => {
     fs.writeFileSync(
       path.join(consumer, 'index.ts'),

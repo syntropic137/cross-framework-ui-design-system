@@ -20,13 +20,17 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  scanCssForHardcodedColors,
+  discoverDesignPackages,
   isDecorativeFile,
+  parseArgs,
+  scanCssForHardcodedColors,
 } from './verify-design-system.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const GATE_SCRIPT = path.join(__dirname, 'verify-design-system.mjs');
+// The same gate as consumers run it: the bin shipped with design-contracts.
+const GATE_BIN = path.join(REPO_ROOT, 'packages', 'contracts', 'bin', 'verify-design-system.mjs');
 
 // ---------------------------------------------------------------------------
 // scanCssForHardcodedColors — must FLAG violations
@@ -265,5 +269,132 @@ describe('integration — scanner detects violation in drifted CSS content', () 
       0,
       `Expected 0 violations for compliant CSS, got ${violations.length}: ${JSON.stringify(violations)}`
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Portable gate: runnable from another repo (Skyline and other consumers)
+// ---------------------------------------------------------------------------
+
+describe('parseArgs — consumer configuration', () => {
+  it('defaults to <cwd>/designs and pnpm -r typecheck', () => {
+    const config = parseArgs([], '/work/app');
+    assert.equal(config.root, '/work/app');
+    assert.deepEqual(config.designsDirs, ['/work/app/designs']);
+    assert.deepEqual(config.packageDirs, []);
+    assert.equal(config.typecheck, 'pnpm -r typecheck');
+  });
+
+  it('resolves --designs, --package and --tokens against --root', () => {
+    const config = parseArgs(
+      ['--root', '/work/app', '--package', 'packages/ui/skyline', '--tokens', 'theme/tokens.css'],
+      '/elsewhere'
+    );
+    assert.equal(config.root, '/work/app');
+    assert.deepEqual(config.designsDirs, [], 'an explicit --package drops the designs default');
+    assert.deepEqual(config.packageDirs, ['/work/app/packages/ui/skyline']);
+    assert.equal(config.tokensCss, '/work/app/theme/tokens.css');
+  });
+
+  it('accepts a custom typecheck command or none', () => {
+    assert.equal(parseArgs(['--typecheck', 'npm run check']).typecheck, 'npm run check');
+    assert.equal(parseArgs(['--no-typecheck']).typecheck, null);
+  });
+
+  it('rejects unknown options and missing values', () => {
+    assert.throws(() => parseArgs(['--bogus']), /Unknown option/);
+    assert.throws(() => parseArgs(['--package']), /needs a value/);
+  });
+});
+
+/** A minimal consumer repo: one design package, a token stylesheet, an adapter. */
+function makeConsumerRepo({ css }) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ds-verify-consumer-'));
+  const pkgDir = path.join(root, 'packages', 'ui', 'skyline-svelte');
+  fs.mkdirSync(path.join(pkgDir, 'src', 'lib'), { recursive: true });
+  fs.writeFileSync(path.join(pkgDir, 'package.json'), JSON.stringify({ name: '@acme/skyline-svelte' }));
+  fs.writeFileSync(path.join(pkgDir, 'src', 'button.css'), css);
+  fs.writeFileSync(
+    path.join(pkgDir, 'src', 'lib', 'contract-adapter.ts'),
+    'export const skylineContractAdapter = {};\n'
+  );
+  // Tokens come from the installed package, as they would in a real consumer.
+  const tokensDir = path.join(root, 'node_modules', '@syntropic137', 'design-tokens');
+  fs.mkdirSync(path.join(tokensDir, 'generated'), { recursive: true });
+  fs.writeFileSync(
+    path.join(tokensDir, 'package.json'),
+    JSON.stringify({
+      name: '@syntropic137/design-tokens',
+      exports: { './css': './generated/design-tokens.css' },
+    })
+  );
+  fs.writeFileSync(
+    path.join(tokensDir, 'generated', 'design-tokens.css'),
+    ':root { --ds-color-fg: #000; }\n'
+  );
+  return root;
+}
+
+function runGateBin(args, cwd) {
+  return spawnSync('node', [GATE_BIN, ...args], { cwd, encoding: 'utf8', timeout: 60_000 });
+}
+
+describe('integration — gate runs from another repo', () => {
+  it('passes a compliant consumer package, resolving tokens from node_modules', () => {
+    const root = makeConsumerRepo({ css: '.b { color: var(--ds-color-fg); }\n' });
+    try {
+      const config = parseArgs(['--package', 'packages/ui/skyline-svelte'], root);
+      assert.equal(
+        config.tokensCss,
+        fs.realpathSync(
+          path.join(root, 'node_modules/@syntropic137/design-tokens/generated/design-tokens.css')
+        )
+      );
+      assert.deepEqual(
+        discoverDesignPackages(config).map((p) => p.name),
+        ['@acme/skyline-svelte']
+      );
+
+      const result = runGateBin(
+        ['--package', 'packages/ui/skyline-svelte', '--typecheck', 'node -e "process.exit(0)"'],
+        root
+      );
+      assert.equal(result.status, 0, result.stdout + result.stderr);
+      assert.match(result.stdout, /design-system:verify: PASSED/);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('fails a consumer package with a hardcoded colour', () => {
+    const root = makeConsumerRepo({ css: '.b { color: #bada55; }\n' });
+    try {
+      const result = runGateBin(['--package', 'packages/ui/skyline-svelte', '--no-typecheck'], root);
+      assert.equal(result.status, 1, result.stdout + result.stderr);
+      assert.match(result.stdout, /CHECK B {2}.*FAIL/);
+      assert.match(result.stdout, /CHECK C {2}.*SKIP/);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('fails when the typecheck command fails', () => {
+    const root = makeConsumerRepo({ css: '.b { color: var(--ds-color-fg); }\n' });
+    try {
+      const result = runGateBin(
+        ['--package', 'packages/ui/skyline-svelte', '--typecheck', 'node -e "process.exit(3)"'],
+        root
+      );
+      assert.equal(result.status, 1, result.stdout + result.stderr);
+      assert.match(result.stdout, /CHECK C {2}.*FAIL/);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('exits 2 with usage on a bad option', () => {
+    const result = runGateBin(['--bogus'], REPO_ROOT);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /Usage: design-system-verify/);
   });
 });
