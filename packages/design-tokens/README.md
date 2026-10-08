@@ -52,6 +52,12 @@ cssVar("ds-color-backgroud"); // type error: not a token
 A test keeps the list identical to the custom properties the CSS defines, and fails
 if a theme introduces a name the base set lacks.
 
+### Root font size
+
+The token CSS never sets `font-size` on `:root` or `html`. Consumers keep the browser
+default (16px, so `1rem` is 16px) unless they choose otherwise; the size tokens are in
+`px` and do not depend on the root. A test guards this.
+
 ## Themes
 
 Themes are declared in `themeDefinitions`. Each theme maps to a `data-theme` selector and overrides only the tokens it needs to change. The generator merges overrides with the base token set to ensure every theme is complete.

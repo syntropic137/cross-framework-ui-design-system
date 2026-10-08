@@ -28,7 +28,7 @@ Declare the order once, early (before the layers are populated):
 | Layer | Holds | Wins over |
 |-------|-------|-----------|
 | `reset` | box-sizing, margin zeroing, normalize | (lowest) |
-| `base`  | element defaults (body, links, `:focus-visible`), the `62.5%` root | reset |
+| `base`  | element defaults (body, links, `:focus-visible`), root font-size left at the browser default | reset |
 | `tokens`| `--ds-*` custom property definitions, `[data-theme]` overrides | base |
 | `components` | component classes (`.btn`, `.card`, `.modal`) consuming tokens | tokens |
 | `utilities` | tiny single-purpose helpers, last-resort overrides | components |
