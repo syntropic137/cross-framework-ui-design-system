@@ -1,18 +1,31 @@
 {
   "name": "@syntropic137/design-contracts",
   "version": "0.1.0",
+  "description": "Framework-neutral component API contracts for the Syntropic137 cross-framework design system. Zero runtime dependencies.",
+  "keywords": [
+    "design-system",
+    "component-contracts",
+    "typescript",
+    "svelte",
+    "react"
+  ],
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
@@ -38,5 +51,12 @@
     "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
     "directory": "packages/contracts"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/syntropic137/cross-framework-ui-design-system/tree/main/packages/contracts#readme",
+  "bugs": {
+    "url": "https://github.com/syntropic137/cross-framework-ui-design-system/issues"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
 }

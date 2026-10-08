@@ -1,13 +1,26 @@
 {
   "name": "@syntropic137/design-tokens",
   "version": "0.1.0",
+  "description": "Design tokens for the Syntropic137 cross-framework design system: layered --ds-* CSS custom properties, a JSON snapshot and a typed token name list. Zero runtime dependencies.",
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "css-custom-properties",
+    "theming"
+  ],
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "*.css"
+  ],
   "files": [
     "dist",
-    "generated"
+    "src",
+    "!dist/**/*.tsbuildinfo",
+    "generated/design-tokens.css",
+    "generated/design-tokens.json"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json && node ./dist/cli.js",
@@ -49,5 +62,12 @@
     "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
     "directory": "packages/design-tokens"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/syntropic137/cross-framework-ui-design-system/tree/main/packages/design-tokens#readme",
+  "bugs": {
+    "url": "https://github.com/syntropic137/cross-framework-ui-design-system/issues"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
 }
