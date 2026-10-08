@@ -15,6 +15,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Must match the Trusted Publisher config on npmjs.com for every package
+    # (same shape as syntropic137-setup's publish.yml).
+    environment: npm-publish
     permissions:
       contents: write # create the git tag + GitHub Release
       id-token: write # npm provenance (OIDC attestation)
@@ -61,7 +64,8 @@ jobs:
       # a stale tag (v0.1.0 exists but nothing is published) block publishing forever.
       - name: Publish to npm via OIDC trusted publishing
         run: |
-          npm install -g npm@latest   # npm >= 11.5.1 required for OIDC trusted publishing
+          npm install -g npm@11.7.0   # pinned; OIDC trusted publishing needs >= 11.5.1
+          echo "node $(node -v) npm $(npm -v)"
           pnpm publish:packages
       - name: Tag and create GitHub Release
         if: steps.tag.outputs.exists == 'false'

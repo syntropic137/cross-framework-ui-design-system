@@ -72,7 +72,7 @@ For each package: open `https://www.npmjs.com/package/@syntropic137/<name>` ->
 | Organization / owner | `syntropic137` |
 | Repository | `cross-framework-ui-design-system` |
 | Workflow filename | `release.yml` |
-| Environment | leave blank |
+| Environment | `npm-publish` (the job runs in that GitHub environment; create it under repo Settings -> Environments if it does not exist) |
 
 - [ ] design-contracts
 - [ ] design-tokens
