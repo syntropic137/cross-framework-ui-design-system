@@ -80,11 +80,34 @@ The model is **release branch + gate + publish-on-merge** (ADR-0009):
 1. **Bump** the lockstep version on `main`: `pnpm version:bump 0.2.0` (updates every
    publishable package + root, seeds a CHANGELOG entry). Edit the CHANGELOG entry.
 2. **Open the release PR** `main` -> `release`. `ci.yml` runs the full `pnpm qa` gate
-   on it; this PR is the release gate.
+   on it, and `release-gate.yml` runs the release gate (below); this PR is the
+   release gate.
 3. **Merge.** `.github/workflows/release.yml` re-runs `pnpm qa`, then
    `pnpm publish:packages` publishes the 6 public packages, tags `vX.Y.Z`, and cuts a
    GitHub Release. A guard skips publish if the tag already exists, so re-pushing
    `release` is idempotent.
+
+### Release gate
+
+`.github/workflows/release-gate.yml` runs on every PR into `release` (and on manual
+dispatch). It runs `pnpm release:gate` (`scripts/release-gate.mjs`, zero-dep) and
+fails, one line per problem, unless all of these hold for the version being released:
+
+- the 6 publishable packages are on one lockstep version, and it is valid semver;
+- no tag `v<version>` exists, locally or on origin;
+- none of the 6 packages has `<version>` on npm (`404` is the pass; a registry or
+  network error fails the gate, it is never skipped);
+- `CHANGELOG.md` has a `## <version>` or `## [<version>]` heading (a lingering
+  `## Unreleased` does not count).
+
+On success it prints a per-package summary table. Run it locally before opening the
+release PR: `pnpm release:gate`. To make it blocking, add the `Release Gate` check to
+the `release` branch protection alongside `check`.
+
+> **First release:** a stale `v0.1.0` tag exists on origin (it points at a docs
+> commit; nothing was published). The gate fails on it by design, so delete it
+> before the first release PR can pass:
+> `git push origin :refs/tags/v0.1.0 && git tag -d v0.1.0`.
 
 `publish:packages` (`scripts/publish-packages.mjs`) packs each package with
 `pnpm pack` (which rewrites `workspace:^` deps to real version ranges) and publishes
