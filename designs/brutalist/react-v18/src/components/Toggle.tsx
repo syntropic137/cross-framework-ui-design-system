@@ -4,7 +4,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent
 } from "react";
-import type { ToggleContract } from "@syntropic137/contracts";
+import type { ToggleContract } from "@syntropic137/design-contracts";
 import clsx from "clsx";
 import "../styles/toggle.css";
 

@@ -10,14 +10,23 @@ long-lived `NPM_TOKEN`, npm trusts this repo's release workflow directly; at pub
 time GitHub hands the workflow a short-lived identity token that npm verifies. Nothing
 long-lived to leak, and every package gets a signed provenance attestation.
 
-**The 6 packages this publishes:**
+**The 2 packages this publishes:**
 
-- `@syntropic137/contracts`
+- `@syntropic137/design-contracts`
 - `@syntropic137/design-tokens`
-- `@syntropic137/default-react-v18`
-- `@syntropic137/default-svelte-v5`
-- `@syntropic137/brutalist-react-v18`
-- `@syntropic137/brutalist-svelte-v5`
+
+### What is published and why
+
+Only the two foundation packages publish. The component implementations under
+`designs/` (`@syntropic137/default-react-v18`, `default-svelte-v5`,
+`brutalist-react-v18`, `brutalist-svelte-v5`) are `"private": true` reference
+examples and never publish. The principle: any component library, in any
+framework, implements the design contracts and consumes the tokens. That gives
+build-time type checking of compatibility, and lets themes and component sets be
+swapped under any UI that depends on the contracts. Styling is vanilla CSS from the
+tokens, with no framework-specific styling layer. The release gate fails if a
+`designs/` package ever becomes publishable again
+([ADR-0008](./adrs/ADR-0008-npm-distribution.md#decision-update-2026-10-08)).
 
 ---
 
@@ -33,8 +42,8 @@ long-lived to leak, and every package gets a signed provenance attestation.
 
 ## Step 1 - First-publish bootstrap (one time)
 
-npm attaches a trusted publisher to a package that **already exists**, but these 6
-packages are not on npm yet. So the very first publish is done by you, locally, to
+npm attaches a trusted publisher to a package that **already exists**, but these 2
+packages may not be on npm yet. So the very first publish is done by you, locally, to
 create them. Every release after this is automatic.
 
 ```bash
@@ -43,16 +52,16 @@ npm login                 # log in to the npm account that owns the syntropic137
 pnpm install
 pnpm build                # produce dist/ for every package
 
-# sanity check first: packs all 6, publishes nothing
+# sanity check first: packs both, publishes nothing
 DRY_RUN=1 node scripts/publish-packages.mjs
 
-# then the real first publish (creates all 6 packages on npm)
+# then the real first publish (creates both packages on npm; skips any version already there)
 node scripts/publish-packages.mjs
 ```
 
 - [ ] `npm login` succeeded.
-- [ ] Dry run listed all 6 packages.
-- [ ] Real run published all 6 (check https://www.npmjs.com/org/syntropic137).
+- [ ] Dry run listed exactly 2 packages.
+- [ ] Real run published both (check https://www.npmjs.com/org/syntropic137).
 
 > If a publish reports the package name is taken by someone else, tell me and we will
 > pick a different scope or name. The `@syntropic137` scope should be yours.
@@ -61,7 +70,7 @@ node scripts/publish-packages.mjs
 
 ## Step 2 - Configure trusted publishing (per package)
 
-Do this once for **each** of the 6 packages on npmjs.com. After this, no token is
+Do this once for **each** of the 2 packages on npmjs.com. After this, no token is
 ever needed.
 
 For each package: open `https://www.npmjs.com/package/@syntropic137/<name>` ->
@@ -72,14 +81,14 @@ For each package: open `https://www.npmjs.com/package/@syntropic137/<name>` ->
 | Organization / owner | `syntropic137` |
 | Repository | `cross-framework-ui-design-system` |
 | Workflow filename | `release.yml` |
-| Environment | leave blank |
+| Environment | `npm-publish` (the job runs in that GitHub environment; create it under repo Settings -> Environments if it does not exist) |
 
-- [ ] contracts
+After adding the publisher, check the package's **Publishing access**: a newly
+added trusted publisher may default to staged publishing. It must be allowed to
+run `npm publish` directly, or release.yml will fail on the first real release.
+
+- [ ] design-contracts
 - [ ] design-tokens
-- [ ] default-react-v18
-- [ ] default-svelte-v5
-- [ ] brutalist-react-v18
-- [ ] brutalist-svelte-v5
 
 ---
 
@@ -130,7 +139,7 @@ From now on a release is: bump on `main`, PR into `release`, merge.
 
 ```bash
 git checkout main && git pull
-pnpm version:bump 0.2.0        # bumps all 6 packages + root, seeds a CHANGELOG entry
+pnpm version:bump 0.2.0        # bumps both foundations, the 4 private designs/ packages + root; seeds a CHANGELOG entry
 # edit the new CHANGELOG.md section to describe the release
 git add -A && git commit -m "chore(release): 0.2.0"
 git push
@@ -140,7 +149,7 @@ gh pr create --base release --head main --title "Release 0.2.0" --body "See CHAN
 ```
 
 When that PR is green and approved, **merge it**. On merge,
-`.github/workflows/release.yml` runs the full gate again, publishes the 6 packages to
+`.github/workflows/release.yml` runs the full gate again, publishes the 2 foundation packages to
 npm with provenance via OIDC, tags `v0.2.0`, and creates a GitHub Release.
 
 - [ ] Release PR went green and was merged.
@@ -158,7 +167,8 @@ feature branch ──PR──> main ──(bump + PR)──> release ──merge
             (every PR)            release gate                 GitHub Release
 ```
 
-- Versions move in **lockstep** (one number for all 6); `pnpm version:bump` enforces it.
+- Versions move in **lockstep** (one number for the 2 published packages and the 4 private
+  reference implementations); `pnpm version:bump` enforces it.
 - No tokens anywhere after Step 2.
 - Re-pushing `release` without a version change is a no-op (the workflow skips a tag
   that already exists).

@@ -1,7 +1,7 @@
 {
   "name": "@syntropic137/brutalist-svelte-v5",
   "version": "0.1.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "svelte": "./dist/index.js",
@@ -49,10 +49,6 @@
     "vite": "^6.4.3",
     "vitest": "^4.1.11"
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/syntropic137/cross-framework-ui-design-system.git",
@@ -60,6 +56,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@syntropic137/contracts": "workspace:^"
+    "@syntropic137/design-contracts": "workspace:^"
   }
 }

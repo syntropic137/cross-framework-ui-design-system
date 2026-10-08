@@ -79,18 +79,43 @@ export function findPublishable(root) {
 }
 
 /**
- * The exact set of packages a release publishes. Discovery is asserted against
- * this list so a package that silently loses `"private": false` (or is renamed or
- * duplicated) fails the release instead of dropping out of it.
+ * The exact set of packages a release publishes: the two foundations (ADR-0008,
+ * decision update 2026-10-08). Discovery is asserted against this list so a
+ * package that silently loses `"private": false` (or is renamed or duplicated)
+ * fails the release instead of dropping out of it.
  */
 export const EXPECTED_PACKAGES = Object.freeze([
-  "@syntropic137/contracts",
+  "@syntropic137/design-contracts",
   "@syntropic137/design-tokens",
+]);
+
+/**
+ * Reference component implementations under designs/. They implement the
+ * contracts and consume the tokens, ride the lockstep version, and must never
+ * publish. `checkPackageSet` names them specifically if one turns publishable.
+ */
+export const REFERENCE_PACKAGES = Object.freeze([
   "@syntropic137/default-react-v18",
   "@syntropic137/default-svelte-v5",
   "@syntropic137/brutalist-react-v18",
   "@syntropic137/brutalist-svelte-v5",
 ]);
+
+/** Workspace dirs that hold reference implementations (never published). */
+export const isReferenceDir = (dir) => dir.startsWith("designs/");
+
+/**
+ * Every package that carries the lockstep version: the publishable set plus the
+ * private reference implementations under designs/, as { dir, name, version, isPrivate }.
+ */
+export function findLockstep(root) {
+  return pkgDirs(root)
+    .map((dir) => {
+      const pkg = JSON.parse(readFileSync(join(root, dir, "package.json"), "utf8"));
+      return { dir, name: pkg.name, version: pkg.version, isPrivate: pkg.private };
+    })
+    .filter((p) => p.isPrivate === false || isReferenceDir(p.dir));
+}
 
 /** Problems when the discovered set differs from `expected` (missing, unexpected, duplicated). */
 export function checkPackageSet(packages, expected = EXPECTED_PACKAGES) {
@@ -101,8 +126,17 @@ export function checkPackageSet(packages, expected = EXPECTED_PACKAGES) {
   for (const [n, c] of counts) {
     if (c > 1) problems.push(`package ${JSON.stringify(n)} is declared by ${c} publishable packages`);
   }
+  // A reference implementation is any name in REFERENCE_PACKAGES or any package under designs/.
+  const reference = new Set([
+    ...REFERENCE_PACKAGES,
+    ...packages.filter((p) => typeof p.dir === "string" && isReferenceDir(p.dir)).map((p) => p.name),
+  ]);
   for (const n of counts.keys()) {
-    if (!expected.includes(n))
+    if (reference.has(n))
+      problems.push(
+        `reference implementation ${JSON.stringify(n)} is publishable; component implementations must stay "private": true (ADR-0008)`,
+      );
+    else if (!expected.includes(n))
       problems.push(`unexpected publishable package ${JSON.stringify(n)} (not in EXPECTED_PACKAGES)`);
   }
   for (const n of expected) {

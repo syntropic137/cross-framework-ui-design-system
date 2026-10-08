@@ -80,9 +80,11 @@ Evidence signals:
 - Put values in tokens, not literals. Reference `var(--ds-*)`; raw brand colors live
   in token definitions. This is what makes theme and design swap work, and what the
   verify gate enforces.
-- Size off one rem root knob. Set the root to a percentage (`62.5%` gives `1rem =
-  10px`) and size in `rem`, because the user's browser font-size preference must
-  still multiply through. A fixed-px root pins sizing and fails WCAG 1.4.4.
+- Size off one rem root knob, and keep it relative. The design-system packages leave
+  the root at the browser default (16px) and size in `rem` against it, because the
+  user's browser font-size preference must still multiply through; they never set
+  root font-size. A fixed-px root pins sizing and fails WCAG 1.4.4. A 62.5% root is
+  an app-only option that must not reach pages rendering design-system components.
 - Build mobile-first. Base styles target the smallest screen; add capability with
   `min-width` rem queries, because additive complexity keeps both the cascade and the
   mobile payload clean.
@@ -143,11 +145,12 @@ Evidence signals:
 
 ### For: the UI scales from one root knob and respects user zoom
 
-- `:root { font-size: 62.5% }` with `body { font-size: 1.6rem }`, then `rem`
-  everywhere. Ladders up by giving easy px-to-rem math while keeping the root relative
-  so zoom still works. Tradeoffs: third-party CSS assuming `1rem = 16px` renders ~37%
-  small, and rem inside a media query resolves against the initial 16px, not the 62.5%
-  override (`48rem` is 768px there).
+- Leave the root at the browser default and use `rem` everywhere (`0.875rem` is
+  14px). Ladders up by matching every design-system package and third-party CSS, which
+  all assume `1rem = 16px`, while user zoom and font-size preferences still scale it.
+  Tradeoffs: px-to-rem math is divide-by-16. The 62.5% root (`1rem = 10px`) is easier
+  math but shrinks design-system components ~37%, so it is an app-only choice, never
+  set by a package.
 - `clamp(rem-floor, rem + vw, rem-cap)` for fluid type and space, always with a `rem`
   term. Ladders up by replacing breakpoint stacks while staying zoom-responsive.
   Tradeoffs: a `vw`-only cap can fail WCAG 1.4.4; keep the cap generous and use

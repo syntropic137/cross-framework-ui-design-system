@@ -21,10 +21,19 @@ import { existsSync, mkdtempSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { findPublishable } from "./lib/publishable-packages.mjs";
+import { checkLockstep, checkPackageSet, findPublishable } from "./lib/publishable-packages.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dryRun = process.env.DRY_RUN === "1";
+// Provenance attestations are only issued from a supported CI OIDC context
+// (GitHub Actions). The one-time local bootstrap publish that creates the
+// packages (docs/publishing-setup.md, step 1) has no such context and npm
+// refuses `--provenance` there, so provenance is on in CI and off locally.
+const inCi = process.env.GITHUB_ACTIONS === "true";
+const provenanceFlag = inCi ? "--provenance" : "--provenance=false";
+// Always talk to the public registry, for both the lookup and the publish, so a
+// user or scoped registry override in npm config cannot redirect either.
+const registryFlags = "--registry=https://registry.npmjs.org/ --@syntropic137:registry=https://registry.npmjs.org/";
 
 const publishable = findPublishable(root);
 
@@ -33,12 +42,31 @@ if (publishable.length === 0) {
   process.exit(1);
 }
 
+// Publish exactly the two foundations (ADR-0008). A designs/ reference
+// implementation that turned publishable, or a foundation that lost
+// `"private": false`, stops the publish before anything is packed.
+const setProblems = checkPackageSet(publishable);
+if (setProblems.length > 0) {
+  console.error("Refusing to publish:");
+  for (const problem of setProblems) console.error(`  ${problem}`);
+  process.exit(1);
+}
+
+// Versions move in lockstep (ADR-0008/0009) and the release tag is derived from
+// one of them, so refuse to publish a mixed set rather than tag the wrong version.
+const lockstep = checkLockstep(publishable);
+if (lockstep.problems.length > 0) {
+  console.error("Refusing to publish:");
+  for (const problem of lockstep.problems) console.error(`  ${problem}`);
+  process.exit(1);
+}
+
 // A version already on the registry should not be re-published (npm would error and
 // wedge a partially-completed release). `npm view` exits non-zero / prints nothing
 // when the exact version is absent.
 function alreadyPublished(name, version) {
   try {
-    const v = execSync(`npm view ${name}@${version} version`, {
+    const v = execSync(`npm view ${registryFlags} -- ${name}@${version} version`, {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
@@ -70,10 +98,10 @@ for (const pkg of publishable) {
   console.log(`packed ${pkg.name}@${pkg.version} -> ${tgz}`);
 
   if (dryRun) {
-    console.log(`[dry-run] would run: npm publish "${tgz}" --provenance --access public`);
+    console.log(`[dry-run] would run: npm publish "${tgz}" ${provenanceFlag} --access public ${registryFlags}`);
     continue;
   }
-  execSync(`npm publish "${tgz}" --provenance --access public`, { cwd: root, stdio: "inherit" });
+  execSync(`npm publish "${tgz}" ${provenanceFlag} --access public ${registryFlags}`, { cwd: root, stdio: "inherit" });
   console.log(`published ${pkg.name}@${pkg.version}`);
   published += 1;
 }

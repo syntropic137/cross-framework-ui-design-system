@@ -5,7 +5,7 @@
 // The canonical swap is just changing one package specifier or env var —
 // the adapter contract guarantees both designs are structurally identical.
 // Both adapters satisfy RequiredComponentAdapter, so TypeScript enforces the swap.
-import type { RequiredComponentContracts } from "@syntropic137/contracts";
+import type { RequiredComponentContracts } from "@syntropic137/design-contracts";
 import { svelteV5ContractAdapter as defaultAdapter } from "@syntropic137/default-svelte-v5";
 import { svelteV5ContractAdapter as brutalistAdapter } from "@syntropic137/brutalist-svelte-v5";
 

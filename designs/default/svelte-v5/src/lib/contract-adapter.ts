@@ -2,7 +2,7 @@ import type { ComponentProps } from "svelte";
 import type {
   AssertRequiredComponentProps,
   RequiredComponentAdapter,
-} from "@syntropic137/contracts";
+} from "@syntropic137/design-contracts";
 import Badge from "./components/badge/Badge.svelte";
 import Button from "./components/button/Button.svelte";
 import Toggle from "./components/toggle/Toggle.svelte";

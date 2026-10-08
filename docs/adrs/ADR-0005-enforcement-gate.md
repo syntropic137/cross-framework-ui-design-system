@@ -55,3 +55,12 @@ CLI runs.
   checks. `rcl-tws.11` tracks making the verify pass strictly read-only/no-emit.
 - The gate is the runtime complement to ADR-0007's compile-time contract: CHECK C
   is the type system, CHECK B/D are the things the type system can't see.
+
+## Addendum (2026-10-07): portable gate
+
+The gate moved to `packages/contracts/bin/verify-design-system.mjs` and ships with
+`@syntropic137/design-contracts` as the `design-system-verify` bin, so consumer repos
+(Skyline first) run the same checks without copying the script. It takes `--root`,
+`--designs`, `--package`, `--tokens`, `--typecheck` and `--no-typecheck`; with no
+flags it behaves as before. `scripts/verify-design-system.mjs` remains the in-repo
+entry point and pins `--root` to this repo.

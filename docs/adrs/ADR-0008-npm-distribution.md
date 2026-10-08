@@ -1,7 +1,7 @@
 # ADR-0008: npm distribution & zero-dependency policy
 
 - Status: Accepted
-- Date: 2026-06-16
+- Date: 2026-06-16 (decision updated 2026-10-08)
 - Related: ADR-0004 (matrix), ADR-0007 (contract model), `rcl-tws.2`, `rcl-tws.9`, `rcl-tws.10`
 
 ## Context
@@ -10,7 +10,7 @@ The system should be consumable by external apps via npm, not only inside this
 workspace. We need to decide *what* publishes, *how* it's versioned, and how we
 keep the supply-chain posture the user cares about — specifically a
 **zero-dependency** guarantee for the two foundational packages
-(`@syntropic137/contracts`, `@syntropic137/design-tokens`).
+(`@syntropic137/design-contracts`, `@syntropic137/design-tokens`).
 
 Current state is inconsistent and not publish-ready: `private` flags differ across
 packages (contracts `false`, design-tokens `true`, default-react-v18 `true`,
@@ -23,11 +23,11 @@ breaks under strict `exports` resolution once published.
 
 **What publishes (public):**
 
-- `@syntropic137/contracts` — framework-neutral API. **Zero runtime deps.**
+- `@syntropic137/design-contracts` — framework-neutral API. **Zero runtime deps.**
 - `@syntropic137/design-tokens` — tokens CSS/JSON. **Zero runtime deps.**
-- The design cells `@syntropic137/<design>-<framework>` — framework as a
-  `peerDependency` (react/react-dom, or svelte), tokens/contracts as peer or
-  regular deps. React cells may carry `clsx` only.
+- ~~The design cells `@syntropic137/<design>-<framework>`.~~ Withdrawn
+  2026-10-08: see the decision update below. The cells are private reference
+  implementations.
 
 **What stays private (`"private": true`, never published):** the apps
 (`apps/tauri-harness*`), the dashboard TUI, and the component generator —
@@ -66,6 +66,30 @@ does this automatically on `pnpm publish`).
 shared version → changeset/CHANGELOG → tag → CI builds, runs `pnpm qa`, publishes
 with provenance.
 
+## Decision update 2026-10-08
+
+**Only the foundations publish.** `@syntropic137/design-contracts` and
+`@syntropic137/design-tokens` are the published packages. The four component
+implementations under `designs/` (`@syntropic137/default-react-v18`,
+`default-svelte-v5`, `brutalist-react-v18`, `brutalist-svelte-v5`) are
+`"private": true`, carry no `publishConfig`, and must never publish automatically.
+They keep their names and the lockstep version (`pnpm version:bump` still bumps
+them) so the repo stays on one line.
+
+**Rationale.** The product is the contract and the tokens, not one component set.
+Any component library, in any framework, implements the design contracts and
+consumes the tokens. That gives build-time type checking of compatibility, and
+lets themes and component sets be swapped under any UI that depends on the
+contracts. Styling is vanilla CSS from the tokens, with no framework-specific
+styling layer. The `designs/` cells prove the contracts are implementable and
+serve as examples to copy; publishing them would make one implementation look
+canonical and widen the supported surface for no gain.
+
+**Enforcement.** `EXPECTED_PACKAGES` in `scripts/lib/publishable-packages.mjs`
+is exactly the two foundations; `checkPackageSet` (used by `publish:packages`
+and `release:gate`) fails, naming the package, if any `designs/` package
+becomes publishable again.
+
 ## Consequences
 
 - **Positive:** external apps get a clean, minimal dependency footprint; the two
@@ -73,7 +97,8 @@ with provenance.
   aspirational.
 - **Positive:** lockstep versioning makes "which versions are compatible" trivial
   — they're equal.
-- **Cost:** lockstep means a cell-only patch still bumps everyone; acceptable while
+- **Cost:** lockstep means a cell-only change still bumps everyone (the cells no
+  longer publish, so this only moves the repo's version line); acceptable while
   the matrix is small. Revisit if cells diverge in cadence.
 - **Open:** the `@syntropic137` npm scope must be secured (org or rename); the
   repo-rename beads (`rcl-95y`/`rcl-0fp`) intersect with the published name.

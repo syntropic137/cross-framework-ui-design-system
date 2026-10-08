@@ -20,7 +20,7 @@ const sansStack  = `ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial
 const monoStack  = `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace`;
 const serifStack = `ui-serif, Georgia, Cambria, "Times New Roman", Times, serif`;
 
-export const baseTokens: TokenCategories = {
+export const baseTokens = {
   color: {
     "ds-color-brand-hue": "222",
     "ds-color-brand-sat": "85%",
@@ -108,7 +108,7 @@ export const baseTokens: TokenCategories = {
     "ds-z-modal":    "400",
     "ds-z-toast":    "500"
   }
-};
+} satisfies TokenCategories;
 
 export const themeDefinitions: ThemeDefinition[] = [
   {

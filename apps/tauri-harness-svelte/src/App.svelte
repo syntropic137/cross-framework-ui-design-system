@@ -5,7 +5,7 @@
     BadgeContract,
     ButtonContract,
     ToggleContract,
-  } from "@syntropic137/contracts";
+  } from "@syntropic137/design-contracts";
   import { ui, activeDesign } from "./ui/adapter.js";
 
   // The adapter values are typed `unknown` (RequiredComponentAdapter widened
