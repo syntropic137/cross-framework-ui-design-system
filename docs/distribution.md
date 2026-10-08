@@ -103,8 +103,8 @@ credentials. Nothing long-lived to leak, and provenance is attached automaticall
 
 Configure once per package on npmjs.com: the package's **Settings -> Trusted
 Publishers -> GitHub Actions**, with repository
-`syntropic137/cross-framework-ui-design-system` and workflow file
-`.github/workflows/release.yml`.
+`syntropic137/cross-framework-ui-design-system` and workflow filename
+`release.yml` (the filename only, not the path).
 
 **First-publish bootstrap.** A trusted publisher is attached to a package that already
 exists, but these 6 packages are not on npm yet. Do a one-time first publish to create

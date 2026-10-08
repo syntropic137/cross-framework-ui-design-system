@@ -24,6 +24,12 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dryRun = process.env.DRY_RUN === "1";
+// Provenance attestations are only issued from a supported CI OIDC context
+// (GitHub Actions). The one-time local bootstrap publish that creates the
+// packages (docs/publishing-setup.md, step 1) has no such context and npm
+// refuses `--provenance` there, so provenance is on in CI and off locally.
+const inCi = process.env.GITHUB_ACTIONS === "true";
+const provenanceFlag = inCi ? "--provenance" : "--provenance=false";
 
 function pkgDirs() {
   const out = [];
@@ -101,10 +107,10 @@ for (const pkg of publishable) {
   console.log(`packed ${pkg.name}@${pkg.version} -> ${tgz}`);
 
   if (dryRun) {
-    console.log(`[dry-run] would run: npm publish "${tgz}" --provenance --access public`);
+    console.log(`[dry-run] would run: npm publish "${tgz}" ${provenanceFlag} --access public`);
     continue;
   }
-  execSync(`npm publish "${tgz}" --provenance --access public`, { cwd: root, stdio: "inherit" });
+  execSync(`npm publish "${tgz}" ${provenanceFlag} --access public`, { cwd: root, stdio: "inherit" });
   console.log(`published ${pkg.name}@${pkg.version}`);
   published += 1;
 }
