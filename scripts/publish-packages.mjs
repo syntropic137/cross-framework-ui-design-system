@@ -21,7 +21,7 @@ import { existsSync, mkdtempSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { checkLockstep, findPublishable } from "./lib/publishable-packages.mjs";
+import { checkLockstep, checkPackageSet, findPublishable } from "./lib/publishable-packages.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dryRun = process.env.DRY_RUN === "1";
@@ -39,6 +39,16 @@ const publishable = findPublishable(root);
 
 if (publishable.length === 0) {
   console.error('No publishable packages (none with "private": false).');
+  process.exit(1);
+}
+
+// Publish exactly the two foundations (ADR-0008). A designs/ reference
+// implementation that turned publishable, or a foundation that lost
+// `"private": false`, stops the publish before anything is packed.
+const setProblems = checkPackageSet(publishable);
+if (setProblems.length > 0) {
+  console.error("Refusing to publish:");
+  for (const problem of setProblems) console.error(`  ${problem}`);
   process.exit(1);
 }
 
