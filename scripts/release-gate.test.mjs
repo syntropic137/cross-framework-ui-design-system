@@ -9,6 +9,7 @@
  */
 
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -30,8 +31,40 @@ import {
   checkLockstep,
   checkPackageSet,
   findPublishable,
+  pkgDirs,
+  workspaceGlobs,
   EXPECTED_PACKAGES,
 } from './lib/publishable-packages.mjs';
+
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const REPO_WORKSPACE = fs.readFileSync(path.join(REPO_ROOT, 'pnpm-workspace.yaml'), 'utf8');
+
+/** A temp workspace: { 'dir': manifest } plus this repo's pnpm-workspace.yaml (or `yaml`). */
+function withWorkspace(manifests, fn, yaml = REPO_WORKSPACE) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'release-gate-ws-'));
+  try {
+    fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), yaml);
+    for (const [dir, manifest] of Object.entries(manifests)) {
+      fs.mkdirSync(path.join(root, dir), { recursive: true });
+      fs.writeFileSync(path.join(root, dir, 'package.json'), JSON.stringify(manifest));
+    }
+    return fn(root);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+const REAL_DIRS = [
+  'packages/contracts',
+  'packages/design-tokens',
+  'designs/default/react-v18',
+  'designs/default/svelte-v5',
+  'designs/brutalist/react-v18',
+  'designs/brutalist/svelte-v5',
+];
+const realManifests = (over = {}) =>
+  Object.fromEntries(
+    REAL_DIRS.map((dir, i) => [dir, { name: EXPECTED_PACKAGES[i], version: '0.2.0', private: false, ...over[dir] }]),
+  );
 
 const NAMES = [
   '@syntropic137/contracts',
@@ -74,6 +107,72 @@ it('fixture names are exactly EXPECTED_PACKAGES', () => {
   assert.deepEqual([...NAMES].sort(), [...EXPECTED_PACKAGES].sort());
 });
 
+it("discovery over this repo's real manifests is exactly EXPECTED_PACKAGES", () => {
+  const found = findPublishable(REPO_ROOT);
+  assert.deepEqual(found.map((p) => p.name).sort(), [...EXPECTED_PACKAGES].sort());
+  assert.deepEqual(checkPackageSet(found), []);
+});
+
+describe('workspace discovery', () => {
+  it('reads the pnpm-workspace.yaml packages globs', () => {
+    assert.deepEqual(workspaceGlobs(REPO_WORKSPACE), [
+      'packages/*',
+      'packages/*/*',
+      'packages/*/*/*',
+      'apps/*',
+      'designs/*/*',
+    ]);
+  });
+  it('refuses a workspace file it cannot read rather than discovering nothing', () => {
+    assert.throws(() => workspaceGlobs('packages:\n  - {weird: 1}\n'), /cannot parse/);
+    assert.throws(() => workspaceGlobs('catalog:\n  x: 1\n'), /no packages globs/);
+  });
+  it('discovers a publishable manifest under apps/ and fails the set', () => {
+    const manifests = realManifests();
+    manifests['apps/stray'] = { name: '@syntropic137/stray-app', version: '0.2.0', private: false };
+    withWorkspace(manifests, (root) => {
+      const names = findPublishable(root).map((p) => p.name);
+      assert.ok(names.includes('@syntropic137/stray-app'));
+      const p = checkPackageSet(findPublishable(root));
+      assert.equal(p.length, 1);
+      assert.match(p[0], /unexpected publishable package "@syntropic137\/stray-app"/);
+    });
+  });
+  it('discovers the deepest glob (packages/*/*/*) and skips node_modules', () => {
+    const manifests = realManifests();
+    manifests['packages/a/b/c'] = { name: '@syntropic137/deep', version: '0.2.0', private: false };
+    manifests['packages/node_modules/x'] = { name: '@syntropic137/nm', version: '0.2.0', private: false };
+    withWorkspace(manifests, (root) => {
+      const dirs = pkgDirs(root);
+      assert.ok(dirs.includes('packages/a/b/c'));
+      assert.ok(!dirs.some((d) => d.includes('node_modules')));
+    });
+  });
+  it('honours ! exclusion globs', () => {
+    const manifests = realManifests();
+    manifests['apps/stray'] = { name: '@syntropic137/stray-app', version: '0.2.0', private: false };
+    withWorkspace(
+      manifests,
+      (root) => assert.ok(!pkgDirs(root).includes('apps/stray')),
+      REPO_WORKSPACE + '  - "!apps/stray"\n',
+    );
+  });
+  it('matches what pnpm itself lists for this repo', () => {
+    assert.deepEqual(pkgDirs(REPO_ROOT), [
+      'apps/tauri-harness',
+      'apps/tauri-harness-svelte',
+      'designs/brutalist/react-v18',
+      'designs/brutalist/svelte-v5',
+      'designs/default/react-v18',
+      'designs/default/svelte-v5',
+      'packages/contracts',
+      'packages/design-tokens',
+      'packages/dev-tools/component-generator',
+      'packages/dev-tools/dashboard',
+    ]);
+  });
+});
+
 describe('checkPackageSet', () => {
   it('passes the exact expected set', () => assert.deepEqual(checkPackageSet(pkgs('0.2.0')), []));
   it('fails a missing package', () => {
@@ -96,21 +195,7 @@ describe('checkPackageSet', () => {
     assert.match(p[0], /design-tokens" is declared by 2/);
   });
   it('fails a package excluded by losing "private": false (real discovery on disk)', () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'release-gate-set-'));
-    const dirs = [
-      'packages/contracts',
-      'packages/design-tokens',
-      'designs/default/react-v18',
-      'designs/default/svelte-v5',
-      'designs/brutalist/react-v18',
-      'designs/brutalist/svelte-v5',
-    ];
-    dirs.forEach((dir, i) => {
-      fs.mkdirSync(path.join(root, dir), { recursive: true });
-      const manifest = { name: EXPECTED_PACKAGES[i], version: '0.2.0', private: i === 3 ? true : false };
-      fs.writeFileSync(path.join(root, dir, 'package.json'), JSON.stringify(manifest));
-    });
-    try {
+    withWorkspace(realManifests({ [REAL_DIRS[3]]: { private: true } }), (root) => {
       const found = findPublishable(root);
       assert.equal(found.length, 5);
       const p = checkPackageSet(found);
@@ -118,9 +203,7 @@ describe('checkPackageSet', () => {
       assert.match(p[0], new RegExp(`${EXPECTED_PACKAGES[3]} was not discovered`));
       // ...and the whole gate fails, even though the remaining five are clean.
       assert.equal(runGate(io({ packages: found })).problems.length, 1);
-    } finally {
-      fs.rmSync(root, { recursive: true, force: true });
-    }
+    });
   });
 });
 
@@ -312,6 +395,25 @@ describe('checkChangelog', () => {
   it('does not let "##" on one line pair with the version on the next', () => {
     assert.equal(checkChangelog('0.2.0', '##\n0.2.0\n').length, 1);
     assert.equal(checkChangelog('0.2.0', '##   \n0.2.0 - 2026-10-08\n').length, 1);
+  });
+  it('a fence closes only on a bare marker of the same char and >= length', () => {
+    // `~~~example` has an info string, so it cannot close the fence.
+    assert.equal(checkChangelog('0.2.0', '~~~\n~~~example\n## 0.2.0\n~~~\n').length, 1);
+    // A shorter or different-character marker does not close it either.
+    assert.equal(checkChangelog('0.2.0', '````\n```\n## 0.2.0\n````\n').length, 1);
+    assert.equal(checkChangelog('0.2.0', '```\n~~~\n## 0.2.0\n```\n').length, 1);
+    // Trailing spaces/tabs after a bare marker do close it.
+    assert.deepEqual(checkChangelog('0.2.0', '~~~\nx\n~~~ \t\n## 0.2.0\n'), []);
+    // An unclosed fence runs to end of file.
+    assert.equal(checkChangelog('0.2.0', '```\n## 0.2.0\n').length, 1);
+  });
+  it('ignores headings inside HTML comments, single- or multi-line', () => {
+    assert.equal(checkChangelog('0.2.0', '<!--\n## 0.2.0\n-->\n').length, 1);
+    assert.equal(checkChangelog('0.2.0', '<!-- start\n\n## [0.2.0]\n\nend -->\n').length, 1);
+    assert.equal(checkChangelog('0.2.0', '<!--\n## 0.2.0\n').length, 1); // unclosed
+    // A one-line comment (the real `<!-- releases -->` marker) does not hide what follows.
+    assert.deepEqual(checkChangelog('0.2.0', '<!-- releases -->\n\n## 0.2.0 - 2026-10-08\n'), []);
+    assert.deepEqual(checkChangelog('0.2.0', '<!--\nx\n-->\n## 0.2.0\n'), []);
   });
   it('ignores headings inside fenced code blocks', () => {
     assert.equal(checkChangelog('0.2.0', '# C\n\n```md\n## 0.2.0\n```\n').length, 1);
