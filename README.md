@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="Syntropic137 Design System" width="100%">
+</p>
+
+```bash
+pnpm add -D @syntropic137/design-contracts @syntropic137/design-tokens
+```
+
 # Design System — Cross-Framework Component Library
 
 A pnpm monorepo (`pnpm@9.1.4`) that implements a **design-first matrix**: one framework-neutral contract, shared design tokens, and multiple designs each implemented per framework. The payoff is surgical: swap a design (one package specifier), swap a framework implementation behind the same contract, or switch themes at runtime — all decoupled, all enforced.
