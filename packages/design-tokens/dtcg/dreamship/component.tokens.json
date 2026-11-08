@@ -1,0 +1,21 @@
+{
+  "$description": "DreamShip OS component layer: only decisions a component needs that a semantic role does not already state.",
+  "component": {
+    "button": {
+      "primary": {
+        "fill": {
+          "$type": "color",
+          "$value": "{color.action.fill}"
+        },
+        "label": {
+          "$type": "color",
+          "$value": "{color.action.on}"
+        },
+        "radius": {
+          "$type": "dimension",
+          "$value": "{radius.pill}"
+        }
+      }
+    }
+  }
+}

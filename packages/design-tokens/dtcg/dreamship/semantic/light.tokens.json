@@ -1,0 +1,64 @@
+{
+  "$description": "DreamShip OS semantic layer, light theme: roles, every value an alias into the reference layer.",
+  "color": {
+    "$type": "color",
+    "surface": {
+      "page": {
+        "$value": "{color.palette.dawn-mist}"
+      },
+      "default": {
+        "$value": "{color.palette.paper}"
+      },
+      "raised": {
+        "$value": "{color.palette.white}"
+      }
+    },
+    "content": {
+      "primary": {
+        "$value": "{color.palette.ink}"
+      },
+      "secondary": {
+        "$value": "{color.palette.slate}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$value": "{color.palette.dawn-rule}",
+        "$description": "Decorative separators only; never the only boundary of a control."
+      }
+    },
+    "action": {
+      "fill": {
+        "$value": "{color.palette.ink}"
+      },
+      "on": {
+        "$value": "{color.palette.dawn-mist}"
+      }
+    },
+    "focus": {
+      "ring": {
+        "$value": "{color.palette.deep-cyan}"
+      }
+    },
+    "status": {
+      "success": {
+        "$value": "{color.palette.jade-ink}"
+      },
+      "warning": {
+        "$value": "{color.palette.dawn-ink}"
+      },
+      "danger": {
+        "$value": "{color.palette.coral-ink}"
+      },
+      "info": {
+        "$value": "{color.palette.deep-cyan}"
+      }
+    }
+  },
+  "gradient": {
+    "$type": "gradient",
+    "brand": {
+      "$value": "{gradient.tide-light}"
+    }
+  }
+}

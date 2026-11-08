@@ -63,3 +63,16 @@ default (16px, so `1rem` is 16px) unless they choose otherwise; the size tokens 
 Themes are declared in `themeDefinitions`. Each theme maps to a `data-theme` selector and overrides only the tokens it needs to change. The generator merges overrides with the base token set to ensure every theme is complete.
 
 > NOTE: Keep changes additive where possible so that new tokens default gracefully for existing themes.
+
+## DTCG designs (CSS, resolved JSON, typed Rust)
+
+A design under `dtcg/<design>/` (today: `dreamship`) is DTCG JSON in reference,
+semantic (one file per theme), component and spatial layers, plus `design.json`
+(themes, selectors, contrast policy). `pnpm tokens:build` writes:
+
+- `generated/<design>/tokens.css` (`@syntropic137/design-tokens/dreamship.css`)
+- `generated/<design>/tokens.resolved.json` (`@syntropic137/design-tokens/dreamship.json`)
+- `../design-tokens-rs/src/<design>.rs`, the typed Rust module of the
+  `syntropic137-design-tokens` crate (committed; a test catches drift)
+
+Generation fails if a theme misses its contrast policy. See ADR-0011.
