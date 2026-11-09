@@ -548,6 +548,14 @@ describe("gradient contrast gate (Codex xvzo6.6 p1)", () => {
     expect(checkContrast([theme], [{ fg: "c.grey", bg: "g.x", min: 4.5 }])).toEqual([]);
   });
 
+  it("ignores a stop that paints nothing inside a run of equal positions", () => {
+    const theme = gradient([stop("black", 0.5), stop("white", 0.5), stop("black", 0.5)]);
+    const rule = { fg: "color.palette.white", bg: "g.x", min: 4.5 };
+    expect(checkContrast([theme], [rule])).toEqual([]);
+    const edge = gradient([stop("black", 0), stop("white", 0), stop("black", 1)]);
+    expect(checkContrast([edge], [rule])).toHaveLength(1);
+  });
+
   it("fixes up out-of-order stops as CSS does (a lower position is raised to the earlier one)", () => {
     const stops = [
       { color: "{c.red}", position: 0 },
