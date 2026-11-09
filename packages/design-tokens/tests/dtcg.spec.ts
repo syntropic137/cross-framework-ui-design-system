@@ -208,7 +208,7 @@ describe("the DreamShip design", () => {
     });
   });
 
-  it("keeps the committed Rust module in step with the source (run tokens:build after a change)", async () => {
+  it("keeps the committed Rust module in step with the source (run tokens:rust after a change)", async () => {
     const { config, documents } = await loadDesign(DREAMSHIP);
     const committed = await readFile(
       join(PACKAGE, "..", "design-tokens-rs", "src", "dreamship.rs"),
