@@ -37,29 +37,55 @@ function isObject(value: Json | undefined): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+const has = (object: JsonObject, key: string): boolean => Object.hasOwn(object, key);
+
+/** Group and token properties this reader understands. */
+const GROUP_KEYS = new Set(["$type", "$description", "$extensions", "$deprecated"]);
+const TOKEN_KEYS = new Set([...GROUP_KEYS, "$value"]);
+
+/**
+ * DTCG structure this reader does not implement. Rejected loudly so no token is
+ * silently dropped: `$root`, `$extends` and JSON Pointer `$ref`.
+ */
+function rejectUnsupported(node: JsonObject, path: string, allowed: ReadonlySet<string>): void {
+  for (const key of Object.keys(node)) {
+    if (key.startsWith("$") && !allowed.has(key)) {
+      throw new DtcgError(path, `${key} is not supported by this reader`);
+    }
+  }
+}
+
 /** Deep-merge layer documents. Groups merge; a token path defined twice is an error. */
 export function mergeDocuments(documents: readonly Json[]): JsonObject {
-  const merged: JsonObject = {};
+  const merged: JsonObject = Object.create(null) as JsonObject;
   const mergeInto = (target: JsonObject, source: JsonObject, path: string): void => {
+    rejectUnsupported(source, path, has(source, "$value") ? TOKEN_KEYS : GROUP_KEYS);
     for (const [key, value] of Object.entries(source)) {
       const childPath = path ? `${path}.${key}` : key;
       if (key.startsWith("$")) {
         // A group's own metadata: first one wins for $description, $type must agree.
-        if (key === "$type" && target.$type !== undefined && target.$type !== value) {
+        if (key === "$type" && has(target, "$type") && target.$type !== value) {
           throw new DtcgError(
             path,
             `$type ${String(value)} conflicts with ${String(target.$type)}`,
           );
         }
-        if (target[key] === undefined) target[key] = value;
+        if (!has(target, key)) target[key] = value;
         continue;
       }
       if (!isObject(value)) throw new DtcgError(childPath, "expected a token or group object");
+      if (!has(target, key)) {
+        if (has(value, "$value")) {
+          rejectUnsupported(value, childPath, TOKEN_KEYS);
+          target[key] = value;
+        } else {
+          target[key] = Object.create(null) as JsonObject;
+          mergeInto(target[key] as JsonObject, value, childPath);
+        }
+        continue;
+      }
       const existing = target[key];
-      if (existing === undefined) {
-        target[key] = "$value" in value ? value : {};
-        if (!("$value" in value)) mergeInto(target[key] as JsonObject, value, childPath);
-      } else if ("$value" in value || (isObject(existing) && "$value" in existing)) {
+      if (has(value, "$value") || (isObject(existing) && has(existing, "$value"))) {
         throw new DtcgError(childPath, "token defined in more than one document");
       } else {
         mergeInto(existing as JsonObject, value, childPath);
@@ -79,14 +105,14 @@ function collect(
   inherited: DtcgType | undefined,
   out: RawToken[],
 ): void {
-  const groupType = group.$type === undefined ? inherited : parseType(group.$type, path);
+  const groupType = has(group, "$type") ? parseType(group.$type, path) : inherited;
   for (const [key, node] of Object.entries(group)) {
     if (key.startsWith("$")) continue;
     const childPath = path ? `${path}.${key}` : key;
     if (!NAME.test(key)) throw new DtcgError(childPath, `name "${key}" must match ${NAME.source}`);
     if (!isObject(node)) throw new DtcgError(childPath, "expected a token or group object");
-    if ("$value" in node) {
-      const type = node.$type === undefined ? groupType : parseType(node.$type, childPath);
+    if (has(node, "$value")) {
+      const type = has(node, "$type") ? parseType(node.$type, childPath) : groupType;
       out.push({
         path: childPath,
         type,
@@ -176,6 +202,7 @@ function sub<T extends DtcgType>(
   lookup: Lookup,
   literal: (v: Json, p: string) => ValueOf[T],
 ): ValueOf[T] {
+  rejectRef(value, path);
   const alias = typeof value === "string" ? ALIAS.exec(value) : null;
   if (!alias) return literal(value, path);
   const target = lookup(alias[1]);
@@ -184,8 +211,15 @@ function sub<T extends DtcgType>(
   return target.value as ValueOf[T];
 }
 
+function rejectRef(value: Json, path: string): void {
+  if (isObject(value) && has(value, "$ref")) {
+    throw new DtcgError(path, "$ref (JSON Pointer) references are not supported by this reader");
+  }
+}
+
 function parseValue(token: RawToken, lookup: Lookup): TokenValue {
   const { path, value } = token;
+  rejectRef(value, path);
   switch (token.type) {
     case "color":
       return { type: "color", value: parseColor(value, path) };
@@ -208,6 +242,20 @@ function parseValue(token: RawToken, lookup: Lookup): TokenValue {
     default:
       throw new DtcgError(path, "no $type on the token or any parent group");
   }
+}
+
+function finite(value: number, path: string): number {
+  if (!Number.isFinite(value)) throw new DtcgError(path, "value overflows after conversion");
+  return value;
+}
+
+/** Control characters cannot be written safely into CSS or Rust strings. */
+function plainString(value: string, path: string): string {
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u001f\u007f]/.test(value)) {
+    throw new DtcgError(path, "control characters are not allowed in names");
+  }
+  return value;
 }
 
 function parseNumber(value: Json, path: string): number {
@@ -235,7 +283,10 @@ function parseColor(value: Json, path: string): Color {
   if (value.hex !== undefined && String(value.hex).toUpperCase() !== hex) {
     throw new DtcgError(path, `hex ${String(value.hex)} disagrees with components (${hex})`);
   }
-  return { components: components as [number, number, number], alpha, hex };
+  // Quantise to 8 bits per channel: CSS, JSON, Rust and the contrast gate all see
+  // exactly the colour the hex states, so the gate checks what ships.
+  const quantised = (components as number[]).map((c) => Math.round(c * 255) / 255);
+  return { components: quantised as [number, number, number], alpha, hex };
 }
 
 function parseDimension(value: Json, path: string): Dimension {
@@ -252,7 +303,7 @@ function parseDuration(value: Json, path: string): Duration {
   }
   const amount = parseNumber(value.value, path);
   if (amount < 0) throw new DtcgError(path, "duration must not be negative");
-  return { ms: value.unit === "s" ? amount * 1000 : amount };
+  return { ms: finite(value.unit === "s" ? amount * 1000 : amount, path) };
 }
 
 function parseCubicBezier(value: Json, path: string): CubicBezier {
@@ -274,10 +325,37 @@ function parseFontFamily(value: Json, path: string): string[] {
   ) {
     throw new DtcgError(path, "fontFamily must be a name or a non-empty list of names");
   }
-  return families as string[];
+  return (families as string[]).map((f) => plainString(f, path));
 }
 
+/** DTCG 2025.10 font-weight keywords. */
+const FONT_WEIGHTS: Readonly<Record<string, number>> = {
+  thin: 100,
+  hairline: 100,
+  "extra-light": 200,
+  "ultra-light": 200,
+  light: 300,
+  normal: 400,
+  regular: 400,
+  book: 400,
+  medium: 500,
+  "semi-bold": 600,
+  "demi-bold": 600,
+  bold: 700,
+  "extra-bold": 800,
+  "ultra-bold": 800,
+  black: 900,
+  heavy: 900,
+  "extra-black": 950,
+  "ultra-black": 950,
+};
+
 function parseFontWeight(value: Json, path: string): number {
+  if (typeof value === "string") {
+    const keyword = Object.hasOwn(FONT_WEIGHTS, value) ? FONT_WEIGHTS[value] : undefined;
+    if (keyword === undefined) throw new DtcgError(path, `unknown fontWeight keyword "${value}"`);
+    return keyword;
+  }
   const weight = parseNumber(value, path);
   if (weight < 1 || weight > 1000) throw new DtcgError(path, "fontWeight must be in 1..1000");
   return weight;
@@ -318,13 +396,13 @@ function parseTypography(value: Json, path: string, lookup: Lookup): Typography 
 
 function parseGradient(token: RawToken, lookup: Lookup): Gradient {
   const { path, value } = token;
-  if (!Array.isArray(value) || value.length < 2)
-    throw new DtcgError(path, "gradient needs at least two stops");
+  if (!Array.isArray(value) || value.length < 1)
+    throw new DtcgError(path, "gradient needs at least one stop");
   const stops = value.map((stop, i) => {
     if (!isObject(stop)) throw new DtcgError(`${path}[${i}]`, "stop must be { color, position }");
-    const position = parseNumber(stop.position, `${path}[${i}].position`);
-    if (position < 0 || position > 1)
-      throw new DtcgError(`${path}[${i}]`, "position must be in 0..1");
+    const raw = sub(stop.position, "number", `${path}[${i}].position`, lookup, parseNumber);
+    // DTCG: positions outside 0..1 clamp to the nearest bound.
+    const position = Math.min(1, Math.max(0, raw));
     return { color: sub(stop.color, "color", `${path}[${i}].color`, lookup, parseColor), position };
   });
   const extension = token.extensions?.[GRADIENT_EXTENSION];

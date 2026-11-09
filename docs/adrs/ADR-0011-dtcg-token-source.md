@@ -29,8 +29,8 @@ consumer cannot use it without a CSS parser.
     components, numeric dimensions, millisecond durations, no CSS syntax;
   - `packages/design-tokens-rs/src/<design>.rs`: a typed `Theme` struct and one
     const per theme in the zero-dependency `no_std` crate
-    `syntropic137-design-tokens`, committed so a Rust consumer needs no Node.
-    A test fails when the committed file differs from the source.
+    `syntropic137-design-tokens`, committed so a Rust consumer needs no Node. Only `tokens:rust` rewrites
+    it; the ordinary build does not, so the drift test fails on a stale copy.
 - Extensions beyond DTCG, both namespaced or documented: gradient direction in
   `$extensions["com.syntropic137.gradient"].angle`; the `em` dimension unit for
   type-relative sizes (tracking).

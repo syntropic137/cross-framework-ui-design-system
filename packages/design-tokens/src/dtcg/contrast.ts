@@ -18,6 +18,19 @@ export function checkContrast(
   themes: readonly ResolvedTheme[],
   rules: readonly ContrastRule[],
 ): ContrastFailure[] {
+  for (const rule of rules) {
+    if (typeof rule.fg !== "string" || typeof rule.bg !== "string") {
+      throw new Error(`contrast rule ${JSON.stringify(rule)}: fg and bg must be token paths`);
+    }
+    if (
+      typeof rule.min !== "number" ||
+      !Number.isFinite(rule.min) ||
+      rule.min < 1 ||
+      rule.min > 21
+    ) {
+      throw new Error(`contrast rule ${rule.fg} on ${rule.bg}: min must be a number in 1..21`);
+    }
+  }
   const failures: ContrastFailure[] = [];
   for (const theme of themes) {
     const colors = new Map<string, Color>();
