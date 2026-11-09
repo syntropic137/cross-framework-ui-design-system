@@ -1,38 +1,58 @@
 // The contrast gate: a design declares which colour pairs must reach which ratio,
 // and generation fails when any theme misses one.
 
-import { contrastRatio } from "./color.js";
+import { contrastRatio, relativeLuminance } from "./color.js";
 import type { Color, Gradient, ResolvedTheme } from "./types.js";
 
-/** Samples per stop-to-stop segment: dense enough to land within 0.5% of any luminance crossing. */
-const SEGMENT_SAMPLES = 256;
-
 /**
- * Every colour a gradient paints, sampled: the stops plus points interpolated
- * between them in gamma-encoded sRGB (the CSS default for gradients), so a
- * foreground whose luminance falls between two stops is judged where it fails.
+ * The luminance range a gradient paints, exactly. Stops are fixed up as CSS
+ * does (in order; a position below an earlier one is raised to it), equal
+ * positions are hard edges (no blend between them), and each blended segment
+ * mixes gamma-encoded sRGB (the CSS default). On a segment, luminance is a
+ * positively weighted sum of the convex sRGB transfer of linear mixes, so it is
+ * convex in t: its maximum is at an end and its minimum is found by ternary
+ * search. Returns [min, max] per painted piece.
  */
-export function gradientSamples(gradient: Gradient): Color[] {
-  const stops = [...gradient.stops].sort((a, b) => a.position - b.position);
-  const samples = stops.map((s) => s.color);
+export function gradientLuminanceRanges(gradient: Gradient): [number, number][] {
+  let floor = -Infinity;
+  const stops = gradient.stops.map((s) => {
+    floor = Math.max(floor, s.position);
+    return { color: s.color, position: floor };
+  });
+  const ranges: [number, number][] = stops.map((s) => {
+    const l = relativeLuminance(s.color);
+    return [l, l];
+  });
   for (let i = 0; i + 1 < stops.length; i++) {
-    const a = stops[i].color;
-    const b = stops[i + 1].color;
-    for (let k = 1; k < SEGMENT_SAMPLES; k++) {
-      const t = k / SEGMENT_SAMPLES;
-      const mix = (x: number, y: number) => x + (y - x) * t;
-      samples.push({
-        components: [0, 1, 2].map((c) => mix(a.components[c], b.components[c])) as [
-          number,
-          number,
-          number,
-        ],
-        alpha: mix(a.alpha, b.alpha),
+    const [a, b] = [stops[i], stops[i + 1]];
+    if (b.position === a.position) continue; // hard edge: nothing painted between
+    const at = (t: number) =>
+      relativeLuminance({
+        components: [0, 1, 2].map(
+          (c) => a.color.components[c] + (b.color.components[c] - a.color.components[c]) * t,
+        ) as [number, number, number],
+        alpha: 1,
         hex: "",
       });
+    let lo = 0;
+    let hi = 1;
+    for (let k = 0; k < 200; k++) {
+      const m1 = lo + (hi - lo) / 3;
+      const m2 = hi - (hi - lo) / 3;
+      if (at(m1) <= at(m2)) hi = m2;
+      else lo = m1;
     }
+    const ends = [at(0), at(1)];
+    ranges.push([Math.min(at((lo + hi) / 2), ...ends), Math.max(...ends)]);
   }
-  return samples;
+  return ranges;
+}
+
+/** Lowest WCAG contrast of a colour against anything in a luminance range. */
+function minContrastInRange(fg: Color, [min, max]: [number, number]): number {
+  const l = relativeLuminance(fg);
+  const nearest = Math.min(max, Math.max(min, l));
+  return (Math.max(l, nearest) + 0.05) / (Math.min(l, nearest) + 0.05);
 }
 
 export type ContrastRule = { fg: string; bg: string; min: number; why?: string };
@@ -80,13 +100,15 @@ export function checkContrast(
           `contrast rule ${rule.fg} on ${rule.bg}: foreground must be a colour and background a colour or gradient in theme ${theme.name}`,
         );
       }
-      const bgs = bgColor ? [bgColor] : gradientSamples(bgGradient!);
+      const bgs = bgColor ? [bgColor] : bgGradient!.stops.map((stop) => stop.color);
       if (fg.alpha !== 1 || bgs.some((bg) => bg.alpha !== 1)) {
         throw new Error(
           `contrast rule ${rule.fg} on ${rule.bg}: translucent colours need a backdrop`,
         );
       }
-      const ratio = Math.min(...bgs.map((bg) => contrastRatio(fg, bg)));
+      const ratio = bgColor
+        ? contrastRatio(fg, bgColor)
+        : Math.min(...gradientLuminanceRanges(bgGradient!).map((r) => minContrastInRange(fg, r)));
       if (ratio < rule.min) {
         failures.push({ theme: theme.name, fg: rule.fg, bg: rule.bg, min: rule.min, ratio });
       }

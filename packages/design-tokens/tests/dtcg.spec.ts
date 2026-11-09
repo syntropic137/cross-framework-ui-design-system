@@ -522,7 +522,43 @@ describe("gradient contrast gate (Codex xvzo6.6 p1)", () => {
 
   it("fails text whose luminance the gradient crosses, though both stops pass", () => {
     const [failure] = checkContrast([theme], [{ fg: "c.grey", bg: "g.bw", min: 4.5 }]);
-    expect(failure.ratio).toBeLessThan(1.05);
+    expect(failure.ratio).toBe(1);
+    // Exact, not sampled: even a minimum just above 1 fails.
+    expect(checkContrast([theme], [{ fg: "c.grey", bg: "g.bw", min: 1.001 }])).toHaveLength(1);
+  });
+
+  const stop = (p: string, position: number) => ({ color: `{color.palette.${p}}`, position });
+  const gradient = (stops: object[]) =>
+    resolveTheme("t", [
+      palette,
+      {
+        c: {
+          $type: "color",
+          grey: { $value: grey },
+          red: { $value: color("#FF0000") },
+          lime: { $value: color("#00FF00") },
+          yellow: { $value: color("#FFFF00") },
+        },
+        g: { $type: "gradient", x: { $value: stops } },
+      } as never,
+    ]);
+
+  it("treats equal stop positions as a hard edge, not a blend", () => {
+    const theme = gradient([stop("black", 0.5), stop("white", 0.5)]);
+    expect(checkContrast([theme], [{ fg: "c.grey", bg: "g.x", min: 4.5 }])).toEqual([]);
+  });
+
+  it("fixes up out-of-order stops as CSS does (a lower position is raised to the earlier one)", () => {
+    const stops = [
+      { color: "{c.red}", position: 0 },
+      { color: "{c.lime}", position: 1 },
+      { color: "{c.yellow}", position: 0.5 },
+    ];
+    const [failure] = checkContrast(
+      [gradient(stops)],
+      [{ fg: "color.palette.black", bg: "g.x", min: 4.5 }],
+    );
+    expect(failure.ratio).toBeCloseTo(3.94, 2);
   });
 
   it("rejects a gradient as the foreground, even with one stop", () => {
