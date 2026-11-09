@@ -116,6 +116,7 @@ describe("DTCG resolver", () => {
       "ds-t-body-font-weight",
       "ds-t-body-line-height",
       "ds-t-body-letter-spacing",
+      "ds-t-body-font-feature-settings",
     ]);
   });
 });
@@ -573,5 +574,53 @@ describe("gradient contrast gate (Codex xvzo6.6 p1)", () => {
     expect(() =>
       checkContrast([theme], [{ fg: "g.solid", bg: "color.palette.white", min: 3 }]),
     ).toThrow(/foreground must be a colour/);
+  });
+});
+
+describe("operational type (xvzo6.7)", () => {
+  it("defines table, terminal, shortcut and numeric styles beside the editorial scale, fit for sustained work", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const [dark] = buildDesign(config, documents).themes;
+    const operational = dark.tokens.filter((t) => t.path.startsWith("typography.operational."));
+    expect(operational.map((t) => t.path.split(".").pop())).toEqual(
+      expect.arrayContaining(["table", "terminal", "shortcut", "numeric"]),
+    );
+    for (const token of operational) {
+      if (token.type !== "typography") throw new Error(`${token.path} is not typography`);
+      const t = token.value;
+      expect(t.fontSize, token.path).toMatchObject({ unit: "px" });
+      expect(t.fontSize.value, token.path).toBeGreaterThanOrEqual(12);
+      expect(t.lineHeight, token.path).toBeGreaterThanOrEqual(1.2);
+      expect(t.letterSpacing.value, token.path).toBeGreaterThanOrEqual(0);
+    }
+    const numeric = tokenOf(dark, "typography.operational.numeric");
+    expect(numeric.type === "typography" && numeric.value.fontFeatures).toContain("tnum");
+    const terminal = tokenOf(dark, "typography.operational.terminal");
+    expect(terminal.type === "typography" && terminal.value.fontFamily[0]).toBe("Geist Mono");
+  });
+
+  it("carries OpenType features to CSS and Rust, and validates the tags", () => {
+    const body = (extensions?: object) => ({
+      $value: {
+        fontFamily: ["Geist"],
+        fontSize: { value: 13, unit: "px" },
+        fontWeight: 400,
+        lineHeight: 1.4,
+        letterSpacing: { value: 0, unit: "em" },
+      },
+      ...(extensions ? { $extensions: { "com.syntropic137.typography": extensions } } : {}),
+    });
+    const theme = resolveTheme("t", [
+      { t: { $type: "typography", plain: body(), nums: body({ fontFeatures: ["tnum", "zero"] }) } },
+    ] as never);
+    const css = (path: string) => Object.fromEntries(cssDeclarations("ds", tokenOf(theme, path)));
+    expect(css("t.plain")["ds-t-plain-font-feature-settings"]).toBe("normal");
+    expect(css("t.nums")["ds-t-nums-font-feature-settings"]).toBe('"tnum", "zero"');
+    expect(emitRust("d", [theme], "t", "// h")).toContain('font_features: &["tnum", "zero"] }');
+    for (const bad of [{ fontFeatures: ["tabular"] }, { fontFeatures: ["tnum", "tnum"] }, {}]) {
+      expect(() =>
+        resolveTheme("t", [{ t: { $type: "typography", x: body(bad) } }] as never),
+      ).toThrow(/fontFeatures/);
+    }
   });
 });
