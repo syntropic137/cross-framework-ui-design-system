@@ -396,3 +396,70 @@ describe("Codex review pass 1 regressions", () => {
     ).toThrow(/alias cycle|expected a color alias/);
   });
 });
+
+describe("generated Rust compiles", () => {
+  it("for a synthetic theme with every type, escapes, odd weights and reordered themes", async () => {
+    const { execFileSync } = await import("node:child_process");
+    const { mkdtemp, mkdir, writeFile, rm } = await import("node:fs/promises");
+    const { tmpdir } = await import("node:os");
+    const docs = (fg: string) => [
+      palette,
+      {
+        $description: "synthetic",
+        c: {
+          $type: "color",
+          fg: { $value: `{color.palette.${fg}}`, $description: 'a "quoted"\nline' },
+        },
+        f: { $type: "fontFamily", odd: { $value: ['A"B\\C', "serif"] } },
+        w: { $type: "fontWeight", x: { $value: 450.5 }, k: { $value: "bold" } },
+        d: { $type: "dimension", x: { $value: { value: -0.5, unit: "em" } } },
+        t: { $type: "duration", x: { $value: { value: 1.5, unit: "s" } } },
+        e: { $type: "cubicBezier", x: { $value: [0.2, -1, 0.2, 2] } },
+        n: { $type: "number", x: { $value: 3 } },
+        g: {
+          $type: "gradient",
+          one: { $value: [{ color: "{color.palette.black}", position: 0.5 }] },
+        },
+        y: {
+          $type: "typography",
+          x: {
+            $value: {
+              fontFamily: "{f.odd}",
+              fontSize: { value: 1, unit: "rem" },
+              fontWeight: "{w.x}",
+              lineHeight: "{n.x}",
+              letterSpacing: "{d.x}",
+            },
+          },
+        },
+      },
+    ];
+    const rust = emitRust(
+      "synthetic",
+      [resolveTheme("dark-1", docs("white")), resolveTheme("light", docs("black"))],
+      "light",
+      "// synthetic",
+    );
+    const dir = await mkdtemp(join(tmpdir(), "dtcg-rust-"));
+    try {
+      await mkdir(join(dir, "src"));
+      const crate = join(PACKAGE, "..", "design-tokens-rs").replaceAll("\\", "/");
+      await writeFile(
+        join(dir, "Cargo.toml"),
+        `[package]\nname = "synthetic"\nversion = "0.0.0"\nedition = "2021"\n[dependencies]\nsyntropic137-design-tokens = { path = "${crate}" }\n[workspace]\n`,
+      );
+      await writeFile(
+        join(dir, "src", "lib.rs"),
+        "#![deny(warnings)]\npub use syntropic137_design_tokens::*;\npub mod synthetic;\n",
+      );
+      await writeFile(join(dir, "src", "synthetic.rs"), rust);
+      execFileSync("cargo", ["check", "--quiet", "--offline"], {
+        cwd: dir,
+        stdio: "pipe",
+        env: { ...process.env, CARGO_TARGET_DIR: join(dir, "target") },
+      });
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  }, 120_000);
+});

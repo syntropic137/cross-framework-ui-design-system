@@ -34,6 +34,14 @@ consumer cannot use it without a CSS parser.
 - Extensions beyond DTCG, both namespaced or documented: gradient direction in
   `$extensions["com.syntropic137.gradient"].angle`; the `em` dimension unit for
   type-relative sizes (tracking).
+- The reader is a declared subset of DTCG 2025.10: curly-brace aliases (token and
+  composite-property level) are supported; JSON Pointer `$ref`, `$root` and
+  `$extends` are rejected with an error, never skipped, so no token is silently
+  lost. Types: color (srgb), dimension, duration, cubicBezier, fontFamily,
+  fontWeight, number, typography, gradient. Adding `$ref` is a separate change if a
+  source ever needs it.
+- Colours are quantised to 8 bits per channel at read time, so the contrast gate
+  judges exactly the colour every output ships.
 - The existing `--ds-*` generic token layer (ADR-0002) is unchanged.
 
 ## Consequences
