@@ -624,3 +624,49 @@ describe("operational type (xvzo6.7)", () => {
     }
   });
 });
+
+describe("typography features on an alias (Codex xvzo6.7 p1)", () => {
+  const body = {
+    $value: {
+      fontFamily: ["Geist"],
+      fontSize: { value: 13, unit: "px" },
+      fontWeight: 400,
+      lineHeight: 1.4,
+      letterSpacing: { value: 0, unit: "em" },
+    },
+    $extensions: { "com.syntropic137.typography": { fontFeatures: ["tnum"] } },
+  };
+  const ext = (fontFeatures: unknown) => ({
+    $extensions: { "com.syntropic137.typography": { fontFeatures } },
+  });
+
+  it("keeps the target's features, or replaces them with the alias's own, validated", () => {
+    const theme = resolveTheme("t", [
+      {
+        t: {
+          $type: "typography",
+          base: body,
+          same: { $value: "{t.base}" },
+          own: { $value: "{t.base}", ...ext(["lnum"]) },
+        },
+      },
+    ] as never);
+    const features = (p: string) => {
+      const token = tokenOf(theme, p);
+      return token.type === "typography" ? token.value.fontFeatures : null;
+    };
+    expect(features("t.same")).toEqual(["tnum"]);
+    expect(features("t.own")).toEqual(["lnum"]);
+    expect(features("t.base")).toEqual(["tnum"]);
+    expect(() =>
+      resolveTheme("t", [
+        { t: { $type: "typography", base: body, bad: { $value: "{t.base}", ...ext(["x"]) } } },
+      ] as never),
+    ).toThrow(/fontFeatures/);
+    expect(() =>
+      resolveTheme("t", [
+        { n: { $type: "number", a: { $value: 1 }, b: { $value: "{n.a}", ...ext(["tnum"]) } } },
+      ] as never),
+    ).toThrow(/only to typography/);
+  });
+});
