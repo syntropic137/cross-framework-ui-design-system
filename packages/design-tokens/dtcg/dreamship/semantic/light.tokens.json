@@ -25,6 +25,14 @@
       "subtle": {
         "$value": "{color.palette.dawn-rule}",
         "$description": "Decorative separators only; never the only boundary of a control."
+      },
+      "control": {
+        "$value": "{color.palette.dawn-control}",
+        "$description": "Boundary that identifies a control (input, secondary button outline). 3:1 against every surface, WCAG 1.4.11."
+      },
+      "selected": {
+        "$value": "{color.palette.ink}",
+        "$description": "Border of a selected item. 3:1 against every surface; distinct from the focus ring."
       }
     },
     "action": {
@@ -42,7 +50,8 @@
     },
     "status": {
       "success": {
-        "$value": "{color.palette.jade-ink}"
+        "$value": "{color.palette.jade-ink}",
+        "$description": "Light success is jade-ink #0A7559 (5.05:1 on dawn mist). The kit prose's deep jade #0C8F6C reaches only 3.62:1 and is retired."
       },
       "warning": {
         "$value": "{color.palette.dawn-ink}"

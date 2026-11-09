@@ -463,3 +463,40 @@ describe("generated Rust compiles", () => {
     }
   }, 120_000);
 });
+
+describe("DS v1.1 fixes (xvzo6.6)", () => {
+  it("judges text on a gradient against its weakest stop: no text colour may sit on brand tide", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { themes } = buildDesign(config, documents);
+    for (const fg of ["color.palette.white", "color.palette.ink", "color.palette.ivory"]) {
+      const failures = checkContrast(themes, [{ fg, bg: "gradient.brand", min: 4.5 }]);
+      expect(failures.length, fg).toBeGreaterThan(0);
+    }
+    const white = checkContrast(themes, [
+      { fg: "color.palette.white", bg: "gradient.brand", min: 4.5 },
+    ]);
+    // White on jade, the brightest stop: the critique's 1.61:1.
+    expect(white[0].ratio).toBeCloseTo(1.61, 2);
+  });
+
+  it("splits borders: subtle is decorative, control and selected reach 3:1 on every surface", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { themes } = buildDesign(config, documents);
+    const rules = ["control", "selected"].flatMap((b) =>
+      ["page", "default", "raised"].map((s) => ({
+        fg: `color.border.${b}`,
+        bg: `color.surface.${s}`,
+        min: 3,
+      })),
+    );
+    expect(checkContrast(themes, rules)).toEqual([]);
+    expect(config.contrast.filter((r) => r.fg === "color.border.subtle")).toEqual([]);
+  });
+
+  it("retires the kit's deep jade: light success is the 5.05:1 jade-ink", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { themes, json } = buildDesign(config, documents);
+    expect(themes[0].tokens.some((t) => t.path === "color.palette.deep-jade")).toBe(false);
+    expect(json.themes.light["color.status.success"]).toMatchObject({ value: { hex: "#0A7559" } });
+  });
+});

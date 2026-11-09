@@ -51,6 +51,18 @@
           "hex": "#1E2A30"
         }
       },
+      "night-control": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.4275,
+            0.451
+          ],
+          "alpha": 1,
+          "hex": "#5C6D73"
+        }
+      },
       "ivory": {
         "$value": {
           "colorSpace": "srgb",
@@ -135,6 +147,18 @@
           "hex": "#DDD5CA"
         }
       },
+      "dawn-control": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.549,
+            0.5216,
+            0.4863
+          ],
+          "alpha": 1,
+          "hex": "#8C857C"
+        }
+      },
       "slate": {
         "$value": {
           "colorSpace": "srgb",
@@ -169,18 +193,6 @@
           ],
           "alpha": 1,
           "hex": "#0FAE82"
-        }
-      },
-      "deep-jade": {
-        "$value": {
-          "colorSpace": "srgb",
-          "components": [
-            0.0471,
-            0.5608,
-            0.4235
-          ],
-          "alpha": 1,
-          "hex": "#0C8F6C"
         }
       },
       "jade-ink": {
