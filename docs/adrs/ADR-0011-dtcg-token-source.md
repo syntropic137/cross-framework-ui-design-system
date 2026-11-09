@@ -32,7 +32,8 @@ consumer cannot use it without a CSS parser.
     `syntropic137-design-tokens`, committed so a Rust consumer needs no Node. Only `tokens:rust` rewrites
     it; the ordinary build does not, so the drift test fails on a stale copy.
 - Extensions beyond DTCG, both namespaced or documented: gradient direction in
-  `$extensions["com.syntropic137.gradient"].angle`; the `em` dimension unit for
+  `$extensions["com.syntropic137.gradient"].angle`; OpenType features in
+  `$extensions["com.syntropic137.typography"].fontFeatures` (e.g. tabular figures); the `em` dimension unit for
   type-relative sizes (tracking).
 - The reader is a declared subset of DTCG 2025.10: curly-brace aliases (token and
   composite-property level) are supported; JSON Pointer `$ref`, `$root` and
