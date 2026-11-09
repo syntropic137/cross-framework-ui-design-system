@@ -15,6 +15,8 @@ pub struct Theme {
     pub color_palette_deep_sea: Color,
     /// `color.palette.night-rule`
     pub color_palette_night_rule: Color,
+    /// `color.palette.night-control`
+    pub color_palette_night_control: Color,
     /// `color.palette.ivory`
     pub color_palette_ivory: Color,
     /// `color.palette.ivory-muted`
@@ -29,14 +31,14 @@ pub struct Theme {
     pub color_palette_white: Color,
     /// `color.palette.dawn-rule`
     pub color_palette_dawn_rule: Color,
+    /// `color.palette.dawn-control`
+    pub color_palette_dawn_control: Color,
     /// `color.palette.slate`
     pub color_palette_slate: Color,
     /// `color.palette.jade`
     pub color_palette_jade: Color,
     /// `color.palette.jade-mid`
     pub color_palette_jade_mid: Color,
-    /// `color.palette.deep-jade`
-    pub color_palette_deep_jade: Color,
     /// `color.palette.jade-ink`
     pub color_palette_jade_ink: Color,
     /// `color.palette.indigo`
@@ -67,6 +69,10 @@ pub struct Theme {
     pub color_content_secondary: Color,
     /// `color.border.subtle`: Decorative separators only; never the only boundary of a control.
     pub color_border_subtle: Color,
+    /// `color.border.control`: Boundary that identifies a control (input, secondary button outline). 3:1 against every surface, WCAG 1.4.11.
+    pub color_border_control: Color,
+    /// `color.border.selected`: Border of a selected item. 3:1 against every surface; distinct from the focus ring.
+    pub color_border_selected: Color,
     /// `color.action.fill`
     pub color_action_fill: Color,
     /// `color.action.on`
@@ -165,6 +171,10 @@ pub struct Theme {
     pub component_button_primary_label: Color,
     /// `component.button.primary.radius`
     pub component_button_primary_radius: Dimension,
+    /// `component.gradient-caption.backing`
+    pub component_gradient_caption_backing: Color,
+    /// `component.gradient-caption.label`
+    pub component_gradient_caption_label: Color,
 }
 
 /// The `dark` theme.
@@ -173,6 +183,7 @@ pub const DARK: Theme = Theme {
     color_palette_night_surface: Color { hex: "#0B1216", srgb: [0.043137, 0.070588, 0.086275], linear: [0.003347, 0.006049, 0.008023], alpha: 1.0 },
     color_palette_deep_sea: Color { hex: "#0E1C22", srgb: [0.054902, 0.109804, 0.133333], linear: [0.004391, 0.011612, 0.015996], alpha: 1.0 },
     color_palette_night_rule: Color { hex: "#1E2A30", srgb: [0.117647, 0.164706, 0.188235], linear: [0.012983, 0.023153, 0.029557], alpha: 1.0 },
+    color_palette_night_control: Color { hex: "#5C6D73", srgb: [0.360784, 0.427451, 0.45098], linear: [0.107023, 0.152926, 0.171441], alpha: 1.0 },
     color_palette_ivory: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
     color_palette_ivory_muted: Color { hex: "#9AA4A7", srgb: [0.603922, 0.643137, 0.654902], linear: [0.323143, 0.371238, 0.386429], alpha: 1.0 },
     color_palette_ink: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
@@ -180,10 +191,10 @@ pub const DARK: Theme = Theme {
     color_palette_paper: Color { hex: "#FBF8F3", srgb: [0.984314, 0.972549, 0.952941], linear: [0.964686, 0.938686, 0.896269], alpha: 1.0 },
     color_palette_white: Color { hex: "#FFFFFF", srgb: [1.0, 1.0, 1.0], linear: [1.0, 1.0, 1.0], alpha: 1.0 },
     color_palette_dawn_rule: Color { hex: "#DDD5CA", srgb: [0.866667, 0.835294, 0.792157], linear: [0.723055, 0.665387, 0.590619], alpha: 1.0 },
+    color_palette_dawn_control: Color { hex: "#8C857C", srgb: [0.54902, 0.521569, 0.486275], linear: [0.262251, 0.234551, 0.201556], alpha: 1.0 },
     color_palette_slate: Color { hex: "#5A626B", srgb: [0.352941, 0.384314, 0.419608], linear: [0.102242, 0.122139, 0.147027], alpha: 1.0 },
     color_palette_jade: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 },
     color_palette_jade_mid: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 },
-    color_palette_deep_jade: Color { hex: "#0C8F6C", srgb: [0.047059, 0.560784, 0.423529], linear: [0.003677, 0.274677, 0.14996], alpha: 1.0 },
     color_palette_jade_ink: Color { hex: "#0A7559", srgb: [0.039216, 0.458824, 0.34902], linear: [0.003035, 0.177888, 0.099899], alpha: 1.0 },
     color_palette_indigo: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 },
     color_palette_cyan: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
@@ -199,6 +210,8 @@ pub const DARK: Theme = Theme {
     color_content_primary: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
     color_content_secondary: Color { hex: "#9AA4A7", srgb: [0.603922, 0.643137, 0.654902], linear: [0.323143, 0.371238, 0.386429], alpha: 1.0 },
     color_border_subtle: Color { hex: "#1E2A30", srgb: [0.117647, 0.164706, 0.188235], linear: [0.012983, 0.023153, 0.029557], alpha: 1.0 },
+    color_border_control: Color { hex: "#5C6D73", srgb: [0.360784, 0.427451, 0.45098], linear: [0.107023, 0.152926, 0.171441], alpha: 1.0 },
+    color_border_selected: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
     color_action_fill: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 },
     color_action_on: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
     color_focus_ring: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
@@ -248,6 +261,8 @@ pub const DARK: Theme = Theme {
     component_button_primary_fill: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 },
     component_button_primary_label: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
     component_button_primary_radius: Dimension { value: 999.0, unit: Unit::Px },
+    component_gradient_caption_backing: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
+    component_gradient_caption_label: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
 };
 
 /// The `light` theme.
@@ -256,6 +271,7 @@ pub const LIGHT: Theme = Theme {
     color_palette_night_surface: Color { hex: "#0B1216", srgb: [0.043137, 0.070588, 0.086275], linear: [0.003347, 0.006049, 0.008023], alpha: 1.0 },
     color_palette_deep_sea: Color { hex: "#0E1C22", srgb: [0.054902, 0.109804, 0.133333], linear: [0.004391, 0.011612, 0.015996], alpha: 1.0 },
     color_palette_night_rule: Color { hex: "#1E2A30", srgb: [0.117647, 0.164706, 0.188235], linear: [0.012983, 0.023153, 0.029557], alpha: 1.0 },
+    color_palette_night_control: Color { hex: "#5C6D73", srgb: [0.360784, 0.427451, 0.45098], linear: [0.107023, 0.152926, 0.171441], alpha: 1.0 },
     color_palette_ivory: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
     color_palette_ivory_muted: Color { hex: "#9AA4A7", srgb: [0.603922, 0.643137, 0.654902], linear: [0.323143, 0.371238, 0.386429], alpha: 1.0 },
     color_palette_ink: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
@@ -263,10 +279,10 @@ pub const LIGHT: Theme = Theme {
     color_palette_paper: Color { hex: "#FBF8F3", srgb: [0.984314, 0.972549, 0.952941], linear: [0.964686, 0.938686, 0.896269], alpha: 1.0 },
     color_palette_white: Color { hex: "#FFFFFF", srgb: [1.0, 1.0, 1.0], linear: [1.0, 1.0, 1.0], alpha: 1.0 },
     color_palette_dawn_rule: Color { hex: "#DDD5CA", srgb: [0.866667, 0.835294, 0.792157], linear: [0.723055, 0.665387, 0.590619], alpha: 1.0 },
+    color_palette_dawn_control: Color { hex: "#8C857C", srgb: [0.54902, 0.521569, 0.486275], linear: [0.262251, 0.234551, 0.201556], alpha: 1.0 },
     color_palette_slate: Color { hex: "#5A626B", srgb: [0.352941, 0.384314, 0.419608], linear: [0.102242, 0.122139, 0.147027], alpha: 1.0 },
     color_palette_jade: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 },
     color_palette_jade_mid: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 },
-    color_palette_deep_jade: Color { hex: "#0C8F6C", srgb: [0.047059, 0.560784, 0.423529], linear: [0.003677, 0.274677, 0.14996], alpha: 1.0 },
     color_palette_jade_ink: Color { hex: "#0A7559", srgb: [0.039216, 0.458824, 0.34902], linear: [0.003035, 0.177888, 0.099899], alpha: 1.0 },
     color_palette_indigo: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 },
     color_palette_cyan: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
@@ -282,6 +298,8 @@ pub const LIGHT: Theme = Theme {
     color_content_primary: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
     color_content_secondary: Color { hex: "#5A626B", srgb: [0.352941, 0.384314, 0.419608], linear: [0.102242, 0.122139, 0.147027], alpha: 1.0 },
     color_border_subtle: Color { hex: "#DDD5CA", srgb: [0.866667, 0.835294, 0.792157], linear: [0.723055, 0.665387, 0.590619], alpha: 1.0 },
+    color_border_control: Color { hex: "#8C857C", srgb: [0.54902, 0.521569, 0.486275], linear: [0.262251, 0.234551, 0.201556], alpha: 1.0 },
+    color_border_selected: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
     color_action_fill: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
     color_action_on: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
     color_focus_ring: Color { hex: "#0E6F7E", srgb: [0.054902, 0.435294, 0.494118], linear: [0.004391, 0.158961, 0.208637], alpha: 1.0 },
@@ -331,6 +349,8 @@ pub const LIGHT: Theme = Theme {
     component_button_primary_fill: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
     component_button_primary_label: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
     component_button_primary_radius: Dimension { value: 999.0, unit: Unit::Px },
+    component_gradient_caption_backing: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
+    component_gradient_caption_label: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
 };
 
 /// The theme a consumer starts in.

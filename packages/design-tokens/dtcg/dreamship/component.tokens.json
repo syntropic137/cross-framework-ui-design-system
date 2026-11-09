@@ -16,6 +16,17 @@
           "$value": "{radius.pill}"
         }
       }
+    },
+    "gradient-caption": {
+      "$description": "Text never sits directly on a brand gradient (no single colour reaches 4.5:1 across tide). A caption over a gradient gets this solid backing.",
+      "backing": {
+        "$type": "color",
+        "$value": "{color.surface.page}"
+      },
+      "label": {
+        "$type": "color",
+        "$value": "{color.content.primary}"
+      }
     }
   }
 }

@@ -142,7 +142,7 @@ describe("contrast gate", () => {
     ]);
     expect(() =>
       checkContrast([theme], [{ fg: "color.palette.nope", bg: "color.palette.white", min: 3 }]),
-    ).toThrow(/no such colour/);
+    ).toThrow(/foreground must be a colour/);
   });
 });
 
@@ -462,4 +462,116 @@ describe("generated Rust compiles", () => {
       await rm(dir, { recursive: true, force: true });
     }
   }, 120_000);
+});
+
+describe("DS v1.1 fixes (xvzo6.6)", () => {
+  it("judges text on a gradient against its weakest stop: no text colour may sit on brand tide", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { themes } = buildDesign(config, documents);
+    for (const fg of ["color.palette.white", "color.palette.ink", "color.palette.ivory"]) {
+      const failures = checkContrast(themes, [{ fg, bg: "gradient.brand", min: 4.5 }]);
+      expect(failures.map((f) => f.theme).sort(), fg).toEqual(["dark", "light"]);
+    }
+    const white = checkContrast(themes, [
+      { fg: "color.palette.white", bg: "gradient.brand", min: 4.5 },
+    ]);
+    // White on jade, the brightest stop: the critique's 1.61:1.
+    expect(white[0].ratio).toBeCloseTo(1.61, 2);
+  });
+
+  it("splits borders: subtle is decorative, control and selected reach 3:1 on every surface", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { themes } = buildDesign(config, documents);
+    const rules = ["control", "selected"].flatMap((b) =>
+      ["page", "default", "raised"].map((s) => ({
+        fg: `color.border.${b}`,
+        bg: `color.surface.${s}`,
+        min: 3,
+      })),
+    );
+    expect(checkContrast(themes, rules)).toEqual([]);
+    expect(config.contrast.filter((r) => r.fg === "color.border.subtle")).toEqual([]);
+  });
+
+  it("retires the kit's deep jade: light success is the 5.05:1 jade-ink", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { themes, json } = buildDesign(config, documents);
+    expect(themes[0].tokens.some((t) => t.path === "color.palette.deep-jade")).toBe(false);
+    expect(json.themes.light["color.status.success"]).toMatchObject({ value: { hex: "#0A7559" } });
+  });
+});
+
+describe("gradient contrast gate (Codex xvzo6.6 p1)", () => {
+  const grey = { colorSpace: "srgb", components: [0x75 / 255, 0x75 / 255, 0x75 / 255] };
+  const theme = resolveTheme("t", [
+    palette,
+    {
+      c: { $type: "color", grey: { $value: grey } },
+      g: {
+        $type: "gradient",
+        bw: {
+          $value: [
+            { color: "{color.palette.black}", position: 0 },
+            { color: "{color.palette.white}", position: 1 },
+          ],
+        },
+        solid: { $value: [{ color: "{color.palette.black}", position: 0 }] },
+      },
+    },
+  ]);
+
+  it("fails text whose luminance the gradient crosses, though both stops pass", () => {
+    const [failure] = checkContrast([theme], [{ fg: "c.grey", bg: "g.bw", min: 4.5 }]);
+    expect(failure.ratio).toBe(1);
+    // Exact, not sampled: even a minimum just above 1 fails.
+    expect(checkContrast([theme], [{ fg: "c.grey", bg: "g.bw", min: 1.001 }])).toHaveLength(1);
+  });
+
+  const stop = (p: string, position: number) => ({ color: `{color.palette.${p}}`, position });
+  const gradient = (stops: object[]) =>
+    resolveTheme("t", [
+      palette,
+      {
+        c: {
+          $type: "color",
+          grey: { $value: grey },
+          red: { $value: color("#FF0000") },
+          lime: { $value: color("#00FF00") },
+          yellow: { $value: color("#FFFF00") },
+        },
+        g: { $type: "gradient", x: { $value: stops } },
+      } as never,
+    ]);
+
+  it("treats equal stop positions as a hard edge, not a blend", () => {
+    const theme = gradient([stop("black", 0.5), stop("white", 0.5)]);
+    expect(checkContrast([theme], [{ fg: "c.grey", bg: "g.x", min: 4.5 }])).toEqual([]);
+  });
+
+  it("ignores a stop that paints nothing inside a run of equal positions", () => {
+    const theme = gradient([stop("black", 0.5), stop("white", 0.5), stop("black", 0.5)]);
+    const rule = { fg: "color.palette.white", bg: "g.x", min: 4.5 };
+    expect(checkContrast([theme], [rule])).toEqual([]);
+    const edge = gradient([stop("black", 0), stop("white", 0), stop("black", 1)]);
+    expect(checkContrast([edge], [rule])).toHaveLength(1);
+  });
+
+  it("fixes up out-of-order stops as CSS does (a lower position is raised to the earlier one)", () => {
+    const stops = [
+      { color: "{c.red}", position: 0 },
+      { color: "{c.lime}", position: 1 },
+      { color: "{c.yellow}", position: 0.5 },
+    ];
+    const [failure] = checkContrast(
+      [gradient(stops)],
+      [{ fg: "color.palette.black", bg: "g.x", min: 4.5 }],
+    );
+    expect(failure.ratio).toBeCloseTo(3.94, 2);
+  });
+
+  it("rejects a gradient as the foreground, even with one stop", () => {
+    expect(() =>
+      checkContrast([theme], [{ fg: "g.solid", bg: "color.palette.white", min: 3 }]),
+    ).toThrow(/foreground must be a colour/);
+  });
 });
