@@ -44,6 +44,12 @@ export type Typography = {
   fontWeight: number;
   lineHeight: number;
   letterSpacing: Dimension;
+  /**
+   * OpenType feature tags switched on, e.g. `tnum` for tabular figures. An
+   * extension (`$extensions["com.syntropic137.typography"].fontFeatures`):
+   * DTCG typography has no such property. Empty when unset.
+   */
+  fontFeatures: string[];
 };
 
 export type GradientStop = { color: Color; position: number };

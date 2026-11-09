@@ -70,6 +70,10 @@ export function cssDeclarations(prefix: string, token: ResolvedToken): [string, 
         [`${name}-font-weight`, num(t.fontWeight)],
         [`${name}-line-height`, num(t.lineHeight)],
         [`${name}-letter-spacing`, dimension(t.letterSpacing)],
+        [
+          `${name}-font-feature-settings`,
+          t.fontFeatures.length ? t.fontFeatures.map((f) => `"${f}"`).join(", ") : "normal",
+        ],
       ];
     }
     case "gradient": {
