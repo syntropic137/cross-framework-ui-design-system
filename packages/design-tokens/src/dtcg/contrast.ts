@@ -33,24 +33,31 @@ export function checkContrast(
   }
   const failures: ContrastFailure[] = [];
   for (const theme of themes) {
-    const colors = new Map<string, Color>();
+    // A background may be a gradient: the pair must hold against every stop.
+    const colors = new Map<string, Color[]>();
     for (const token of theme.tokens) {
-      if (token.type === "color") colors.set(token.path, token.value);
+      if (token.type === "color") colors.set(token.path, [token.value]);
+      if (token.type === "gradient")
+        colors.set(
+          token.path,
+          token.value.stops.map((s) => s.color),
+        );
     }
     for (const rule of rules) {
-      const fg = colors.get(rule.fg);
-      const bg = colors.get(rule.bg);
-      if (!fg || !bg) {
+      const fgs = colors.get(rule.fg);
+      const bgs = colors.get(rule.bg);
+      const fg = fgs?.length === 1 ? fgs[0] : undefined;
+      if (!fg || !bgs) {
         throw new Error(
           `contrast rule ${rule.fg} on ${rule.bg}: no such colour in theme ${theme.name}`,
         );
       }
-      if (fg.alpha !== 1 || bg.alpha !== 1) {
+      if (fg.alpha !== 1 || bgs.some((bg) => bg.alpha !== 1)) {
         throw new Error(
           `contrast rule ${rule.fg} on ${rule.bg}: translucent colours need a backdrop`,
         );
       }
-      const ratio = contrastRatio(fg, bg);
+      const ratio = Math.min(...bgs.map((bg) => contrastRatio(fg, bg)));
       if (ratio < rule.min) {
         failures.push({ theme: theme.name, fg: rule.fg, bg: rule.bg, min: rule.min, ratio });
       }
