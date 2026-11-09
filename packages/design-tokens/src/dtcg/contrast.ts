@@ -11,7 +11,7 @@ import type { Color, Gradient, ResolvedTheme } from "./types.js";
  * mixes gamma-encoded sRGB (the CSS default). On a segment, luminance is a
  * positively weighted sum of the convex sRGB transfer of linear mixes, so it is
  * convex in t: its maximum is at an end and its minimum is found by ternary
- * search. Returns [min, max] per painted piece.
+ * search (exact up to float precision). Returns [min, max] per painted piece.
  */
 export function gradientLuminanceRanges(gradient: Gradient): [number, number][] {
   let floor = -Infinity;
@@ -19,10 +19,18 @@ export function gradientLuminanceRanges(gradient: Gradient): [number, number][] 
     floor = Math.max(floor, s.position);
     return { color: s.color, position: floor };
   });
-  const ranges: [number, number][] = stops.map((s) => {
-    const l = relativeLuminance(s.color);
+  // A stop paints on its own only before the first position or after the last;
+  // every other painted colour lies on a positive-length segment below, so an
+  // interior stop inside a run of equal positions paints nothing.
+  const solid = (stop: (typeof stops)[number]): [number, number] => {
+    const l = relativeLuminance(stop.color);
     return [l, l];
-  });
+  };
+  const first = stops[0];
+  const last = stops[stops.length - 1];
+  const ranges: [number, number][] = [];
+  if (first.position > 0) ranges.push(solid(first));
+  if (last.position < 1) ranges.push(solid(last));
   for (let i = 0; i + 1 < stops.length; i++) {
     const [a, b] = [stops[i], stops[i + 1]];
     if (b.position === a.position) continue; // hard edge: nothing painted between
