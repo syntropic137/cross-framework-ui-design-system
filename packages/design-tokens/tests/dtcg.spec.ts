@@ -7,6 +7,7 @@ import {
   contrastRatio,
   cssDeclarations,
   emitCss,
+  emitRust,
   loadDesign,
   resolveTheme,
   type ResolvedTheme,
@@ -129,14 +130,14 @@ describe("contrast gate", () => {
   it("reports every pair below its minimum, per theme", () => {
     const theme = resolveTheme("t", [palette]);
     expect(
-      checkContrast([theme], [{ fg: "color.palette.black", bg: "color.palette.white", min: 22 }]),
+      checkContrast([theme], [{ fg: "color.palette.black", bg: "color.palette.black", min: 3 }]),
     ).toEqual([
       {
         theme: "t",
         fg: "color.palette.black",
-        bg: "color.palette.white",
-        min: 22,
-        ratio: expect.closeTo(21, 5),
+        bg: "color.palette.black",
+        min: 3,
+        ratio: 1,
       },
     ]);
     expect(() =>
@@ -242,5 +243,156 @@ describe("the DreamShip design", () => {
     expect(() =>
       buildDesign(config, new Map([...documents, ["semantic/dark.tokens.json", dark]])),
     ).toThrow(/dark: color.content.secondary on color.surface.page = 1\.\d\d:1, needs 4.5:1/);
+  });
+});
+
+describe("Codex review pass 1 regressions", () => {
+  it("merges a group named like an Object.prototype member", () => {
+    const theme = resolveTheme("t", [{ constructor: { $type: "number", a: { $value: 1 } } }]);
+    expect(theme.tokens.map((t) => t.path)).toEqual(["constructor.a"]);
+  });
+
+  it.each([
+    ["$root", { n: { $type: "number", $root: { $value: 1 } } }],
+    ["$extends", { n: { $type: "number", $extends: "{m}", a: { $value: 1 } } }],
+    ["a $ref token", { n: { $type: "number", a: { $ref: "#/m/b" } } }],
+    ["a $ref value", { n: { $type: "number", a: { $value: { $ref: "#/m/b/$value" } } } }],
+  ])("rejects %s instead of dropping tokens", (_name, document) => {
+    expect(() => resolveTheme("t", [document as never])).toThrow(/not supported/);
+  });
+
+  it("gates the colour that ships: components are quantised to the hex", () => {
+    const grey = { colorSpace: "srgb", components: [0.465, 0.465, 0.465] };
+    const theme = resolveTheme("t", [palette, { c: { $type: "color", grey: { $value: grey } } }]);
+    const failures = checkContrast(
+      [theme],
+      [{ fg: "c.grey", bg: "color.palette.white", min: 4.5 }],
+    );
+    expect(failures).toHaveLength(1);
+    expect(failures[0].ratio).toBeCloseTo(4.4781, 3);
+  });
+
+  it("accepts single-stop gradients and aliased positions, clamping positions to 0..1", () => {
+    const theme = resolveTheme("t", [
+      palette,
+      {
+        p: { $type: "number", end: { $value: 1.5 } },
+        g: {
+          $type: "gradient",
+          one: { $value: [{ color: "{color.palette.black}", position: 0 }] },
+          two: {
+            $value: [
+              { color: "{color.palette.black}", position: -1 },
+              { color: "{color.palette.white}", position: "{p.end}" },
+            ],
+          },
+        },
+      },
+    ]);
+    const two = tokenOf(theme, "g.two");
+    expect(two.type === "gradient" && two.value.stops.map((s) => s.position)).toEqual([0, 1]);
+    expect(tokenOf(theme, "g.one").type).toBe("gradient");
+  });
+
+  it("reads font-weight keywords and keeps fractional weights identical in every output", () => {
+    const theme = resolveTheme("t", [
+      { w: { $type: "fontWeight", bold: { $value: "bold" }, odd: { $value: 450.5 } } },
+    ]);
+    expect(tokenOf(theme, "w.bold").value).toBe(700);
+    const rust = emitRust("d", [theme], "t", "// h");
+    expect(rust).toContain("w_odd: 450.5,");
+    expect(cssDeclarations("ds", tokenOf(theme, "w.odd"))).toEqual([["ds-w-odd", "450.5"]]);
+    expect(() =>
+      resolveTheme("t", [{ w: { $type: "fontWeight", x: { $value: "heavyish" } } }]),
+    ).toThrow(/unknown fontWeight/);
+  });
+
+  it("escapes quotes and backslashes in CSS and Rust strings, and rejects control characters", () => {
+    const theme = resolveTheme("t", [
+      {
+        f: {
+          $type: "fontFamily",
+          odd: { $value: ['A"B\\C', "serif"], $description: "two\nlines" },
+        },
+      },
+    ]);
+    expect(cssDeclarations("ds", tokenOf(theme, "f.odd"))).toEqual([
+      ["ds-f-odd", '"A\\"B\\\\C", serif'],
+    ]);
+    const rust = emitRust("d", [theme], "t", "// h");
+    expect(rust).toContain('f_odd: &["A\\"B\\\\C", "serif"],');
+    expect(rust).toContain("/// `f.odd`: two lines");
+    expect(() =>
+      resolveTheme("t", [{ f: { $type: "fontFamily", x: { $value: "A\u0001" } } }]),
+    ).toThrow(/control characters/);
+  });
+
+  it("refuses values that overflow after conversion or do not fit a Rust f32", () => {
+    expect(() =>
+      resolveTheme("t", [{ d: { $type: "duration", x: { $value: { value: 1e308, unit: "s" } } } }]),
+    ).toThrow(/overflows/);
+    const big = resolveTheme("t", [{ n: { $type: "number", x: { $value: 1e39 } } }]);
+    expect(() => emitRust("d", [big], "t", "// h")).toThrow(/does not fit a Rust f32/);
+  });
+
+  it.each([
+    ["a missing minimum", { fg: "color.palette.black", bg: "color.palette.white" }],
+    ["a string minimum", { fg: "color.palette.black", bg: "color.palette.white", min: "4.5:1" }],
+  ])("rejects a contrast rule with %s", (_name, rule) => {
+    expect(() => checkContrast([resolveTheme("t", [palette])], [rule as never])).toThrow(
+      /min must be/,
+    );
+  });
+
+  it("rejects translucent pairs, which need a backdrop to judge", () => {
+    const theme = resolveTheme("t", [
+      palette,
+      { c: { $type: "color", glass: { $value: { ...color("#000000"), alpha: 0.5 } } } },
+    ]);
+    expect(() =>
+      checkContrast([theme], [{ fg: "c.glass", bg: "color.palette.white", min: 3 }]),
+    ).toThrow(/translucent/);
+  });
+
+  it("accepts themes that list the same tokens in a different order", () => {
+    const a = resolveTheme("a", [{ n: { $type: "number", x: { $value: 1 }, y: { $value: 2 } } }]);
+    const b = resolveTheme("b", [{ n: { $type: "number", y: { $value: 4 }, x: { $value: 3 } } }]);
+    const rust = emitRust("d", [a, b], "a", "// h");
+    expect(rust).toContain("pub const B: Theme = Theme {\n    n_x: 3.0,\n    n_y: 4.0,\n};");
+    const c = resolveTheme("c", [{ n: { $type: "number", x: { $value: 1 } } }]);
+    expect(() => emitRust("d", [a, c], "a", "// h")).toThrow(/same tokens/);
+  });
+
+  it("rejects composite aliases of the wrong type and composite alias cycles", () => {
+    expect(() =>
+      resolveTheme("t", [
+        palette,
+        {
+          t: {
+            $type: "typography",
+            x: {
+              $value: {
+                fontFamily: "{color.palette.black}",
+                fontSize: { value: 1, unit: "px" },
+                fontWeight: 400,
+                lineHeight: 1,
+                letterSpacing: { value: 0, unit: "em" },
+              },
+            },
+          },
+        },
+      ]),
+    ).toThrow(/expected a fontFamily alias/);
+    expect(() =>
+      resolveTheme("t", [
+        {
+          g: {
+            $type: "gradient",
+            a: { $value: [{ color: "{g.b}", position: 0 }] },
+            b: { $value: "{g.a}" },
+          },
+        },
+      ]),
+    ).toThrow(/alias cycle|expected a color alias/);
   });
 });

@@ -9,7 +9,10 @@ const DTCG_DESIGNS = ["dreamship"] as const;
 async function run(): Promise<void> {
   const distDir = dirname(fileURLToPath(import.meta.url));
   const packageRoot = join(distDir, "..");
-  const targetArgument = process.argv[2] ?? "generated";
+  const args = process.argv.slice(2);
+  // --rust also rewrites the committed Rust modules (tokens:rust); the plain build never does.
+  const writeRust = args.includes("--rust");
+  const targetArgument = args.find((a) => !a.startsWith("--")) ?? "generated";
   const outputDir = isAbsolute(targetArgument) ? targetArgument : join(packageRoot, targetArgument);
 
   await writeGeneratedFiles(outputDir);
@@ -18,7 +21,9 @@ async function run(): Promise<void> {
     await writeDesign(join(packageRoot, "dtcg", design), {
       cssPath: join(outputDir, design, "tokens.css"),
       jsonPath: join(outputDir, design, "tokens.resolved.json"),
-      rustPath: join(packageRoot, "..", "design-tokens-rs", "src", `${design}.rs`),
+      rustPath: writeRust
+        ? join(packageRoot, "..", "design-tokens-rs", "src", `${design}.rs`)
+        : undefined,
     });
   }
 }

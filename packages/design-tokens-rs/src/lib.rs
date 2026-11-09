@@ -54,7 +54,7 @@ pub type CubicBezier = [f32; 4];
 pub struct Typography {
     pub font_family: &'static [&'static str],
     pub font_size: Dimension,
-    pub font_weight: u16,
+    pub font_weight: f32,
     pub line_height: f32,
     pub letter_spacing: Dimension,
 }

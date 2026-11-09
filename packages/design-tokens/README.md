@@ -68,7 +68,7 @@ Themes are declared in `themeDefinitions`. Each theme maps to a `data-theme` sel
 
 A design under `dtcg/<design>/` (today: `dreamship`) is DTCG JSON in reference,
 semantic (one file per theme), component and spatial layers, plus `design.json`
-(themes, selectors, contrast policy). `pnpm tokens:build` writes:
+(themes, selectors, contrast policy). `pnpm tokens:build` writes the first two; `pnpm tokens:rust` also rewrites the third:
 
 - `generated/<design>/tokens.css` (`@syntropic137/design-tokens/dreamship.css`)
 - `generated/<design>/tokens.resolved.json` (`@syntropic137/design-tokens/dreamship.json`)

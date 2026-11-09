@@ -36,8 +36,13 @@ function dimension(d: Dimension): string {
   return `${num(d.value)}${d.unit}`;
 }
 
+/** A CSS string literal. Control characters are rejected upstream by the resolver. */
+function cssString(value: string): string {
+  return `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+}
+
 function fontFamily(families: readonly string[]): string {
-  return families.map((f) => (GENERIC_FAMILIES.has(f) ? f : `"${f}"`)).join(", ");
+  return families.map((f) => (GENERIC_FAMILIES.has(f) ? f : cssString(f))).join(", ");
 }
 
 /** One token as one or more `[name, value]` declarations (a typography composite expands). */
