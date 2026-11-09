@@ -159,9 +159,17 @@ export function resolveTheme(name: string, documents: readonly Json[]): Resolved
       if (token.type && token.type !== target.type) {
         throw new DtcgError(path, `$type ${token.type} aliases a ${target.type} token`);
       }
+      // An alias may restate typography features; they replace the target's.
+      let value = target.value;
+      if (token.extensions?.[TYPOGRAPHY_EXTENSION] !== undefined) {
+        if (target.type !== "typography") {
+          throw new DtcgError(path, "fontFeatures apply only to typography tokens");
+        }
+        value = { ...(target.value as Typography), fontFeatures: parseFontFeatures(token) };
+      }
       result = {
         type: target.type,
-        value: target.value,
+        value,
         path,
         aliasOf: token.value as string,
         description: token.description,
