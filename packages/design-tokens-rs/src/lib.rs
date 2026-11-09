@@ -90,6 +90,8 @@ mod tests {
         assert_eq!(DARK.color_surface_page, DARK.color_palette_night);
         assert_eq!(LIGHT.color_content_primary.hex, "#0B0D10");
         assert_eq!(LIGHT.component_button_primary_fill, LIGHT.color_action_fill);
+        assert_eq!(DARK.color_border_control.hex, "#5C6D73");
+        assert_eq!(LIGHT.color_border_selected, LIGHT.color_palette_ink);
     }
 
     #[test]
