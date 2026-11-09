@@ -82,7 +82,7 @@ function value(token: ResolvedToken): string {
       return f32(token.value);
     case "typography": {
       const t = token.value;
-      return `Typography { font_family: ${families(t.fontFamily)}, font_size: ${dimension(t.fontSize)}, font_weight: ${f32(t.fontWeight)}, line_height: ${f32(t.lineHeight)}, letter_spacing: ${dimension(t.letterSpacing)} }`;
+      return `Typography { font_family: ${families(t.fontFamily)}, font_size: ${dimension(t.fontSize)}, font_weight: ${f32(t.fontWeight)}, line_height: ${f32(t.lineHeight)}, letter_spacing: ${dimension(t.letterSpacing)}, font_features: &[${t.fontFeatures.map(rustString).join(", ")}] }`;
     }
     case "gradient": {
       const stops = token.value.stops.map(

@@ -562,6 +562,144 @@
             "unit": "em"
           }
         }
+      },
+      "$description": "Presentation scale: pages, introductions, empty states. Not for dense, sustained work."
+    },
+    "operational": {
+      "$description": "Sustained-work scale: dense UI, data, code. Sentence case; at least 12px; line height at least 1.2; no negative tracking.",
+      "ui": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 14,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.45,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Default text of controls, lists and panels."
+      },
+      "label": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.35,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Field and control labels, sentence case. Replaces 11px tracked uppercase mono for anything read often."
+      },
+      "table": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.4,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Table cells; tabular figures so columns align.",
+        "$extensions": {
+          "com.syntropic137.typography": {
+            "fontFeatures": [
+              "tnum"
+            ]
+          }
+        }
+      },
+      "table-header": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 1.35,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Table column headers.",
+        "$extensions": {
+          "com.syntropic137.typography": {
+            "fontFeatures": [
+              "tnum"
+            ]
+          }
+        }
+      },
+      "terminal": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.5,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Terminal and code editor text."
+      },
+      "shortcut": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.35,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Keyboard shortcut keys, e.g. in menus and hints."
+      },
+      "numeric": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 14,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.45,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Figures read or compared: counts, sizes, times. Tabular, lining.",
+        "$extensions": {
+          "com.syntropic137.typography": {
+            "fontFeatures": [
+              "tnum",
+              "lnum"
+            ]
+          }
+        }
       }
     }
   },

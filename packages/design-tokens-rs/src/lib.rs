@@ -57,6 +57,8 @@ pub struct Typography {
     pub font_weight: f32,
     pub line_height: f32,
     pub letter_spacing: Dimension,
+    /// OpenType feature tags switched on, e.g. `"tnum"` for tabular figures.
+    pub font_features: &'static [&'static str],
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -91,6 +93,7 @@ mod tests {
         assert_eq!(LIGHT.color_content_primary.hex, "#0B0D10");
         assert_eq!(LIGHT.component_button_primary_fill, LIGHT.color_action_fill);
         assert_eq!(DARK.color_border_control.hex, "#5C6D73");
+        assert_eq!(DARK.typography_operational_numeric.font_features, &["tnum", "lnum"]);
         assert_eq!(LIGHT.color_border_selected, LIGHT.color_palette_ink);
     }
 

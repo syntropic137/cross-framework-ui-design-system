@@ -32,6 +32,8 @@ type RawToken = {
 const NAME = /^[a-z0-9][a-z0-9-]*$/;
 const ALIAS = /^\{([a-z0-9-]+(?:\.[a-z0-9-]+)*)\}$/;
 const GRADIENT_EXTENSION = "com.syntropic137.gradient";
+const TYPOGRAPHY_EXTENSION = "com.syntropic137.typography";
+const FEATURE_TAG = /^[a-z0-9]{4}$/;
 
 function isObject(value: Json | undefined): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -157,9 +159,17 @@ export function resolveTheme(name: string, documents: readonly Json[]): Resolved
       if (token.type && token.type !== target.type) {
         throw new DtcgError(path, `$type ${token.type} aliases a ${target.type} token`);
       }
+      // An alias may restate typography features; they replace the target's.
+      let value = target.value;
+      if (token.extensions?.[TYPOGRAPHY_EXTENSION] !== undefined) {
+        if (target.type !== "typography") {
+          throw new DtcgError(path, "fontFeatures apply only to typography tokens");
+        }
+        value = { ...(target.value as Typography), fontFeatures: parseFontFeatures(token) };
+      }
       result = {
         type: target.type,
-        value: target.value,
+        value,
         path,
         aliasOf: token.value as string,
         description: token.description,
@@ -236,7 +246,7 @@ function parseValue(token: RawToken, lookup: Lookup): TokenValue {
     case "number":
       return { type: "number", value: parseNumber(value, path) };
     case "typography":
-      return { type: "typography", value: parseTypography(value, path, lookup) };
+      return { type: "typography", value: parseTypography(token, lookup) };
     case "gradient":
       return { type: "gradient", value: parseGradient(token, lookup) };
     default:
@@ -361,7 +371,22 @@ function parseFontWeight(value: Json, path: string): number {
   return weight;
 }
 
-function parseTypography(value: Json, path: string, lookup: Lookup): Typography {
+function parseFontFeatures(token: RawToken): string[] {
+  const extension = token.extensions?.[TYPOGRAPHY_EXTENSION];
+  if (extension === undefined) return [];
+  const features = isObject(extension) ? extension.fontFeatures : undefined;
+  if (
+    !Array.isArray(features) ||
+    !features.every((f) => typeof f === "string" && FEATURE_TAG.test(f)) ||
+    new Set(features).size !== features.length
+  ) {
+    throw new DtcgError(token.path, "fontFeatures must be distinct four-character OpenType tags");
+  }
+  return features as string[];
+}
+
+function parseTypography(token: RawToken, lookup: Lookup): Typography {
+  const { path, value } = token;
   if (!isObject(value)) throw new DtcgError(path, "typography must be an object");
   const field = (key: string): Json => {
     if (value[key] === undefined) throw new DtcgError(path, `typography needs ${key}`);
@@ -391,6 +416,7 @@ function parseTypography(value: Json, path: string, lookup: Lookup): Typography 
       lookup,
       parseDimension,
     ),
+    fontFeatures: parseFontFeatures(token),
   };
 }
 
