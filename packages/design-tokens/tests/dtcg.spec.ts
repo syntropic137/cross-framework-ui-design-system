@@ -142,7 +142,7 @@ describe("contrast gate", () => {
     ]);
     expect(() =>
       checkContrast([theme], [{ fg: "color.palette.nope", bg: "color.palette.white", min: 3 }]),
-    ).toThrow(/no such colour/);
+    ).toThrow(/foreground must be a colour/);
   });
 });
 
@@ -470,7 +470,7 @@ describe("DS v1.1 fixes (xvzo6.6)", () => {
     const { themes } = buildDesign(config, documents);
     for (const fg of ["color.palette.white", "color.palette.ink", "color.palette.ivory"]) {
       const failures = checkContrast(themes, [{ fg, bg: "gradient.brand", min: 4.5 }]);
-      expect(failures.length, fg).toBeGreaterThan(0);
+      expect(failures.map((f) => f.theme).sort(), fg).toEqual(["dark", "light"]);
     }
     const white = checkContrast(themes, [
       { fg: "color.palette.white", bg: "gradient.brand", min: 4.5 },
@@ -498,5 +498,36 @@ describe("DS v1.1 fixes (xvzo6.6)", () => {
     const { themes, json } = buildDesign(config, documents);
     expect(themes[0].tokens.some((t) => t.path === "color.palette.deep-jade")).toBe(false);
     expect(json.themes.light["color.status.success"]).toMatchObject({ value: { hex: "#0A7559" } });
+  });
+});
+
+describe("gradient contrast gate (Codex xvzo6.6 p1)", () => {
+  const grey = { colorSpace: "srgb", components: [0x75 / 255, 0x75 / 255, 0x75 / 255] };
+  const theme = resolveTheme("t", [
+    palette,
+    {
+      c: { $type: "color", grey: { $value: grey } },
+      g: {
+        $type: "gradient",
+        bw: {
+          $value: [
+            { color: "{color.palette.black}", position: 0 },
+            { color: "{color.palette.white}", position: 1 },
+          ],
+        },
+        solid: { $value: [{ color: "{color.palette.black}", position: 0 }] },
+      },
+    },
+  ]);
+
+  it("fails text whose luminance the gradient crosses, though both stops pass", () => {
+    const [failure] = checkContrast([theme], [{ fg: "c.grey", bg: "g.bw", min: 4.5 }]);
+    expect(failure.ratio).toBeLessThan(1.05);
+  });
+
+  it("rejects a gradient as the foreground, even with one stop", () => {
+    expect(() =>
+      checkContrast([theme], [{ fg: "g.solid", bg: "color.palette.white", min: 3 }]),
+    ).toThrow(/foreground must be a colour/);
   });
 });

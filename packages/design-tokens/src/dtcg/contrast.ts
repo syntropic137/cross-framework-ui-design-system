@@ -2,7 +2,38 @@
 // and generation fails when any theme misses one.
 
 import { contrastRatio } from "./color.js";
-import type { Color, ResolvedTheme } from "./types.js";
+import type { Color, Gradient, ResolvedTheme } from "./types.js";
+
+/** Samples per stop-to-stop segment: dense enough to land within 0.5% of any luminance crossing. */
+const SEGMENT_SAMPLES = 256;
+
+/**
+ * Every colour a gradient paints, sampled: the stops plus points interpolated
+ * between them in gamma-encoded sRGB (the CSS default for gradients), so a
+ * foreground whose luminance falls between two stops is judged where it fails.
+ */
+export function gradientSamples(gradient: Gradient): Color[] {
+  const stops = [...gradient.stops].sort((a, b) => a.position - b.position);
+  const samples = stops.map((s) => s.color);
+  for (let i = 0; i + 1 < stops.length; i++) {
+    const a = stops[i].color;
+    const b = stops[i + 1].color;
+    for (let k = 1; k < SEGMENT_SAMPLES; k++) {
+      const t = k / SEGMENT_SAMPLES;
+      const mix = (x: number, y: number) => x + (y - x) * t;
+      samples.push({
+        components: [0, 1, 2].map((c) => mix(a.components[c], b.components[c])) as [
+          number,
+          number,
+          number,
+        ],
+        alpha: mix(a.alpha, b.alpha),
+        hex: "",
+      });
+    }
+  }
+  return samples;
+}
 
 export type ContrastRule = { fg: string; bg: string; min: number; why?: string };
 
@@ -33,25 +64,23 @@ export function checkContrast(
   }
   const failures: ContrastFailure[] = [];
   for (const theme of themes) {
-    // A background may be a gradient: the pair must hold against every stop.
-    const colors = new Map<string, Color[]>();
+    const colors = new Map<string, Color>();
+    const gradients = new Map<string, Gradient>();
     for (const token of theme.tokens) {
-      if (token.type === "color") colors.set(token.path, [token.value]);
-      if (token.type === "gradient")
-        colors.set(
-          token.path,
-          token.value.stops.map((s) => s.color),
-        );
+      if (token.type === "color") colors.set(token.path, token.value);
+      if (token.type === "gradient") gradients.set(token.path, token.value);
     }
     for (const rule of rules) {
-      const fgs = colors.get(rule.fg);
-      const bgs = colors.get(rule.bg);
-      const fg = fgs?.length === 1 ? fgs[0] : undefined;
-      if (!fg || !bgs) {
+      // The foreground must be a plain colour: a gradient cannot be a text or border colour.
+      const fg = colors.get(rule.fg);
+      const bgColor = colors.get(rule.bg);
+      const bgGradient = gradients.get(rule.bg);
+      if (!fg || (!bgColor && !bgGradient)) {
         throw new Error(
-          `contrast rule ${rule.fg} on ${rule.bg}: no such colour in theme ${theme.name}`,
+          `contrast rule ${rule.fg} on ${rule.bg}: foreground must be a colour and background a colour or gradient in theme ${theme.name}`,
         );
       }
+      const bgs = bgColor ? [bgColor] : gradientSamples(bgGradient!);
       if (fg.alpha !== 1 || bgs.some((bg) => bg.alpha !== 1)) {
         throw new Error(
           `contrast rule ${rule.fg} on ${rule.bg}: translucent colours need a backdrop`,
