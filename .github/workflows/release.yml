@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Must match the Trusted Publisher config on npmjs.com for every package
     # (same shape as syntropic137-setup's publish.yml).
     environment: npm-publish
