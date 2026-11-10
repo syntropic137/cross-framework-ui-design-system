@@ -1,6 +1,6 @@
 [package]
 name = "syntropic137-design-tokens"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 description = "Typed design tokens generated from the DTCG source in @syntropic137/design-tokens. Zero dependencies, no_std, every value const."
