@@ -1,6 +1,6 @@
 {
   "name": "@syntropic137/design-tokens",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Design tokens for the Syntropic137 cross-framework design system: layered --ds-* CSS custom properties, a JSON snapshot and a typed token name list. Zero runtime dependencies.",
   "keywords": [
     "design-system",
@@ -23,7 +23,8 @@
     "generated/design-tokens.json",
     "dtcg",
     "generated/example/tokens.css",
-    "generated/example/tokens.resolved.json"
+    "generated/example/tokens.resolved.json",
+    "generated/example/aliases.css"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json && node ./dist/cli.js",
@@ -62,7 +63,8 @@
     "./generated/design-tokens.json": "./generated/design-tokens.json",
     "./package.json": "./package.json",
     "./example.css": "./generated/example/tokens.css",
-    "./example.json": "./generated/example/tokens.resolved.json"
+    "./example.json": "./generated/example/tokens.resolved.json",
+    "./example.aliases.css": "./generated/example/aliases.css"
   },
   "repository": {
     "type": "git",
