@@ -1,6 +1,6 @@
 {
   "name": "@syntropic137/design-tokens",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Design tokens for the Syntropic137 cross-framework design system: layered --ds-* CSS custom properties, a JSON snapshot and a typed token name list. Zero runtime dependencies.",
   "keywords": [
     "design-system",
@@ -23,7 +23,8 @@
     "generated/design-tokens.json",
     "dtcg",
     "generated/dreamship/tokens.css",
-    "generated/dreamship/tokens.resolved.json"
+    "generated/dreamship/tokens.resolved.json",
+    "generated/dreamship/aliases.css"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json && node ./dist/cli.js",
@@ -62,7 +63,8 @@
     "./generated/design-tokens.json": "./generated/design-tokens.json",
     "./package.json": "./package.json",
     "./dreamship.css": "./generated/dreamship/tokens.css",
-    "./dreamship.json": "./generated/dreamship/tokens.resolved.json"
+    "./dreamship.json": "./generated/dreamship/tokens.resolved.json",
+    "./dreamship.aliases.css": "./generated/dreamship/aliases.css"
   },
   "repository": {
     "type": "git",

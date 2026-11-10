@@ -2,6 +2,8 @@
   "$description": "DreamShip OS design: which DTCG layer files make each theme, how CSS selects a theme, and which colour pairs must reach which contrast. Read by src/dtcg/design.ts.",
   "design": "dreamship",
   "prefix": "ds",
+  "reference": "reference.tokens.json",
+  "aliases": "aliases.json",
   "layers": [
     "reference.tokens.json",
     "component.tokens.json",

@@ -1,0 +1,23 @@
+{
+  "$description": "Old interface-kit v1.1 names (--os-*) mapped to contract names, for ONE minor release (0.2.x) and deleted in the next (xvzo6.2 C2). Where v1.1 drifted from the ratified v1.0 values (muted, focus, radius steps, label), the alias points at the contract name, so a v1.1 consumer changes value, not name (ARCH 2026-11-10). A typography target becomes a `font` shorthand.",
+  "aliases": {
+    "os-ink": "color.content.primary",
+    "os-muted": "color.content.secondary",
+    "os-warn": "color.status.warning",
+    "os-danger": "color.status.danger",
+    "os-focus": "color.focus.ring",
+    "os-sans": "font.family.sans",
+    "os-serif": "font.family.serif",
+    "os-mono": "font.family.mono",
+    "os-text-ui": "typography.operational.ui",
+    "os-text-label": "typography.editorial.label",
+    "os-radius-sm": "radius.sm",
+    "os-radius-md": "radius.md",
+    "os-radius-lg": "radius.lg",
+    "os-radius-pill": "radius.pill",
+    "os-ease": "easing.engineer",
+    "os-fast": "duration.instant",
+    "os-ui": "duration.ui",
+    "os-scene": "duration.scene"
+  }
+}

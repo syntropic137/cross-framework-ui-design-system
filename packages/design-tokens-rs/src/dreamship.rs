@@ -7,56 +7,6 @@ use crate::{Color, CubicBezier, Dimension, Duration, Gradient, GradientStop, Typ
 /// Every token of one theme. Field = DTCG path with `.` and `-` as `_`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Theme {
-    /// `color.palette.night`
-    pub color_palette_night: Color,
-    /// `color.palette.night-surface`
-    pub color_palette_night_surface: Color,
-    /// `color.palette.deep-sea`
-    pub color_palette_deep_sea: Color,
-    /// `color.palette.night-rule`
-    pub color_palette_night_rule: Color,
-    /// `color.palette.night-control`
-    pub color_palette_night_control: Color,
-    /// `color.palette.ivory`
-    pub color_palette_ivory: Color,
-    /// `color.palette.ivory-muted`
-    pub color_palette_ivory_muted: Color,
-    /// `color.palette.ink`
-    pub color_palette_ink: Color,
-    /// `color.palette.dawn-mist`
-    pub color_palette_dawn_mist: Color,
-    /// `color.palette.paper`
-    pub color_palette_paper: Color,
-    /// `color.palette.white`
-    pub color_palette_white: Color,
-    /// `color.palette.dawn-rule`
-    pub color_palette_dawn_rule: Color,
-    /// `color.palette.dawn-control`
-    pub color_palette_dawn_control: Color,
-    /// `color.palette.slate`
-    pub color_palette_slate: Color,
-    /// `color.palette.jade`
-    pub color_palette_jade: Color,
-    /// `color.palette.jade-mid`
-    pub color_palette_jade_mid: Color,
-    /// `color.palette.jade-ink`
-    pub color_palette_jade_ink: Color,
-    /// `color.palette.indigo`
-    pub color_palette_indigo: Color,
-    /// `color.palette.cyan`
-    pub color_palette_cyan: Color,
-    /// `color.palette.deep-cyan`
-    pub color_palette_deep_cyan: Color,
-    /// `color.palette.dawn-light`
-    pub color_palette_dawn_light: Color,
-    /// `color.palette.dawn`
-    pub color_palette_dawn: Color,
-    /// `color.palette.dawn-ink`
-    pub color_palette_dawn_ink: Color,
-    /// `color.palette.coral`
-    pub color_palette_coral: Color,
-    /// `color.palette.coral-ink`
-    pub color_palette_coral_ink: Color,
     /// `color.surface.page`
     pub color_surface_page: Color,
     /// `color.surface.default`
@@ -87,14 +37,6 @@ pub struct Theme {
     pub color_status_danger: Color,
     /// `color.status.info`
     pub color_status_info: Color,
-    /// `gradient.tide`
-    pub gradient_tide: Gradient,
-    /// `gradient.tide-light`
-    pub gradient_tide_light: Gradient,
-    /// `gradient.tide-x`
-    pub gradient_tide_x: Gradient,
-    /// `gradient.dawn`
-    pub gradient_dawn: Gradient,
     /// `gradient.brand`
     pub gradient_brand: Gradient,
     /// `font.family.sans`: Engineer voice: structure.
@@ -193,31 +135,6 @@ pub struct Theme {
 
 /// The `dark` theme.
 pub const DARK: Theme = Theme {
-    color_palette_night: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
-    color_palette_night_surface: Color { hex: "#0B1216", srgb: [0.043137, 0.070588, 0.086275], linear: [0.003347, 0.006049, 0.008023], alpha: 1.0 },
-    color_palette_deep_sea: Color { hex: "#0E1C22", srgb: [0.054902, 0.109804, 0.133333], linear: [0.004391, 0.011612, 0.015996], alpha: 1.0 },
-    color_palette_night_rule: Color { hex: "#1E2A30", srgb: [0.117647, 0.164706, 0.188235], linear: [0.012983, 0.023153, 0.029557], alpha: 1.0 },
-    color_palette_night_control: Color { hex: "#5C6D73", srgb: [0.360784, 0.427451, 0.45098], linear: [0.107023, 0.152926, 0.171441], alpha: 1.0 },
-    color_palette_ivory: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
-    color_palette_ivory_muted: Color { hex: "#9AA4A7", srgb: [0.603922, 0.643137, 0.654902], linear: [0.323143, 0.371238, 0.386429], alpha: 1.0 },
-    color_palette_ink: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
-    color_palette_dawn_mist: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
-    color_palette_paper: Color { hex: "#FBF8F3", srgb: [0.984314, 0.972549, 0.952941], linear: [0.964686, 0.938686, 0.896269], alpha: 1.0 },
-    color_palette_white: Color { hex: "#FFFFFF", srgb: [1.0, 1.0, 1.0], linear: [1.0, 1.0, 1.0], alpha: 1.0 },
-    color_palette_dawn_rule: Color { hex: "#DDD5CA", srgb: [0.866667, 0.835294, 0.792157], linear: [0.723055, 0.665387, 0.590619], alpha: 1.0 },
-    color_palette_dawn_control: Color { hex: "#8C857C", srgb: [0.54902, 0.521569, 0.486275], linear: [0.262251, 0.234551, 0.201556], alpha: 1.0 },
-    color_palette_slate: Color { hex: "#5A626B", srgb: [0.352941, 0.384314, 0.419608], linear: [0.102242, 0.122139, 0.147027], alpha: 1.0 },
-    color_palette_jade: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 },
-    color_palette_jade_mid: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 },
-    color_palette_jade_ink: Color { hex: "#0A7559", srgb: [0.039216, 0.458824, 0.34902], linear: [0.003035, 0.177888, 0.099899], alpha: 1.0 },
-    color_palette_indigo: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 },
-    color_palette_cyan: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
-    color_palette_deep_cyan: Color { hex: "#0E6F7E", srgb: [0.054902, 0.435294, 0.494118], linear: [0.004391, 0.158961, 0.208637], alpha: 1.0 },
-    color_palette_dawn_light: Color { hex: "#F4D2A6", srgb: [0.956863, 0.823529, 0.65098], linear: [0.904661, 0.64448, 0.381326], alpha: 1.0 },
-    color_palette_dawn: Color { hex: "#F4B26A", srgb: [0.956863, 0.698039, 0.415686], linear: [0.904661, 0.445201, 0.144128], alpha: 1.0 },
-    color_palette_dawn_ink: Color { hex: "#975012", srgb: [0.592157, 0.313725, 0.070588], linear: [0.309469, 0.08022, 0.006049], alpha: 1.0 },
-    color_palette_coral: Color { hex: "#F2735C", srgb: [0.94902, 0.45098, 0.360784], linear: [0.887923, 0.171441, 0.107023], alpha: 1.0 },
-    color_palette_coral_ink: Color { hex: "#B23A25", srgb: [0.698039, 0.227451, 0.145098], linear: [0.445201, 0.042311, 0.0185], alpha: 1.0 },
     color_surface_page: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
     color_surface_default: Color { hex: "#0B1216", srgb: [0.043137, 0.070588, 0.086275], linear: [0.003347, 0.006049, 0.008023], alpha: 1.0 },
     color_surface_raised: Color { hex: "#0E1C22", srgb: [0.054902, 0.109804, 0.133333], linear: [0.004391, 0.011612, 0.015996], alpha: 1.0 },
@@ -233,10 +150,6 @@ pub const DARK: Theme = Theme {
     color_status_warning: Color { hex: "#F4B26A", srgb: [0.956863, 0.698039, 0.415686], linear: [0.904661, 0.445201, 0.144128], alpha: 1.0 },
     color_status_danger: Color { hex: "#F2735C", srgb: [0.94902, 0.45098, 0.360784], linear: [0.887923, 0.171441, 0.107023], alpha: 1.0 },
     color_status_info: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
-    gradient_tide: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 }, position: 1.0 }] },
-    gradient_tide_light: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 }, position: 1.0 }] },
-    gradient_tide_x: Gradient { angle_deg: 90.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 }, position: 1.0 }] },
-    gradient_dawn: Gradient { angle_deg: 90.0, stops: &[GradientStop { color: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#F4D2A6", srgb: [0.956863, 0.823529, 0.65098], linear: [0.904661, 0.64448, 0.381326], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#F4B26A", srgb: [0.956863, 0.698039, 0.415686], linear: [0.904661, 0.445201, 0.144128], alpha: 1.0 }, position: 1.0 }] },
     gradient_brand: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 }, position: 1.0 }] },
     font_family_sans: &["Geist", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
     font_family_serif: &["Instrument Serif", "Iowan Old Style", "Georgia", "serif"],
@@ -288,31 +201,6 @@ pub const DARK: Theme = Theme {
 
 /// The `light` theme.
 pub const LIGHT: Theme = Theme {
-    color_palette_night: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
-    color_palette_night_surface: Color { hex: "#0B1216", srgb: [0.043137, 0.070588, 0.086275], linear: [0.003347, 0.006049, 0.008023], alpha: 1.0 },
-    color_palette_deep_sea: Color { hex: "#0E1C22", srgb: [0.054902, 0.109804, 0.133333], linear: [0.004391, 0.011612, 0.015996], alpha: 1.0 },
-    color_palette_night_rule: Color { hex: "#1E2A30", srgb: [0.117647, 0.164706, 0.188235], linear: [0.012983, 0.023153, 0.029557], alpha: 1.0 },
-    color_palette_night_control: Color { hex: "#5C6D73", srgb: [0.360784, 0.427451, 0.45098], linear: [0.107023, 0.152926, 0.171441], alpha: 1.0 },
-    color_palette_ivory: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
-    color_palette_ivory_muted: Color { hex: "#9AA4A7", srgb: [0.603922, 0.643137, 0.654902], linear: [0.323143, 0.371238, 0.386429], alpha: 1.0 },
-    color_palette_ink: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
-    color_palette_dawn_mist: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
-    color_palette_paper: Color { hex: "#FBF8F3", srgb: [0.984314, 0.972549, 0.952941], linear: [0.964686, 0.938686, 0.896269], alpha: 1.0 },
-    color_palette_white: Color { hex: "#FFFFFF", srgb: [1.0, 1.0, 1.0], linear: [1.0, 1.0, 1.0], alpha: 1.0 },
-    color_palette_dawn_rule: Color { hex: "#DDD5CA", srgb: [0.866667, 0.835294, 0.792157], linear: [0.723055, 0.665387, 0.590619], alpha: 1.0 },
-    color_palette_dawn_control: Color { hex: "#8C857C", srgb: [0.54902, 0.521569, 0.486275], linear: [0.262251, 0.234551, 0.201556], alpha: 1.0 },
-    color_palette_slate: Color { hex: "#5A626B", srgb: [0.352941, 0.384314, 0.419608], linear: [0.102242, 0.122139, 0.147027], alpha: 1.0 },
-    color_palette_jade: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 },
-    color_palette_jade_mid: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 },
-    color_palette_jade_ink: Color { hex: "#0A7559", srgb: [0.039216, 0.458824, 0.34902], linear: [0.003035, 0.177888, 0.099899], alpha: 1.0 },
-    color_palette_indigo: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 },
-    color_palette_cyan: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
-    color_palette_deep_cyan: Color { hex: "#0E6F7E", srgb: [0.054902, 0.435294, 0.494118], linear: [0.004391, 0.158961, 0.208637], alpha: 1.0 },
-    color_palette_dawn_light: Color { hex: "#F4D2A6", srgb: [0.956863, 0.823529, 0.65098], linear: [0.904661, 0.64448, 0.381326], alpha: 1.0 },
-    color_palette_dawn: Color { hex: "#F4B26A", srgb: [0.956863, 0.698039, 0.415686], linear: [0.904661, 0.445201, 0.144128], alpha: 1.0 },
-    color_palette_dawn_ink: Color { hex: "#975012", srgb: [0.592157, 0.313725, 0.070588], linear: [0.309469, 0.08022, 0.006049], alpha: 1.0 },
-    color_palette_coral: Color { hex: "#F2735C", srgb: [0.94902, 0.45098, 0.360784], linear: [0.887923, 0.171441, 0.107023], alpha: 1.0 },
-    color_palette_coral_ink: Color { hex: "#B23A25", srgb: [0.698039, 0.227451, 0.145098], linear: [0.445201, 0.042311, 0.0185], alpha: 1.0 },
     color_surface_page: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
     color_surface_default: Color { hex: "#FBF8F3", srgb: [0.984314, 0.972549, 0.952941], linear: [0.964686, 0.938686, 0.896269], alpha: 1.0 },
     color_surface_raised: Color { hex: "#FFFFFF", srgb: [1.0, 1.0, 1.0], linear: [1.0, 1.0, 1.0], alpha: 1.0 },
@@ -328,10 +216,6 @@ pub const LIGHT: Theme = Theme {
     color_status_warning: Color { hex: "#975012", srgb: [0.592157, 0.313725, 0.070588], linear: [0.309469, 0.08022, 0.006049], alpha: 1.0 },
     color_status_danger: Color { hex: "#B23A25", srgb: [0.698039, 0.227451, 0.145098], linear: [0.445201, 0.042311, 0.0185], alpha: 1.0 },
     color_status_info: Color { hex: "#0E6F7E", srgb: [0.054902, 0.435294, 0.494118], linear: [0.004391, 0.158961, 0.208637], alpha: 1.0 },
-    gradient_tide: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 }, position: 1.0 }] },
-    gradient_tide_light: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 }, position: 1.0 }] },
-    gradient_tide_x: Gradient { angle_deg: 90.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 }, position: 1.0 }] },
-    gradient_dawn: Gradient { angle_deg: 90.0, stops: &[GradientStop { color: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#F4D2A6", srgb: [0.956863, 0.823529, 0.65098], linear: [0.904661, 0.64448, 0.381326], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#F4B26A", srgb: [0.956863, 0.698039, 0.415686], linear: [0.904661, 0.445201, 0.144128], alpha: 1.0 }, position: 1.0 }] },
     gradient_brand: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 }, position: 1.0 }] },
     font_family_sans: &["Geist", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
     font_family_serif: &["Instrument Serif", "Iowan Old Style", "Georgia", "serif"],

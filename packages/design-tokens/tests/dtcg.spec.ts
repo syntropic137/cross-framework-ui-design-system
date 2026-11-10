@@ -670,3 +670,94 @@ describe("typography features on an alias (Codex xvzo6.7 p1)", () => {
     ).toThrow(/only to typography/);
   });
 });
+
+describe("design contract (xvzo6.2 C1-C3)", () => {
+  const cssStems = (css: string) => {
+    const base = css.slice(0, css.indexOf("}"));
+    return new Set(
+      [...base.matchAll(/--([a-z0-9-]+):/g)]
+        .map((m) => m[1])
+        .filter((n) => !n.startsWith("ds-ref-") && n !== "ds-design")
+        .map((n) =>
+          n.replace(
+            /-(font-family|font-size|font-weight|line-height|letter-spacing|font-feature-settings)$/,
+            "",
+          ),
+        ),
+    );
+  };
+
+  it("spells every contract name three ways: DTCG path = CSS = Rust field = resolved-JSON key", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const out = buildDesign(config, documents);
+    const paths = Object.keys(out.json.themes.dark).sort();
+    expect(Object.keys(out.json.themes.light).sort()).toEqual(paths);
+    const struct = out.rust.slice(out.rust.indexOf("pub struct Theme"));
+    const fields = [...struct.slice(0, struct.indexOf("}")).matchAll(/pub (\w+):/g)].map(
+      (m) => m[1],
+    );
+    expect(new Set(fields)).toEqual(new Set(paths.map((p) => p.replaceAll(/[.-]/g, "_"))));
+    expect(cssStems(out.css)).toEqual(new Set(paths.map((p) => `ds-${p.replaceAll(".", "-")}`)));
+  });
+
+  it("keeps the raw reference palette out of the contract: --ds-ref-* in CSS, absent from JSON and Rust", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const out = buildDesign(config, documents);
+    expect(out.css).toContain("--ds-ref-color-palette-night: #06090C;");
+    expect(out.css).toContain("--ds-ref-gradient-tide: linear-gradient(");
+    expect(out.css).not.toMatch(/--ds-color-palette-|--ds-gradient-tide/);
+    expect(out.css).toContain("--ds-gradient-brand: linear-gradient(");
+    const keys = Object.keys(out.json.themes.dark);
+    expect(
+      keys.filter((k) => k.startsWith("color.palette") || k.startsWith("gradient.tide")),
+    ).toEqual([]);
+    expect(out.rust).not.toMatch(/color_palette_|gradient_tide/);
+    expect(keys).toEqual(
+      expect.arrayContaining([
+        "space.1",
+        "radius.sm",
+        "duration.ui",
+        "easing.engineer",
+        "font.family.sans",
+      ]),
+    );
+  });
+
+  it("marks the sheet with its design, once, in the default block", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { css } = buildDesign(config, documents);
+    expect(css.match(/--ds-design: "dreamship";/g)).toHaveLength(1);
+    expect(css.indexOf("--ds-design")).toBeLessThan(css.indexOf("}"));
+  });
+
+  it("aliases the interface-kit --os-* names to contract names; the four v1.1 drifts take the contract value", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { aliasesCss } = buildDesign(config, documents);
+    expect(aliasesCss).toContain("--os-muted: var(--ds-color-content-secondary);");
+    expect(aliasesCss).toContain("--os-focus: var(--ds-color-focus-ring);");
+    expect(aliasesCss).toContain("--os-radius-sm: var(--ds-radius-sm);");
+    expect(aliasesCss).toContain(
+      "--os-text-label: var(--ds-typography-editorial-label-font-weight) var(--ds-typography-editorial-label-font-size)/var(--ds-typography-editorial-label-line-height) var(--ds-typography-editorial-label-font-family);",
+    );
+    expect(aliasesCss).not.toContain("--ds-ref-");
+  });
+
+  it("refuses an alias to a reference path, an unknown path, or one that shadows a contract name", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const withAliases = (aliases: Record<string, string>) =>
+      buildDesign(config, new Map([...documents, ["aliases.json", { aliases }]]));
+    expect(() => withAliases({ "os-x": "color.palette.night" })).toThrow(/not a contract token/);
+    expect(() => withAliases({ "os-x": "color.nope" })).toThrow(/not a contract token/);
+    expect(() => withAliases({ "ds-radius-sm": "radius.md" })).toThrow(/shadow a contract name/);
+    expect(() => withAliases({ "ds-design": "radius.md" })).toThrow(/shadow a contract name/);
+  });
+
+  it("moves npm design-tokens, design-contracts and the Rust crate in lockstep (C3)", async () => {
+    const version = async (p: string) =>
+      (JSON.parse(await readFile(join(PACKAGE, p), "utf8")) as { version: string }).version;
+    const cargo = await readFile(join(PACKAGE, "..", "design-tokens-rs", "Cargo.toml"), "utf8");
+    const crate = /^version = "([^"]+)"/m.exec(cargo)?.[1];
+    expect(await version("package.json")).toBe(crate);
+    expect(await version("../contracts/package.json")).toBe(crate);
+  });
+});
