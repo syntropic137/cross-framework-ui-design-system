@@ -37,3 +37,14 @@
 id = "GHSA-vfj7-8cjw-p6xm"
 ignoreUntil = 2027-01-08
 reason = "braces has no fixed version (last_affected 3.0.3); dev-only glob expansion of repo-controlled patterns via stylelint/typescript-eslint"
+
+# GHSA-gcqx-w48m-w2h4: deepmerge <=4.3.1, prototype poisoning of the returned
+# object. There is NO fixed release (last_affected 4.3.1, the latest on npm).
+# Reached only through @sveltejs/vite-plugin-svelte, which merges its own and
+# this repo's Svelte/Vite config objects at dev and build time: repo-controlled
+# input, never user data, never in a published package.
+# Revisit by the date below, or as soon as deepmerge publishes a fix.
+[[IgnoredVulns]]
+id = "GHSA-gcqx-w48m-w2h4"
+ignoreUntil = 2027-01-08
+reason = "deepmerge has no fixed version (last_affected 4.3.1); dev-only merge of repo-controlled Svelte/Vite config via vite-plugin-svelte"

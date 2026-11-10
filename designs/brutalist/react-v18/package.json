@@ -1,6 +1,6 @@
 {
   "name": "@syntropic137/brutalist-react-v18",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.cjs",
@@ -49,7 +49,7 @@
     "react-dom": "^18.2.0",
     "rimraf": "^5.0.7",
     "typescript": "^5.9.2",
-    "vite": "^6.4.3",
+    "vite": "^6.4.5",
     "vitest": "^4.1.11"
   },
   "repository": {
