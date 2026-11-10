@@ -302,6 +302,32 @@
           "alpha": 1,
           "hex": "#B23A25"
         }
+      },
+      "night-scrim": {
+        "$description": "Kit night at 72%: the dark dialog backdrop (color.overlay.scrim, xvzo6.9 D3). No new colour.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0235,
+            0.0353,
+            0.0471
+          ],
+          "alpha": 0.72,
+          "hex": "#06090C"
+        }
+      },
+      "ink-scrim": {
+        "$description": "Kit ink at 40%: the light dialog backdrop (color.overlay.scrim, xvzo6.9 D3). No new colour.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0431,
+            0.051,
+            0.0627
+          ],
+          "alpha": 0.4,
+          "hex": "#0B0D10"
+        }
       }
     }
   },

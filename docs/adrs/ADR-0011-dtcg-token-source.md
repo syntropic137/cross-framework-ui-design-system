@@ -63,7 +63,7 @@ consumer cannot use it without a CSS parser.
 - C2 A design replaces the generic ADR-0002 layer, never stacks on it: a document
   loads exactly one tokens sheet, marked `--ds-design: "<name>"`. Same name, same
   role in every design; values differ (the theme swap). Old names ship as one
-  generated alias sheet (`design.json` `aliases`) for one minor, then are deleted.
+  generated alias sheet (`design.json` `aliases`) for at least one minor that reaches npm, and are deleted only when a count of their uses across the consumers reads 0; the deletion PR shows the count (amended 2026-11-10, ARCH: 0.2.x never reached npm, so the `--os-*` aliases live through 0.3.x, earliest deletion 0.4.0).
 - C3 Lockstep: npm design-tokens, design-contracts and the Rust crate carry one
   version (tested). 0.x: removing or renaming a contract name is a minor bump with
   an alias sheet; adding is minor; a value change that passes contrast is a patch.
