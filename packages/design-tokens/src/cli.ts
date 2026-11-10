@@ -21,6 +21,7 @@ async function run(): Promise<void> {
     await writeDesign(join(packageRoot, "dtcg", design), {
       cssPath: join(outputDir, design, "tokens.css"),
       jsonPath: join(outputDir, design, "tokens.resolved.json"),
+      aliasesPath: join(outputDir, design, "aliases.css"),
       rustPath: writeRust
         ? join(packageRoot, "..", "design-tokens-rs", "src", `${design}.rs`)
         : undefined,
