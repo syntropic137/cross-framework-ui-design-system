@@ -11,10 +11,10 @@ describe("design token generation", () => {
 
     expect(outputs.css).toContain("@layer tokens");
     expect(outputs.css).toContain(":root {\n    --ds-color-brand-hue: 222;");
-    expect(outputs.css).toContain("[data-theme=\"dark\"]");
+    expect(outputs.css).toContain('[data-theme="dark"]');
     expect(outputs.css).toContain("--ds-color-bg: #0c0f14;");
-    expect(outputs.css).toContain("[data-theme=\"rose\"]");
-    expect(outputs.css).toContain("[data-theme=\"serif\"]");
+    expect(outputs.css).toContain('[data-theme="rose"]');
+    expect(outputs.css).toContain('[data-theme="serif"]');
     expect(outputs.css).toContain("--ds-font-sans: ui-serif, Georgia");
   });
 
@@ -57,9 +57,7 @@ describe("design token generation", () => {
   it("exposes a theme-aware --ds-color-accent-hover", () => {
     const outputs = buildTokenOutputs();
 
-    expect(outputs.json.tokens.color["ds-color-accent-hover"]).toBe(
-      "var(--ds-color-brand-600)",
-    );
+    expect(outputs.json.tokens.color["ds-color-accent-hover"]).toBe("var(--ds-color-brand-600)");
     expect(outputs.json.themes.dark.color["ds-color-accent-hover"]).toContain("72%");
   });
 

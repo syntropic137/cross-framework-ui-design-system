@@ -1,23 +1,23 @@
 export type TokenCategories = {
-  color:      Record<string, string>;
+  color: Record<string, string>;
   typography: Record<string, string>;
-  space:      Record<string, string>;
-  radius:     Record<string, string>;
-  shadow:     Record<string, string>;
-  motion:     Record<string, string>;
-  z:          Record<string, string>;
+  space: Record<string, string>;
+  radius: Record<string, string>;
+  shadow: Record<string, string>;
+  motion: Record<string, string>;
+  z: Record<string, string>;
 };
 
 export type ThemeDefinition = {
-  name:        string;
-  selector:    string;
+  name: string;
+  selector: string;
   description: string;
-  isDefault?:  boolean;
-  overrides:   Partial<TokenCategories>;
+  isDefault?: boolean;
+  overrides: Partial<TokenCategories>;
 };
 
-const sansStack  = `ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji`;
-const monoStack  = `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace`;
+const sansStack = `ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji`;
+const monoStack = `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace`;
 const serifStack = `ui-serif, Georgia, Cambria, "Times New Roman", Times, serif`;
 
 export const baseTokens = {
@@ -25,7 +25,7 @@ export const baseTokens = {
     "ds-color-brand-hue": "222",
     "ds-color-brand-sat": "85%",
     // var() composition below is intentional — these values resolve at CSS runtime in the browser
-    "ds-color-brand":     "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 50%)",
+    "ds-color-brand": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 50%)",
     "ds-color-brand-600": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 40%)",
     "ds-color-brand-700": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 32%)",
     // The brand ramp is deliberately theme-invariant: these are fixed
@@ -36,43 +36,43 @@ export const baseTokens = {
     "ds-color-brand-600-contrast": "#ffffff",
     "ds-color-brand-700-contrast": "#ffffff",
 
-    "ds-color-bg":              "#ffffff",
-    "ds-color-fg":              "#0b0c0e",
-    "ds-color-surface":         "#f5f7fb",
-    "ds-color-surface-raised":  "#edf0f5",
-    "ds-color-overlay":         "#e0e4ec",
+    "ds-color-bg": "#ffffff",
+    "ds-color-fg": "#0b0c0e",
+    "ds-color-surface": "#f5f7fb",
+    "ds-color-surface-raised": "#edf0f5",
+    "ds-color-overlay": "#e0e4ec",
 
-    "ds-color-text-muted":  "#6b7280",
+    "ds-color-text-muted": "#6b7280",
     "ds-color-text-subtle": "#9ca3af",
 
-    "ds-color-border":       "#e5e7eb",
+    "ds-color-border": "#e5e7eb",
     "ds-color-border-focus": "var(--ds-color-accent)",
 
-    "ds-color-accent":          "var(--ds-color-brand)",
+    "ds-color-accent": "var(--ds-color-brand)",
     "ds-color-accent-contrast": "#ffffff",
     // Semantic hover partner for accent. Components must use this rather than
     // reaching into the raw ramp: brand-600 is *darker* than the dark theme's
     // accent, so hovering to it made dark-mode buttons run backwards.
-    "ds-color-accent-hover":    "var(--ds-color-brand-600)",
+    "ds-color-accent-hover": "var(--ds-color-brand-600)",
 
-    "ds-color-danger":           "#e5484d",
-    "ds-color-danger-contrast":  "#ffffff",
-    "ds-color-success":          "#30a46c",
+    "ds-color-danger": "#e5484d",
+    "ds-color-danger-contrast": "#ffffff",
+    "ds-color-success": "#30a46c",
     "ds-color-success-contrast": "#ffffff",
-    "ds-color-warning":          "#f76808",
+    "ds-color-warning": "#f76808",
     "ds-color-warning-contrast": "#1a1207",
 
-    "ds-focus-ring": "2px solid var(--ds-color-brand)"
+    "ds-focus-ring": "2px solid var(--ds-color-brand)",
   },
   typography: {
     "ds-font-sans": sansStack,
     "ds-font-mono": monoStack,
-    "ds-text-xs":   "12px",
-    "ds-text-sm":   "14px",
-    "ds-text-md":   "16px",
-    "ds-text-lg":   "18px",
-    "ds-text-xl":   "20px",
-    "ds-text-2xl":  "24px"
+    "ds-text-xs": "12px",
+    "ds-text-sm": "14px",
+    "ds-text-md": "16px",
+    "ds-text-lg": "18px",
+    "ds-text-xl": "20px",
+    "ds-text-2xl": "24px",
   },
   space: {
     "ds-space-1": "4px",
@@ -80,7 +80,7 @@ export const baseTokens = {
     "ds-space-3": "12px",
     "ds-space-4": "16px",
     "ds-space-6": "24px",
-    "ds-space-8": "32px"
+    "ds-space-8": "32px",
   },
   radius: {
     "ds-radius-sm": "6px",
@@ -89,85 +89,85 @@ export const baseTokens = {
     // Pill sentinel, not a scalable size: a value larger than any element's
     // half-height so border-radius clamps to a full semicircle. Deliberately
     // px rather than rem — it must not track the root font-size knob.
-    "ds-radius-full": "9999px"
+    "ds-radius-full": "9999px",
   },
   shadow: {
     "ds-shadow-sm": "0 1px 2px rgba(0,0,0,.06)",
-    "ds-shadow-md": "0 4px 12px rgba(0,0,0,.08)"
+    "ds-shadow-md": "0 4px 12px rgba(0,0,0,.08)",
   },
   motion: {
     "ds-duration-fast": "100ms",
     "ds-duration-base": "200ms",
     "ds-duration-slow": "350ms",
-    "ds-ease":          "cubic-bezier(0.4, 0, 0.2, 1)"
+    "ds-ease": "cubic-bezier(0.4, 0, 0.2, 1)",
   },
   z: {
     "ds-z-dropdown": "100",
-    "ds-z-sticky":   "200",
-    "ds-z-overlay":  "300",
-    "ds-z-modal":    "400",
-    "ds-z-toast":    "500"
-  }
+    "ds-z-sticky": "200",
+    "ds-z-overlay": "300",
+    "ds-z-modal": "400",
+    "ds-z-toast": "500",
+  },
 } satisfies TokenCategories;
 
 export const themeDefinitions: ThemeDefinition[] = [
   {
-    name:        "light",
-    selector:    ":root",
+    name: "light",
+    selector: ":root",
     description: "Default light theme",
-    isDefault:   true,
-    overrides:   {}
+    isDefault: true,
+    overrides: {},
   },
   {
-    name:        "dark",
-    selector:    "[data-theme=\"dark\"]",
+    name: "dark",
+    selector: '[data-theme="dark"]',
     description: "Dark mode palette",
     overrides: {
       color: {
-        "ds-color-bg":             "#0c0f14",
-        "ds-color-fg":             "#e8eaee",
-        "ds-color-text-muted":     "#a8b0bd",
-        "ds-color-text-subtle":    "#6b7280",
-        "ds-color-surface":        "#121621",
+        "ds-color-bg": "#0c0f14",
+        "ds-color-fg": "#e8eaee",
+        "ds-color-text-muted": "#a8b0bd",
+        "ds-color-text-subtle": "#6b7280",
+        "ds-color-surface": "#121621",
         "ds-color-surface-raised": "#1a1f2e",
-        "ds-color-overlay":        "#1f2633",
-        "ds-color-border":         "#1f2633",
-        "ds-color-accent":         "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 62%)",
-        "ds-color-accent-contrast":"#0a0b0e",
+        "ds-color-overlay": "#1f2633",
+        "ds-color-border": "#1f2633",
+        "ds-color-accent": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 62%)",
+        "ds-color-accent-contrast": "#0a0b0e",
         // Lighter than accent, not darker — hover moves away from the page.
-        "ds-color-accent-hover":   "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 72%)",
-        "ds-color-danger":         "#ff6369",
-        "ds-color-success":        "#3dd68c",
-        "ds-color-warning":        "#ff8b3d",
-        "ds-focus-ring":           "2px solid var(--ds-color-accent)"
+        "ds-color-accent-hover": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 72%)",
+        "ds-color-danger": "#ff6369",
+        "ds-color-success": "#3dd68c",
+        "ds-color-warning": "#ff8b3d",
+        "ds-focus-ring": "2px solid var(--ds-color-accent)",
       },
       shadow: {
         "ds-shadow-sm": "0 1px 2px rgba(0,0,0,.5)",
-        "ds-shadow-md": "0 6px 18px rgba(0,0,0,.55)"
-      }
-    }
+        "ds-shadow-md": "0 6px 18px rgba(0,0,0,.55)",
+      },
+    },
   },
   {
-    name:        "rose",
-    selector:    "[data-theme=\"rose\"]",
+    name: "rose",
+    selector: '[data-theme="rose"]',
     description: "Rose brand accent",
     overrides: {
       color: {
         "ds-color-brand-hue": "340",
         "ds-color-brand-sat": "70%",
-        "ds-color-accent":    "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 55%)",
-        "ds-color-accent-contrast": "#ffffff"
-      }
-    }
+        "ds-color-accent": "hsl(var(--ds-color-brand-hue) var(--ds-color-brand-sat) 55%)",
+        "ds-color-accent-contrast": "#ffffff",
+      },
+    },
   },
   {
-    name:        "serif",
-    selector:    "[data-theme=\"serif\"]",
+    name: "serif",
+    selector: '[data-theme="serif"]',
     description: "Serif typography option",
     overrides: {
       typography: {
-        "ds-font-sans": serifStack
-      }
-    }
-  }
+        "ds-font-sans": serifStack,
+      },
+    },
+  },
 ];
