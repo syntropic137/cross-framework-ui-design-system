@@ -672,32 +672,64 @@ describe("typography features on an alias (Codex xvzo6.7 p1)", () => {
 });
 
 describe("design contract (xvzo6.2 C1-C3)", () => {
-  const cssStems = (css: string) => {
-    const base = css.slice(0, css.indexOf("}"));
-    return new Set(
-      [...base.matchAll(/--([a-z0-9-]+):/g)]
-        .map((m) => m[1])
-        .filter((n) => !n.startsWith("ds-ref-") && n !== "ds-design")
-        .map((n) =>
-          n.replace(
-            /-(font-family|font-size|font-weight|line-height|letter-spacing|font-feature-settings)$/,
-            "",
-          ),
-        ),
-    );
+  /** Token paths straight from the DTCG files (no resolver), minus the reference palette. */
+  const sourceContractPaths = (
+    documents: ReadonlyMap<string, unknown>,
+    files: string[],
+    reference: string,
+  ) => {
+    const paths = new Set<string>();
+    const walk = (node: unknown, path: string[], file: string) => {
+      if (!node || typeof node !== "object") return;
+      if ("$value" in node) {
+        const isPalette = file === reference && ["color", "gradient"].includes(path[0]);
+        if (!isPalette) paths.add(path.join("."));
+        return;
+      }
+      for (const [k, v] of Object.entries(node))
+        if (!k.startsWith("$")) walk(v, [...path, k], file);
+    };
+    for (const f of files) walk(documents.get(f), [], f);
+    return [...paths].sort();
   };
+  const TYPO_PARTS = [
+    "font-family",
+    "font-size",
+    "font-weight",
+    "line-height",
+    "letter-spacing",
+    "font-feature-settings",
+  ];
 
   it("spells every contract name three ways: DTCG path = CSS = Rust field = resolved-JSON key", async () => {
     const { config, documents } = await loadDesign(DREAMSHIP);
     const out = buildDesign(config, documents);
-    const paths = Object.keys(out.json.themes.dark).sort();
-    expect(Object.keys(out.json.themes.light).sort()).toEqual(paths);
+    const expected = sourceContractPaths(
+      documents,
+      [...config.layers, config.themes[0].semantic],
+      config.reference ?? "",
+    );
+    expect(expected.length).toBeGreaterThan(50);
+    expect(Object.keys(out.json.themes.dark).sort()).toEqual(expected);
+    expect(Object.keys(out.json.themes.light).sort()).toEqual(expected);
     const struct = out.rust.slice(out.rust.indexOf("pub struct Theme"));
     const fields = [...struct.slice(0, struct.indexOf("}")).matchAll(/pub (\w+):/g)].map(
       (m) => m[1],
     );
-    expect(new Set(fields)).toEqual(new Set(paths.map((p) => p.replaceAll(/[.-]/g, "_"))));
-    expect(cssStems(out.css)).toEqual(new Set(paths.map((p) => `ds-${p.replaceAll(".", "-")}`)));
+    expect(fields.sort()).toEqual(expected.map((p) => p.replaceAll(/[.-]/g, "_")).sort());
+    const base = out.css.slice(0, out.css.indexOf("}"));
+    const declared = new Set([...base.matchAll(/--([a-z0-9-]+):/g)].map((m) => m[1]));
+    const expectedCss = expected.flatMap((p) => {
+      const name = `ds-${p.replaceAll(".", "-")}`;
+      return out.json.themes.dark[p].type === "typography"
+        ? TYPO_PARTS.map((s) => `${name}-${s}`)
+        : [name];
+    });
+    for (const name of expectedCss) expect(declared, name).toContain(name);
+    const extra = [...declared].filter(
+      (n) => !n.startsWith("ds-ref-") && n !== "ds-design" && !expectedCss.includes(n),
+    );
+    expect(extra).toEqual([]);
   });
 
   it("keeps the raw reference palette out of the contract: --ds-ref-* in CSS, absent from JSON and Rust", async () => {
