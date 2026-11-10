@@ -37,6 +37,8 @@ pub struct Theme {
     pub color_status_danger: Color,
     /// `color.status.info`
     pub color_status_info: Color,
+    /// `color.overlay.scrim`: Backdrop behind dialogs, sheets, modal menus and onboarding. A role, not a component value (ARCH 2026-11-10).
+    pub color_overlay_scrim: Color,
     /// `gradient.brand`
     pub gradient_brand: Gradient,
     /// `font.family.sans`: Engineer voice: structure.
@@ -131,6 +133,12 @@ pub struct Theme {
     pub component_gradient_caption_backing: Color,
     /// `component.gradient-caption.label`
     pub component_gradient_caption_label: Color,
+    /// `component.control.height`
+    pub component_control_height: Dimension,
+    /// `component.control.height-touch`: Control height under a coarse pointer (touch).
+    pub component_control_height_touch: Dimension,
+    /// `component.chip.height`: Choice chip height: the 40 px pointer target (feedback #16).
+    pub component_chip_height: Dimension,
 }
 
 /// The `dark` theme.
@@ -150,6 +158,7 @@ pub const DARK: Theme = Theme {
     color_status_warning: Color { hex: "#F4B26A", srgb: [0.956863, 0.698039, 0.415686], linear: [0.904661, 0.445201, 0.144128], alpha: 1.0 },
     color_status_danger: Color { hex: "#F2735C", srgb: [0.94902, 0.45098, 0.360784], linear: [0.887923, 0.171441, 0.107023], alpha: 1.0 },
     color_status_info: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 },
+    color_overlay_scrim: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 0.72 },
     gradient_brand: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#27E6AD", srgb: [0.152941, 0.901961, 0.678431], linear: [0.020289, 0.791298, 0.417885], alpha: 1.0 }, position: 1.0 }] },
     font_family_sans: &["Geist", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
     font_family_serif: &["Instrument Serif", "Iowan Old Style", "Georgia", "serif"],
@@ -197,6 +206,9 @@ pub const DARK: Theme = Theme {
     component_button_primary_radius: Dimension { value: 999.0, unit: Unit::Px },
     component_gradient_caption_backing: Color { hex: "#06090C", srgb: [0.023529, 0.035294, 0.047059], linear: [0.001821, 0.002732, 0.003677], alpha: 1.0 },
     component_gradient_caption_label: Color { hex: "#ECE6DB", srgb: [0.92549, 0.901961, 0.858824], linear: [0.838799, 0.791298, 0.708376], alpha: 1.0 },
+    component_control_height: Dimension { value: 40.0, unit: Unit::Px },
+    component_control_height_touch: Dimension { value: 44.0, unit: Unit::Px },
+    component_chip_height: Dimension { value: 40.0, unit: Unit::Px },
 };
 
 /// The `light` theme.
@@ -216,6 +228,7 @@ pub const LIGHT: Theme = Theme {
     color_status_warning: Color { hex: "#975012", srgb: [0.592157, 0.313725, 0.070588], linear: [0.309469, 0.08022, 0.006049], alpha: 1.0 },
     color_status_danger: Color { hex: "#B23A25", srgb: [0.698039, 0.227451, 0.145098], linear: [0.445201, 0.042311, 0.0185], alpha: 1.0 },
     color_status_info: Color { hex: "#0E6F7E", srgb: [0.054902, 0.435294, 0.494118], linear: [0.004391, 0.158961, 0.208637], alpha: 1.0 },
+    color_overlay_scrim: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 0.4 },
     gradient_brand: Gradient { angle_deg: 180.0, stops: &[GradientStop { color: Color { hex: "#3B5BD9", srgb: [0.231373, 0.356863, 0.85098], linear: [0.043735, 0.104616, 0.693872], alpha: 1.0 }, position: 0.0 }, GradientStop { color: Color { hex: "#1FB7C7", srgb: [0.121569, 0.717647, 0.780392], linear: [0.013702, 0.473531, 0.571125], alpha: 1.0 }, position: 0.5 }, GradientStop { color: Color { hex: "#0FAE82", srgb: [0.058824, 0.682353, 0.509804], linear: [0.004777, 0.423268, 0.223228], alpha: 1.0 }, position: 1.0 }] },
     font_family_sans: &["Geist", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
     font_family_serif: &["Instrument Serif", "Iowan Old Style", "Georgia", "serif"],
@@ -263,6 +276,9 @@ pub const LIGHT: Theme = Theme {
     component_button_primary_radius: Dimension { value: 999.0, unit: Unit::Px },
     component_gradient_caption_backing: Color { hex: "#F6F1EA", srgb: [0.964706, 0.945098, 0.917647], linear: [0.921582, 0.879622, 0.822786], alpha: 1.0 },
     component_gradient_caption_label: Color { hex: "#0B0D10", srgb: [0.043137, 0.05098, 0.062745], linear: [0.003347, 0.004025, 0.005182], alpha: 1.0 },
+    component_control_height: Dimension { value: 40.0, unit: Unit::Px },
+    component_control_height_touch: Dimension { value: 44.0, unit: Unit::Px },
+    component_chip_height: Dimension { value: 40.0, unit: Unit::Px },
 };
 
 /// The theme a consumer starts in.
