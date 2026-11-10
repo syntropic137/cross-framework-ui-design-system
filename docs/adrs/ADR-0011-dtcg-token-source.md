@@ -1,6 +1,6 @@
 # ADR-0011: One DTCG token source per design, generating CSS, resolved JSON and typed Rust
 
-- Status: Proposed (names and publish policy are settled by the DreamShip design contract, dreamship-v0-xvzo6.2)
+- Status: Accepted 2026-11-10 (names and publish policy: the DreamShip design contract, dreamship-v0-xvzo6.2 C1-C5)
 - Date: 2026-11-08
 - Related: ADR-0002 (token generation), ADR-0006 (runtime theming), ADR-0008 (npm distribution)
 
@@ -49,7 +49,25 @@ consumer cannot use it without a CSS parser.
 
 - A theme swap is a source edit plus `tokens:build`; CSS, JSON and Rust change together.
 - Rust consumers depend on the crate by git tag (no crates.io pipeline yet).
-- Open until the contract: the DTCG-path to CSS-name mapping (`color.content.primary`
-  -> `--ds-color-content-primary`) and positional `space.N` collide in places with
-  ADR-0002 names (`--ds-space-6` is 32px here, 24px there); a design's CSS is loaded
-  instead of, not beside, the generic layer until the contract resolves this.
+- Rust consumers pin the crate by the full sha of the release tag commit (`rev`), the tag only as a comment.
+
+## Contract (dreamship-v0-xvzo6.2, ds_architect 2026-11-09)
+
+- C1 Contract surface: every semantic and component token plus the reference
+  scales (space, radius, duration, easing, font, typography). One name, three
+  spellings: DTCG `color.content.secondary` = CSS `--ds-color-content-secondary` =
+  Rust `color_content_secondary` = resolved-JSON key; a test proves the sets equal.
+  The raw reference palette (reference-layer `color.*`, `gradient.*`, named by
+  `design.json` `reference`) is not contract: CSS emits it as `--ds-ref-<path>`,
+  JSON and Rust leave it out. `spatial.*` is reserved; the stub emits nothing.
+- C2 A design replaces the generic ADR-0002 layer, never stacks on it: a document
+  loads exactly one tokens sheet, marked `--ds-design: "<name>"`. Same name, same
+  role in every design; values differ (the theme swap). Old names ship as one
+  generated alias sheet (`design.json` `aliases`) for one minor, then are deleted.
+- C3 Lockstep: npm design-tokens, design-contracts and the Rust crate carry one
+  version (tested). 0.x: removing or renaming a contract name is a minor bump with
+  an alias sheet; adding is minor; a value change that passes contrast is a patch.
+  `--ds-ref-*` changes never break.
+- C4 Publish: npm per ADR-0008 (two foundations; `designs/*` private); the Rust
+  crate stays `publish = false`, consumed by git `rev`; generated Rust is committed
+  and the drift test fails a stale copy.

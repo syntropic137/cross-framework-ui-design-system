@@ -18,7 +18,7 @@ const CATEGORY_ORDER: (keyof TokenCategories)[] = [
   "radius",
   "shadow",
   "motion",
-  "z"
+  "z",
 ];
 
 const INDENT = "  ";
@@ -31,8 +31,8 @@ export function buildTokenOutputs(): TokenOutputs {
     css,
     json: {
       tokens: cloneTokens(baseTokens),
-      themes: themesJson
-    }
+      themes: themesJson,
+    },
   };
 }
 
@@ -73,7 +73,7 @@ function buildCss(tokens: TokenCategories, themes: ThemeDefinition[]): string {
 
 function buildThemesJson(
   tokens: TokenCategories,
-  themes: ThemeDefinition[]
+  themes: ThemeDefinition[],
 ): Record<string, TokenCategories> {
   const themeMap: Record<string, TokenCategories> = {};
 
@@ -103,16 +103,16 @@ function flattenTokens(categories: Partial<TokenCategories>): Record<string, str
 
 function mergeTokenCategories(
   base: TokenCategories,
-  overrides: Partial<TokenCategories> = {}
+  overrides: Partial<TokenCategories> = {},
 ): TokenCategories {
   return {
-    color:      { ...base.color,      ...(overrides.color      ?? {}) },
+    color: { ...base.color, ...(overrides.color ?? {}) },
     typography: { ...base.typography, ...(overrides.typography ?? {}) },
-    space:      { ...base.space,      ...(overrides.space      ?? {}) },
-    radius:     { ...base.radius,     ...(overrides.radius     ?? {}) },
-    shadow:     { ...base.shadow,     ...(overrides.shadow     ?? {}) },
-    motion:     { ...base.motion,     ...(overrides.motion     ?? {}) },
-    z:          { ...base.z,          ...(overrides.z          ?? {}) }
+    space: { ...base.space, ...(overrides.space ?? {}) },
+    radius: { ...base.radius, ...(overrides.radius ?? {}) },
+    shadow: { ...base.shadow, ...(overrides.shadow ?? {}) },
+    motion: { ...base.motion, ...(overrides.motion ?? {}) },
+    z: { ...base.z, ...(overrides.z ?? {}) },
   };
 }
 

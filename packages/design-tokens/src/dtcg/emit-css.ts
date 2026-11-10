@@ -4,6 +4,17 @@
 import { cssName, num } from "./format.js";
 import type { Color, Dimension, ResolvedTheme, ResolvedToken } from "./types.js";
 
+/** Options beyond the themes: reference-only paths and the design marker (xvzo6.2 C1, C2). */
+export type CssOptions = {
+  /**
+   * Paths of the raw reference palette (reference `color.*`, `gradient.*`). Not
+   * contract: emitted as `--<prefix>-ref-<path>`, never under a contract name.
+   */
+  referencePaths?: ReadonlySet<string>;
+  /** Emits `--<prefix>-design: "<design>"` in the default block, so a page can prove it loaded one tokens sheet. */
+  design?: string;
+};
+
 export type CssTheme = {
   theme: ResolvedTheme;
   /** Selectors that switch this theme on, e.g. `[data-theme="light"]`. */
@@ -46,8 +57,12 @@ function fontFamily(families: readonly string[]): string {
 }
 
 /** One token as one or more `[name, value]` declarations (a typography composite expands). */
-export function cssDeclarations(prefix: string, token: ResolvedToken): [string, string][] {
-  const name = cssName(prefix, token.path);
+export function cssDeclarations(
+  prefix: string,
+  token: ResolvedToken,
+  reference = false,
+): [string, string][] {
+  const name = cssName(reference ? `${prefix}-ref` : prefix, token.path);
   switch (token.type) {
     case "color":
       return [[name, cssColor(token.value)]];
@@ -85,8 +100,14 @@ export function cssDeclarations(prefix: string, token: ResolvedToken): [string, 
   }
 }
 
-function declarations(prefix: string, theme: ResolvedTheme): Map<string, string> {
-  return new Map(theme.tokens.flatMap((token) => cssDeclarations(prefix, token)));
+function declarations(
+  prefix: string,
+  theme: ResolvedTheme,
+  referencePaths: ReadonlySet<string>,
+): Map<string, string> {
+  return new Map(
+    theme.tokens.flatMap((token) => cssDeclarations(prefix, token, referencePaths.has(token.path))),
+  );
 }
 
 function block(selector: string, decls: Map<string, string>, indent: string): string {
@@ -94,17 +115,27 @@ function block(selector: string, decls: Map<string, string>, indent: string): st
   return `${indent}${selector} {\n${body}\n${indent}}`;
 }
 
-export function emitCss(prefix: string, themes: readonly CssTheme[], header: string): string {
+export function emitCss(
+  prefix: string,
+  themes: readonly CssTheme[],
+  header: string,
+  options: CssOptions = {},
+): string {
   const [base, ...rest] = themes;
   if (!base) throw new Error("emitCss needs at least one theme");
-  const baseDecls = declarations(prefix, base.theme);
-  const parts = [block(base.selectors.join(",\n  "), baseDecls, "  ")];
+  const referencePaths = options.referencePaths ?? new Set<string>();
+  const baseDecls = declarations(prefix, base.theme, referencePaths);
+  const marker: [string, string][] =
+    options.design === undefined ? [] : [[`${prefix}-design`, cssString(options.design)]];
+  if (marker.length && baseDecls.has(marker[0][0])) {
+    throw new Error(`a token is named --${marker[0][0]}, which the design marker owns`);
+  }
+  const parts = [block(base.selectors.join(",\n  "), new Map([...marker, ...baseDecls]), "  ")];
   for (const theme of rest) {
-    const diff = new Map(
-      [...declarations(prefix, theme.theme)].filter(([n, v]) => baseDecls.get(n) !== v),
-    );
+    const themeDecls = declarations(prefix, theme.theme, referencePaths);
+    const diff = new Map([...themeDecls].filter(([n, v]) => baseDecls.get(n) !== v));
     for (const n of baseDecls.keys()) {
-      if (!diff.has(n) && !declarations(prefix, theme.theme).has(n)) {
+      if (!diff.has(n) && !themeDecls.has(n)) {
         throw new Error(`theme ${theme.theme.name} lacks --${n}`);
       }
     }
@@ -116,4 +147,38 @@ export function emitCss(prefix: string, themes: readonly CssTheme[], header: str
     }
   }
   return `${header}\n@layer tokens {\n${parts.join("\n\n")}\n}\n`;
+}
+
+/**
+ * The alias sheet (xvzo6.2 C2): old names as `var()` of contract names, one
+ * minor release only. A typography target becomes a `font` shorthand. Every
+ * target must be a contract token (never a reference path); an old name may
+ * not shadow a contract name.
+ */
+export function emitAliases(
+  prefix: string,
+  aliases: Readonly<Record<string, string>>,
+  contract: ResolvedTheme,
+  header: string,
+): string {
+  const byPath = new Map(contract.tokens.map((t) => [t.path, t]));
+  const contractNames = new Set(
+    contract.tokens.flatMap((t) => cssDeclarations(prefix, t).map(([n]) => n)),
+  );
+  const lines = Object.entries(aliases).map(([old, path]) => {
+    if (!/^[a-z][a-z0-9-]*$/.test(old))
+      throw new Error(`alias name "${old}" must be lower-case kebab`);
+    if (contractNames.has(old) || old === `${prefix}-design`) {
+      throw new Error(`alias --${old} would shadow a contract name`);
+    }
+    const token = byPath.get(path);
+    if (!token) throw new Error(`alias --${old} targets ${path}, which is not a contract token`);
+    const v = (suffix = "") => `var(--${cssName(prefix, path)}${suffix})`;
+    const value =
+      token.type === "typography"
+        ? `${v("-font-weight")} ${v("-font-size")}/${v("-line-height")} ${v("-font-family")}`
+        : v();
+    return `    --${old}: ${value};`;
+  });
+  return `${header}\n@layer tokens {\n  :root,\n  [data-theme] {\n${lines.join("\n")}\n  }\n}\n`;
 }

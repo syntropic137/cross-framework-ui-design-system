@@ -4,7 +4,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { checkContrast, type ContrastRule } from "./contrast.js";
-import { emitCss } from "./emit-css.js";
+import { emitAliases, emitCss } from "./emit-css.js";
 import { emitResolvedJson } from "./emit-json.js";
 import { emitRust } from "./emit-rust.js";
 import { resolveTheme } from "./resolve.js";
@@ -13,6 +13,14 @@ import type { ResolvedTheme } from "./types.js";
 export type DesignConfig = {
   design: string;
   prefix: string;
+  /**
+   * The reference layer file (one of `layers`). Its `color.*` and `gradient.*`
+   * tokens are the raw palette: not contract (xvzo6.2 C1), so CSS names them
+   * `--<prefix>-ref-*` and resolved JSON and Rust leave them out.
+   */
+  reference?: string;
+  /** Old names to contract names, emitted as the alias sheet (xvzo6.2 C2). */
+  aliases?: string;
   layers: string[];
   themes: {
     name: string;
@@ -24,7 +32,11 @@ export type DesignConfig = {
 };
 
 export type DesignOutputs = {
+  /** Every resolved token, reference palette included (the contrast gate judges these). */
   themes: ResolvedTheme[];
+  /** Contract tokens only: what JSON and Rust expose. */
+  contract: ResolvedTheme[];
+  aliasesCss?: string;
   css: string;
   json: ReturnType<typeof emitResolvedJson>;
   rust: string;
@@ -63,16 +75,46 @@ export function buildDesign(
     throw new Error(`design ${config.design}: contrast below policy\n${lines.join("\n")}`);
   }
   const defaultTheme = config.themes[0].name;
+  const referencePaths = config.reference
+    ? referenceOnlyPaths(config, doc(config.reference))
+    : new Set<string>();
+  const contract = themes.map((theme) => ({
+    name: theme.name,
+    tokens: theme.tokens.filter((t) => !referencePaths.has(t.path)),
+  }));
+  const cssHeader = header(config.design, "/*").replace(/$/, " */");
+  const aliases = config.aliases
+    ? (doc(config.aliases) as { aliases?: Record<string, string> }).aliases
+    : undefined;
+  if (config.aliases && !aliases) {
+    throw new Error(`design ${config.design}: ${config.aliases} has no "aliases" object`);
+  }
   return {
     themes,
+    contract,
     css: emitCss(
       config.prefix,
       config.themes.map((t, i) => ({ theme: themes[i], selectors: t.selectors, media: t.media })),
-      header(config.design, "/*").replace(/$/, " */"),
+      cssHeader,
+      { referencePaths, design: config.design },
     ),
-    json: emitResolvedJson(config.design, themes, defaultTheme),
-    rust: emitRust(config.design, themes, defaultTheme, header(config.design, "//")),
+    ...(aliases ? { aliasesCss: emitAliases(config.prefix, aliases, contract[0], cssHeader) } : {}),
+    json: emitResolvedJson(config.design, contract, defaultTheme),
+    rust: emitRust(config.design, contract, defaultTheme, header(config.design, "//")),
   };
+}
+
+/** Reference-layer `color.*` and `gradient.*` paths: the raw palette, not contract (C1). */
+function referenceOnlyPaths(config: DesignConfig, reference: unknown): Set<string> {
+  if (!config.layers.includes(config.reference ?? "")) {
+    throw new Error(
+      `design ${config.design}: reference ${config.reference} is not one of its layers`,
+    );
+  }
+  const { tokens } = resolveTheme("reference", [reference as never]);
+  return new Set(
+    tokens.map((t) => t.path).filter((p) => ["color", "gradient"].includes(p.split(".")[0])),
+  );
 }
 
 /** Read a design directory (its `design.json` and every layer file it names). */
@@ -80,7 +122,11 @@ export async function loadDesign(
   designDir: string,
 ): Promise<{ config: DesignConfig; documents: Map<string, unknown> }> {
   const config = JSON.parse(await readFile(join(designDir, "design.json"), "utf8")) as DesignConfig;
-  const files = [...config.layers, ...config.themes.map((t) => t.semantic)];
+  const files = [
+    ...config.layers,
+    ...config.themes.map((t) => t.semantic),
+    ...(config.aliases ? [config.aliases] : []),
+  ];
   const documents = new Map<string, unknown>();
   for (const file of files) {
     documents.set(file, JSON.parse(await readFile(join(designDir, file), "utf8")));
@@ -90,7 +136,12 @@ export async function loadDesign(
 
 /** Where outputs go. `rustPath` is optional: the Rust module is committed, so the
  * ordinary build leaves it alone and the drift test can catch a stale copy. */
-export type DesignPaths = { cssPath: string; jsonPath: string; rustPath?: string };
+export type DesignPaths = {
+  cssPath: string;
+  jsonPath: string;
+  aliasesPath?: string;
+  rustPath?: string;
+};
 
 export async function writeDesign(designDir: string, paths: DesignPaths): Promise<DesignOutputs> {
   const { config, documents } = await loadDesign(designDir);
@@ -98,6 +149,9 @@ export async function writeDesign(designDir: string, paths: DesignPaths): Promis
   for (const [path, text] of [
     [paths.cssPath, outputs.css],
     [paths.jsonPath, `${JSON.stringify(outputs.json, null, 2)}\n`],
+    ...(paths.aliasesPath && outputs.aliasesCss
+      ? ([[paths.aliasesPath, outputs.aliasesCss]] as const)
+      : []),
     ...(paths.rustPath ? ([[paths.rustPath, outputs.rust]] as const) : []),
   ] as const) {
     await mkdir(dirname(path), { recursive: true });
