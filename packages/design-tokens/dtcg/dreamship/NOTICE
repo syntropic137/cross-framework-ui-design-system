@@ -1,0 +1,9 @@
+DreamShip OS theme: trademark notice
+
+"DreamShip" and "DreamShip OS" are trademarks of AweHelm. The MIT licence of
+this package covers the token files in this folder (names and values). It
+grants no right to use the DreamShip names or brand to identify another
+product, or to imply that a product is made or endorsed by AweHelm.
+
+This folder holds no logo or brand mark assets, and must not: logos live
+outside this repository. A product built on these tokens names itself.
