@@ -11,6 +11,8 @@
 //     foundations (`"private": false`: design-contracts, design-tokens) and the
 //     private reference implementations under designs/*/* (which never publish,
 //     ADR-0008), plus the repo root package.json.
+//   - Sets the Rust crate packages/design-tokens-rs/Cargo.toml to the same version
+//     (run `cargo update -w` after, so Cargo.lock follows).
 //   - Prepends a dated CHANGELOG.md section stub for the new version.
 // What it does NOT do: git add / commit / tag. That happens in the release PR.
 
@@ -43,6 +45,19 @@ const rootFile = join(root, "package.json");
 const rootPkg = JSON.parse(readFileSync(rootFile, "utf8"));
 rootPkg.version = version;
 write(rootFile, rootPkg);
+
+// The Rust crate moves in lockstep too (dreamship-v0-xvzo6.2 C3; a design-tokens test enforces it).
+const crateFile = join(root, "packages", "design-tokens-rs", "Cargo.toml");
+if (existsSync(crateFile)) {
+  const cargo = readFileSync(crateFile, "utf8");
+  const next = cargo.replace(/^version = "[^"]+"/m, `version = "${version}"`);
+  if (next === cargo && !cargo.includes(`version = "${version}"`)) {
+    console.error(`no top-level version line in ${crateFile}`);
+    process.exit(1);
+  }
+  writeFileSync(crateFile, next);
+  bumped.push("syntropic137-design-tokens (Rust crate, git-pinned)");
+}
 
 // Prepend a CHANGELOG stub.
 const changelogFile = join(root, "CHANGELOG.md");

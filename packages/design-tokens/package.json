@@ -1,6 +1,6 @@
 {
   "name": "@syntropic137/design-tokens",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Design tokens for the Syntropic137 cross-framework design system: layered --ds-* CSS custom properties, a JSON snapshot and a typed token name list. Zero runtime dependencies.",
   "keywords": [
     "design-system",
@@ -20,16 +20,22 @@
     "src",
     "!dist/**/*.tsbuildinfo",
     "generated/design-tokens.css",
-    "generated/design-tokens.json"
+    "generated/design-tokens.json",
+    "dtcg",
+    "generated/dreamship/tokens.css",
+    "generated/dreamship/tokens.resolved.json",
+    "generated/dreamship/aliases.css"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json && node ./dist/cli.js",
     "clean": "rimraf dist generated",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:rust",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "tokens:build": "pnpm build && node ./dist/cli.js"
+    "tokens:build": "pnpm build && node ./dist/cli.js",
+    "test:rust": "cargo test --quiet --manifest-path ../design-tokens-rs/Cargo.toml",
+    "tokens:rust": "pnpm build && node ./dist/cli.js generated --rust"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
@@ -55,7 +61,10 @@
     "./css": "./generated/design-tokens.css",
     "./generated/design-tokens.css": "./generated/design-tokens.css",
     "./generated/design-tokens.json": "./generated/design-tokens.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./dreamship.css": "./generated/dreamship/tokens.css",
+    "./dreamship.json": "./generated/dreamship/tokens.resolved.json",
+    "./dreamship.aliases.css": "./generated/dreamship/aliases.css"
   },
   "repository": {
     "type": "git",

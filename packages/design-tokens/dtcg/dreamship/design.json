@@ -1,0 +1,136 @@
+{
+  "$description": "DreamShip OS design: which DTCG layer files make each theme, how CSS selects a theme, and which colour pairs must reach which contrast. Read by src/dtcg/design.ts.",
+  "design": "dreamship",
+  "prefix": "ds",
+  "reference": "reference.tokens.json",
+  "aliases": "aliases.json",
+  "layers": [
+    "reference.tokens.json",
+    "component.tokens.json",
+    "spatial.tokens.json"
+  ],
+  "themes": [
+    {
+      "name": "dark",
+      "semantic": "semantic/dark.tokens.json",
+      "selectors": [
+        ":root",
+        "[data-theme=\"dark\"]"
+      ]
+    },
+    {
+      "name": "light",
+      "semantic": "semantic/light.tokens.json",
+      "selectors": [
+        "[data-theme=\"light\"]"
+      ],
+      "media": {
+        "query": "(prefers-color-scheme: light)",
+        "selector": ":root:not([data-theme])"
+      }
+    }
+  ],
+  "contrast": [
+    {
+      "fg": "color.content.primary",
+      "bg": "color.surface.page",
+      "min": 4.5,
+      "why": "body text, WCAG 1.4.3"
+    },
+    {
+      "fg": "color.content.primary",
+      "bg": "color.surface.default",
+      "min": 4.5
+    },
+    {
+      "fg": "color.content.primary",
+      "bg": "color.surface.raised",
+      "min": 4.5
+    },
+    {
+      "fg": "color.content.secondary",
+      "bg": "color.surface.page",
+      "min": 4.5
+    },
+    {
+      "fg": "color.content.secondary",
+      "bg": "color.surface.default",
+      "min": 4.5
+    },
+    {
+      "fg": "color.content.secondary",
+      "bg": "color.surface.raised",
+      "min": 4.5
+    },
+    {
+      "fg": "color.action.on",
+      "bg": "color.action.fill",
+      "min": 4.5,
+      "why": "primary action label"
+    },
+    {
+      "fg": "color.status.success",
+      "bg": "color.surface.page",
+      "min": 4.5,
+      "why": "status words are text"
+    },
+    {
+      "fg": "color.status.warning",
+      "bg": "color.surface.page",
+      "min": 4.5
+    },
+    {
+      "fg": "color.status.danger",
+      "bg": "color.surface.page",
+      "min": 4.5
+    },
+    {
+      "fg": "color.status.info",
+      "bg": "color.surface.page",
+      "min": 4.5
+    },
+    {
+      "fg": "color.focus.ring",
+      "bg": "color.surface.page",
+      "min": 3,
+      "why": "focus indicator, WCAG 1.4.11"
+    },
+    {
+      "fg": "color.border.control",
+      "bg": "color.surface.page",
+      "min": 3,
+      "why": "control boundary, WCAG 1.4.11"
+    },
+    {
+      "fg": "color.border.selected",
+      "bg": "color.surface.page",
+      "min": 3
+    },
+    {
+      "fg": "color.border.control",
+      "bg": "color.surface.default",
+      "min": 3
+    },
+    {
+      "fg": "color.border.selected",
+      "bg": "color.surface.default",
+      "min": 3
+    },
+    {
+      "fg": "color.border.control",
+      "bg": "color.surface.raised",
+      "min": 3
+    },
+    {
+      "fg": "color.border.selected",
+      "bg": "color.surface.raised",
+      "min": 3
+    },
+    {
+      "fg": "component.gradient-caption.label",
+      "bg": "component.gradient-caption.backing",
+      "min": 4.5,
+      "why": "caption over a gradient sits on its backing"
+    }
+  ]
+}

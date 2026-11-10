@@ -1,0 +1,72 @@
+{
+  "$description": "DreamShip OS semantic layer, dark theme: roles, every value an alias into the reference layer.",
+  "color": {
+    "$type": "color",
+    "surface": {
+      "page": {
+        "$value": "{color.palette.night}"
+      },
+      "default": {
+        "$value": "{color.palette.night-surface}"
+      },
+      "raised": {
+        "$value": "{color.palette.deep-sea}"
+      }
+    },
+    "content": {
+      "primary": {
+        "$value": "{color.palette.ivory}"
+      },
+      "secondary": {
+        "$value": "{color.palette.ivory-muted}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$value": "{color.palette.night-rule}",
+        "$description": "Decorative separators only; never the only boundary of a control."
+      },
+      "control": {
+        "$value": "{color.palette.night-control}",
+        "$description": "Boundary that identifies a control (input, secondary button outline). 3:1 against every surface, WCAG 1.4.11."
+      },
+      "selected": {
+        "$value": "{color.palette.ivory}",
+        "$description": "Border of a selected item. 3:1 against every surface; distinct from the focus ring."
+      }
+    },
+    "action": {
+      "fill": {
+        "$value": "{color.palette.jade}"
+      },
+      "on": {
+        "$value": "{color.palette.night}"
+      }
+    },
+    "focus": {
+      "ring": {
+        "$value": "{color.palette.cyan}"
+      }
+    },
+    "status": {
+      "success": {
+        "$value": "{color.palette.jade}"
+      },
+      "warning": {
+        "$value": "{color.palette.dawn}"
+      },
+      "danger": {
+        "$value": "{color.palette.coral}"
+      },
+      "info": {
+        "$value": "{color.palette.cyan}"
+      }
+    }
+  },
+  "gradient": {
+    "$type": "gradient",
+    "brand": {
+      "$value": "{gradient.tide}"
+    }
+  }
+}

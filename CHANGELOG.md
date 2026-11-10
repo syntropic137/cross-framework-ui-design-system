@@ -5,6 +5,24 @@ lockstep (see ADR-0009). Newest first.
 
 <!-- releases -->
 
+## 0.2.0 - 2026-11-10
+
+DreamShip design contract (dreamship-v0-xvzo6.2 C1-C4, ADR-0011 Accepted).
+
+- **Breaking (0.x minor):** the DreamShip raw reference palette is no longer
+  contract. CSS names it `--ds-ref-<path>` (was `--ds-color-palette-*`,
+  `--ds-gradient-tide*`); resolved JSON and the Rust `Theme` drop it
+  (`color_palette_*`, `gradient_tide*`). Name roles instead
+  (`--ds-color-surface-page`, `--ds-gradient-brand`, ...).
+- `generated/dreamship/tokens.css` sets `--ds-design: "dreamship"`, so a consumer
+  can prove a page loads exactly one tokens sheet.
+- New export `@syntropic137/design-tokens/dreamship.aliases.css`: interface-kit v1.1
+  `--os-*` names as `var(--ds-*)`, for this minor only (deleted in 0.3.0). Where v1.1
+  drifted from v1.0 (muted, focus, radius steps, label) the alias takes the contract
+  value.
+- npm `design-tokens`, `design-contracts` and the Rust crate
+  `syntropic137-design-tokens` share one version; a test enforces it.
+
 ## 0.1.1 - 2026-10-08
 
 First release through the automated pipeline (main -> `release` PR, release gate,

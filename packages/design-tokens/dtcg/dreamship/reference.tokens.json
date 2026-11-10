@@ -1,0 +1,854 @@
+{
+  "$description": "DreamShip OS reference layer: raw primitives (palette, font identities, scales). Source: kit v1.0 tokens (KMS areas/brand/dreamship-os-design-system-v1). Names provisional until the contract (dreamship-v0-xvzo6.2).",
+  "color": {
+    "$type": "color",
+    "palette": {
+      "night": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0235,
+            0.0353,
+            0.0471
+          ],
+          "alpha": 1,
+          "hex": "#06090C"
+        }
+      },
+      "night-surface": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0431,
+            0.0706,
+            0.0863
+          ],
+          "alpha": 1,
+          "hex": "#0B1216"
+        }
+      },
+      "deep-sea": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0549,
+            0.1098,
+            0.1333
+          ],
+          "alpha": 1,
+          "hex": "#0E1C22"
+        }
+      },
+      "night-rule": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1176,
+            0.1647,
+            0.1882
+          ],
+          "alpha": 1,
+          "hex": "#1E2A30"
+        }
+      },
+      "night-control": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.4275,
+            0.451
+          ],
+          "alpha": 1,
+          "hex": "#5C6D73"
+        }
+      },
+      "ivory": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9255,
+            0.902,
+            0.8588
+          ],
+          "alpha": 1,
+          "hex": "#ECE6DB"
+        }
+      },
+      "ivory-muted": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6039,
+            0.6431,
+            0.6549
+          ],
+          "alpha": 1,
+          "hex": "#9AA4A7"
+        }
+      },
+      "ink": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0431,
+            0.051,
+            0.0627
+          ],
+          "alpha": 1,
+          "hex": "#0B0D10"
+        }
+      },
+      "dawn-mist": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9647,
+            0.9451,
+            0.9176
+          ],
+          "alpha": 1,
+          "hex": "#F6F1EA"
+        }
+      },
+      "paper": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9843,
+            0.9725,
+            0.9529
+          ],
+          "alpha": 1,
+          "hex": "#FBF8F3"
+        }
+      },
+      "white": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        }
+      },
+      "dawn-rule": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8667,
+            0.8353,
+            0.7922
+          ],
+          "alpha": 1,
+          "hex": "#DDD5CA"
+        }
+      },
+      "dawn-control": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.549,
+            0.5216,
+            0.4863
+          ],
+          "alpha": 1,
+          "hex": "#8C857C"
+        }
+      },
+      "slate": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3529,
+            0.3843,
+            0.4196
+          ],
+          "alpha": 1,
+          "hex": "#5A626B"
+        }
+      },
+      "jade": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1529,
+            0.902,
+            0.6784
+          ],
+          "alpha": 1,
+          "hex": "#27E6AD"
+        }
+      },
+      "jade-mid": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0588,
+            0.6824,
+            0.5098
+          ],
+          "alpha": 1,
+          "hex": "#0FAE82"
+        }
+      },
+      "jade-ink": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0392,
+            0.4588,
+            0.349
+          ],
+          "alpha": 1,
+          "hex": "#0A7559"
+        }
+      },
+      "indigo": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2314,
+            0.3569,
+            0.851
+          ],
+          "alpha": 1,
+          "hex": "#3B5BD9"
+        }
+      },
+      "cyan": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1216,
+            0.7176,
+            0.7804
+          ],
+          "alpha": 1,
+          "hex": "#1FB7C7"
+        }
+      },
+      "deep-cyan": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0549,
+            0.4353,
+            0.4941
+          ],
+          "alpha": 1,
+          "hex": "#0E6F7E"
+        }
+      },
+      "dawn-light": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9569,
+            0.8235,
+            0.651
+          ],
+          "alpha": 1,
+          "hex": "#F4D2A6"
+        }
+      },
+      "dawn": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9569,
+            0.698,
+            0.4157
+          ],
+          "alpha": 1,
+          "hex": "#F4B26A"
+        }
+      },
+      "dawn-ink": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5922,
+            0.3137,
+            0.0706
+          ],
+          "alpha": 1,
+          "hex": "#975012"
+        }
+      },
+      "coral": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.949,
+            0.451,
+            0.3608
+          ],
+          "alpha": 1,
+          "hex": "#F2735C"
+        }
+      },
+      "coral-ink": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.698,
+            0.2275,
+            0.1451
+          ],
+          "alpha": 1,
+          "hex": "#B23A25"
+        }
+      }
+    }
+  },
+  "gradient": {
+    "$type": "gradient",
+    "tide": {
+      "$value": [
+        {
+          "color": "{color.palette.indigo}",
+          "position": 0
+        },
+        {
+          "color": "{color.palette.cyan}",
+          "position": 0.5
+        },
+        {
+          "color": "{color.palette.jade}",
+          "position": 1
+        }
+      ],
+      "$extensions": {
+        "com.syntropic137.gradient": {
+          "angle": 180
+        }
+      }
+    },
+    "tide-light": {
+      "$value": [
+        {
+          "color": "{color.palette.indigo}",
+          "position": 0
+        },
+        {
+          "color": "{color.palette.cyan}",
+          "position": 0.5
+        },
+        {
+          "color": "{color.palette.jade-mid}",
+          "position": 1
+        }
+      ],
+      "$extensions": {
+        "com.syntropic137.gradient": {
+          "angle": 180
+        }
+      }
+    },
+    "tide-x": {
+      "$value": [
+        {
+          "color": "{color.palette.indigo}",
+          "position": 0
+        },
+        {
+          "color": "{color.palette.cyan}",
+          "position": 0.5
+        },
+        {
+          "color": "{color.palette.jade}",
+          "position": 1
+        }
+      ],
+      "$extensions": {
+        "com.syntropic137.gradient": {
+          "angle": 90
+        }
+      }
+    },
+    "dawn": {
+      "$value": [
+        {
+          "color": "{color.palette.ivory}",
+          "position": 0
+        },
+        {
+          "color": "{color.palette.dawn-light}",
+          "position": 0.5
+        },
+        {
+          "color": "{color.palette.dawn}",
+          "position": 1
+        }
+      ],
+      "$extensions": {
+        "com.syntropic137.gradient": {
+          "angle": 90
+        }
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "sans": {
+        "$value": [
+          "Geist",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "$description": "Engineer voice: structure."
+      },
+      "serif": {
+        "$value": [
+          "Instrument Serif",
+          "Iowan Old Style",
+          "Georgia",
+          "serif"
+        ],
+        "$description": "Dreamer voice: warmth. Never in small controls."
+      },
+      "mono": {
+        "$value": [
+          "Geist Mono",
+          "ui-monospace",
+          "Menlo",
+          "monospace"
+        ]
+      }
+    }
+  },
+  "typography": {
+    "$type": "typography",
+    "editorial": {
+      "display": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 76,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 0.94,
+          "letterSpacing": {
+            "value": -0.05,
+            "unit": "em"
+          }
+        }
+      },
+      "h1": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 56,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 0.98,
+          "letterSpacing": {
+            "value": -0.045,
+            "unit": "em"
+          }
+        }
+      },
+      "h2": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 40,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 1.05,
+          "letterSpacing": {
+            "value": -0.035,
+            "unit": "em"
+          }
+        }
+      },
+      "h3": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 1.15,
+          "letterSpacing": {
+            "value": -0.025,
+            "unit": "em"
+          }
+        }
+      },
+      "h4": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 21,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 1.3,
+          "letterSpacing": {
+            "value": -0.02,
+            "unit": "em"
+          }
+        }
+      },
+      "body-l": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 18,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.6,
+          "letterSpacing": {
+            "value": -0.005,
+            "unit": "em"
+          }
+        }
+      },
+      "body": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 15,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.6,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        }
+      },
+      "small": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.5,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        }
+      },
+      "label": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": {
+            "value": 11,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.4,
+          "letterSpacing": {
+            "value": 0.14,
+            "unit": "em"
+          }
+        }
+      },
+      "$description": "Presentation scale: pages, introductions, empty states. Not for dense, sustained work."
+    },
+    "operational": {
+      "$description": "Sustained-work scale: dense UI, data, code. Sentence case; at least 12px; line height at least 1.2; no negative tracking.",
+      "ui": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 14,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.45,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Default text of controls, lists and panels."
+      },
+      "label": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.35,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Field and control labels, sentence case. Replaces 11px tracked uppercase mono for anything read often."
+      },
+      "table": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.4,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Table cells; tabular figures so columns align.",
+        "$extensions": {
+          "com.syntropic137.typography": {
+            "fontFeatures": [
+              "tnum"
+            ]
+          }
+        }
+      },
+      "table-header": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 600,
+          "lineHeight": 1.35,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Table column headers.",
+        "$extensions": {
+          "com.syntropic137.typography": {
+            "fontFeatures": [
+              "tnum"
+            ]
+          }
+        }
+      },
+      "terminal": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.5,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Terminal and code editor text."
+      },
+      "shortcut": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.35,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Keyboard shortcut keys, e.g. in menus and hints."
+      },
+      "numeric": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": {
+            "value": 14,
+            "unit": "px"
+          },
+          "fontWeight": 500,
+          "lineHeight": 1.45,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "em"
+          }
+        },
+        "$description": "Figures read or compared: counts, sizes, times. Tabular, lining.",
+        "$extensions": {
+          "com.syntropic137.typography": {
+            "fontFeatures": [
+              "tnum",
+              "lnum"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "space": {
+    "1": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "2": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "3": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "4": {
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "5": {
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "6": {
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "7": {
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      }
+    },
+    "8": {
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      }
+    },
+    "9": {
+      "$value": {
+        "value": 96,
+        "unit": "px"
+      }
+    },
+    "10": {
+      "$value": {
+        "value": 128,
+        "unit": "px"
+      }
+    },
+    "$type": "dimension"
+  },
+  "radius": {
+    "$type": "dimension",
+    "xs": {
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "sm": {
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      }
+    },
+    "md": {
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "lg": {
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "pill": {
+      "$value": {
+        "value": 999,
+        "unit": "px"
+      }
+    },
+    "key": {
+      "$value": {
+        "value": 0.24,
+        "unit": "em"
+      }
+    }
+  },
+  "duration": {
+    "$type": "duration",
+    "instant": {
+      "$value": {
+        "value": 120,
+        "unit": "ms"
+      }
+    },
+    "ui": {
+      "$value": {
+        "value": 240,
+        "unit": "ms"
+      }
+    },
+    "scene": {
+      "$value": {
+        "value": 600,
+        "unit": "ms"
+      }
+    },
+    "tide": {
+      "$value": {
+        "value": 1600,
+        "unit": "ms"
+      }
+    }
+  },
+  "easing": {
+    "$type": "cubicBezier",
+    "engineer": {
+      "$value": [
+        0.2,
+        0.8,
+        0.2,
+        1
+      ]
+    },
+    "dreamer": {
+      "$value": [
+        0.45,
+        0,
+        0.2,
+        1
+      ]
+    }
+  }
+}
