@@ -7,7 +7,8 @@ lockstep (see ADR-0009). Newest first.
 
 ## 0.3.0 - 2026-11-10
 
-DreamShip alpha additions (dreamship-v0-xvzo6.3, design page xvzo6.9, ARCH 2026-11-10).
+DreamShip alpha additions (dreamship-v0-xvzo6.3, design pages xvzo6.9 and xvzo6.10, ARCH 2026-11-10;
+approved by the operator 2026-11-11: K1-K6 and D3, badges on the kit look).
 No kit value changes.
 
 - New role `color.overlay.scrim` (`--ds-color-overlay-scrim`, Rust `color_overlay_scrim`):
@@ -15,6 +16,9 @@ No kit value changes.
   light = kit ink at 40% (reference `night-scrim`, `ink-scrim`; no new colour).
 - New component sizes: `component.control.height` 40px, `component.control.height-touch`
   44px (coarse pointer), `component.chip.height` 40px.
+- New component token `component.badge.label` (typography, aliases `typography.editorial.label`):
+  status badges keep the kit v1.0 label look (operator ruling 2026-11-11, xvzo6.10). Badge
+  colours stay the status roles.
 - New contract `toast` (planned): kind `info` | `failed`, message, optional action.
 - The `--os-*` alias sheet stays through 0.3.x (0.2.0 never reached npm); deletion no
   earlier than 0.4.0, when a count of its uses reads 0 (ADR-0011 C2 amended).

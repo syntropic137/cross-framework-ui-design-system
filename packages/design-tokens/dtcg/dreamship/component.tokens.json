@@ -55,6 +55,13 @@
         },
         "$description": "Choice chip height: the 40 px pointer target (feedback #16)."
       }
+    },
+    "badge": {
+      "label": {
+        "$type": "typography",
+        "$value": "{typography.editorial.label}",
+        "$description": "Status badge text keeps the kit v1.0 look: the editorial label style (operator ruling 2026-11-11 06:00Z, dreamship-v0-xvzo6.10). Colour stays the status role, so light success text is 5.05:1, not the kit's deep jade (3.84:1)."
+      }
     }
   }
 }
