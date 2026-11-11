@@ -62,6 +62,12 @@
       "info": {
         "$value": "{color.palette.deep-cyan}"
       }
+    },
+    "overlay": {
+      "scrim": {
+        "$value": "{color.palette.ink-scrim}",
+        "$description": "Backdrop behind dialogs, sheets, modal menus and onboarding. A role, not a component value (ARCH 2026-11-10)."
+      }
     }
   },
   "gradient": {

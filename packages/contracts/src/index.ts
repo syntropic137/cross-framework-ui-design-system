@@ -40,6 +40,7 @@ export * from "./components/switch.js";
 export * from "./components/tabs.js";
 export * from "./components/time-field.js";
 export * from "./components/time-range-field.js";
+export * from "./components/toast.js";
 export * from "./components/toggle.js";
 export * from "./components/toggle-group.js";
 export * from "./components/toolbar.js";

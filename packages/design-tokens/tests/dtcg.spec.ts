@@ -500,6 +500,45 @@ describe("DS v1.1 fixes (xvzo6.6)", () => {
     expect(themes[0].tokens.some((t) => t.path === "color.palette.deep-jade")).toBe(false);
     expect(json.themes.light["color.status.success"]).toMatchObject({ value: { hex: "#0A7559" } });
   });
+
+  it("writes no literal in the component layer: every value aliases a named token (xvzo6.3)", async () => {
+    const doc = JSON.parse(await readFile(join(DREAMSHIP, "component.tokens.json"), "utf8"));
+    const values: unknown[] = [];
+    const walk = (node: Record<string, unknown>) => {
+      for (const [key, child] of Object.entries(node)) {
+        if (key === "$value") values.push(child);
+        else if (child && typeof child === "object" && !key.startsWith("$"))
+          walk(child as Record<string, unknown>);
+      }
+    };
+    walk(doc);
+    expect(values.length).toBeGreaterThan(0);
+    for (const v of values) expect(v).toMatch(/^\{[a-z0-9.-]+\}$/);
+  });
+
+  it("pins the 0.3.0 alpha values: heights, scrim and the badge label (operator 2026-11-11)", async () => {
+    const { config, documents } = await loadDesign(DREAMSHIP);
+    const { json } = buildDesign(config, documents);
+    const px = (value: number) => ({ value: { value, unit: "px" } });
+    for (const theme of ["dark", "light"] as const) {
+      const t = json.themes[theme];
+      expect(t["component.control.height"]).toMatchObject(px(40));
+      expect(t["component.control.height-touch"]).toMatchObject(px(44));
+      expect(t["component.chip.height"]).toMatchObject(px(40));
+      expect(t["component.badge.label"]).toEqual({
+        ...t["typography.editorial.label"],
+        aliasOf: "{typography.editorial.label}",
+      });
+    }
+    expect(json.themes.dark["color.overlay.scrim"]).toMatchObject({
+      value: { hex: "#06090C", alpha: 0.72 },
+      aliasOf: "{color.palette.night-scrim}",
+    });
+    expect(json.themes.light["color.overlay.scrim"]).toMatchObject({
+      value: { hex: "#0B0D10", alpha: 0.4 },
+      aliasOf: "{color.palette.ink-scrim}",
+    });
+  });
 });
 
 describe("gradient contrast gate (Codex xvzo6.6 p1)", () => {

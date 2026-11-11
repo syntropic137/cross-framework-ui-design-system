@@ -44,6 +44,7 @@ export const componentContractStatus = {
   tabs: "planned",
   "time-field": "planned",
   "time-range-field": "planned",
+  toast: "planned",
   toggle: "required",
   "toggle-group": "planned",
   toolbar: "planned",

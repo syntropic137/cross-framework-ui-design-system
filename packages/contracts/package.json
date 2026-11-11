@@ -1,6 +1,6 @@
 {
   "name": "@syntropic137/design-contracts",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Framework-neutral component API contracts for the Syntropic137 cross-framework design system. Zero runtime dependencies.",
   "keywords": [
     "design-system",
