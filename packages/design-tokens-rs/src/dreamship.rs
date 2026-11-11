@@ -139,6 +139,8 @@ pub struct Theme {
     pub component_control_height_touch: Dimension,
     /// `component.chip.height`: Choice chip height: the 40 px pointer target (feedback #16).
     pub component_chip_height: Dimension,
+    /// `component.badge.label`: Status badge text keeps the kit v1.0 look: the editorial label style (operator ruling 2026-11-11 06:00Z, dreamship-v0-xvzo6.10). Colour stays the status role, so light success text is 5.05:1, not the kit's deep jade (3.84:1).
+    pub component_badge_label: Typography,
 }
 
 /// The `dark` theme.
@@ -209,6 +211,7 @@ pub const DARK: Theme = Theme {
     component_control_height: Dimension { value: 40.0, unit: Unit::Px },
     component_control_height_touch: Dimension { value: 44.0, unit: Unit::Px },
     component_chip_height: Dimension { value: 40.0, unit: Unit::Px },
+    component_badge_label: Typography { font_family: &["Geist Mono", "ui-monospace", "Menlo", "monospace"], font_size: Dimension { value: 11.0, unit: Unit::Px }, font_weight: 500.0, line_height: 1.4, letter_spacing: Dimension { value: 0.14, unit: Unit::Em }, font_features: &[] },
 };
 
 /// The `light` theme.
@@ -279,6 +282,7 @@ pub const LIGHT: Theme = Theme {
     component_control_height: Dimension { value: 40.0, unit: Unit::Px },
     component_control_height_touch: Dimension { value: 44.0, unit: Unit::Px },
     component_chip_height: Dimension { value: 40.0, unit: Unit::Px },
+    component_badge_label: Typography { font_family: &["Geist Mono", "ui-monospace", "Menlo", "monospace"], font_size: Dimension { value: 11.0, unit: Unit::Px }, font_weight: 500.0, line_height: 1.4, letter_spacing: Dimension { value: 0.14, unit: Unit::Em }, font_features: &[] },
 };
 
 /// The theme a consumer starts in.
