@@ -5,6 +5,24 @@ lockstep (see ADR-0009). Newest first.
 
 <!-- releases -->
 
+## 0.3.0 - 2026-11-10
+
+the reference app alpha additions (example-v0-internal-bead, design pages internal-bead and internal-bead, ARCH 2026-11-10;
+approved by the operator 2026-11-11: K1-K6 and D3, badges on the kit look).
+No kit value changes.
+
+- New role `color.overlay.scrim` (`--ds-color-overlay-scrim`, Rust `color_overlay_scrim`):
+  backdrop behind dialogs, sheets, modal menus and onboarding. Dark = kit night at 72%,
+  light = kit ink at 40% (reference `night-scrim`, `ink-scrim`; no new colour).
+- New component sizes: `component.control.height` 40px, `component.control.height-touch`
+  44px (coarse pointer), `component.chip.height` 40px.
+- New component token `component.badge.label` (typography, aliases `typography.editorial.label`):
+  status badges keep the kit v1.0 label look (operator ruling 2026-11-11, internal-bead). Badge
+  colours stay the status roles.
+- New contract `toast` (planned): kind `info` | `failed`, message, optional action.
+- The `--os-*` alias sheet stays through 0.3.x (0.2.0 never reached npm); deletion no
+  earlier than 0.4.0, when a count of its uses reads 0 (ADR-0011 C2 amended).
+
 ## 0.2.0 - 2026-11-10
 
 the reference app design contract (example-v0-internal-bead C1-C4, ADR-0011 Accepted).
