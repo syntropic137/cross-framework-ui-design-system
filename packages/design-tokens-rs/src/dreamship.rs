@@ -111,6 +111,10 @@ pub struct Theme {
     pub radius_pill: Dimension,
     /// `radius.key`
     pub radius_key: Dimension,
+    /// `size.target-pointer`
+    pub size_target_pointer: Dimension,
+    /// `size.target-touch`
+    pub size_target_touch: Dimension,
     /// `duration.instant`
     pub duration_instant: Duration,
     /// `duration.ui`
@@ -197,6 +201,8 @@ pub const DARK: Theme = Theme {
     radius_lg: Dimension { value: 24.0, unit: Unit::Px },
     radius_pill: Dimension { value: 999.0, unit: Unit::Px },
     radius_key: Dimension { value: 0.24, unit: Unit::Em },
+    size_target_pointer: Dimension { value: 40.0, unit: Unit::Px },
+    size_target_touch: Dimension { value: 44.0, unit: Unit::Px },
     duration_instant: Duration { ms: 120.0 },
     duration_ui: Duration { ms: 240.0 },
     duration_scene: Duration { ms: 600.0 },
@@ -268,6 +274,8 @@ pub const LIGHT: Theme = Theme {
     radius_lg: Dimension { value: 24.0, unit: Unit::Px },
     radius_pill: Dimension { value: 999.0, unit: Unit::Px },
     radius_key: Dimension { value: 0.24, unit: Unit::Em },
+    size_target_pointer: Dimension { value: 40.0, unit: Unit::Px },
+    size_target_touch: Dimension { value: 44.0, unit: Unit::Px },
     duration_instant: Duration { ms: 120.0 },
     duration_ui: Duration { ms: 240.0 },
     duration_scene: Duration { ms: 600.0 },
