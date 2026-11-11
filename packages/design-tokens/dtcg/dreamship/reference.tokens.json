@@ -831,6 +831,22 @@
       }
     }
   },
+  "size": {
+    "$type": "dimension",
+    "$description": "Hit-target sizes the component layer aliases (xvzo6.9 critique: necessary button and field decisions).",
+    "target-pointer": {
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      }
+    },
+    "target-touch": {
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      }
+    }
+  },
   "duration": {
     "$type": "duration",
     "instant": {

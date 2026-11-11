@@ -32,27 +32,18 @@
       "$description": "Fields and buttons (xvzo6.9). Name in the base, value in the theme (ARCH 2026-11-10).",
       "height": {
         "$type": "dimension",
-        "$value": {
-          "value": 40,
-          "unit": "px"
-        }
+        "$value": "{size.target-pointer}"
       },
       "height-touch": {
         "$type": "dimension",
-        "$value": {
-          "value": 44,
-          "unit": "px"
-        },
+        "$value": "{size.target-touch}",
         "$description": "Control height under a coarse pointer (touch)."
       }
     },
     "chip": {
       "height": {
         "$type": "dimension",
-        "$value": {
-          "value": 40,
-          "unit": "px"
-        },
+        "$value": "{size.target-pointer}",
         "$description": "Choice chip height: the 40 px pointer target (feedback #16)."
       }
     },
