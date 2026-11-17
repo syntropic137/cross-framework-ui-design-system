@@ -4,7 +4,7 @@
 import { cssName, num } from "./format.js";
 import type { Color, Dimension, ResolvedTheme, ResolvedToken } from "./types.js";
 
-/** Options beyond the themes: reference-only paths and the design marker (internal-bead C1, C2). */
+/** Options beyond the themes: reference-only paths and the design marker (ADR-0011 C1, C2). */
 export type CssOptions = {
   /**
    * Paths of the raw reference palette (reference `color.*`, `gradient.*`). Not
@@ -150,7 +150,7 @@ export function emitCss(
 }
 
 /**
- * The alias sheet (internal-bead C2): old names as `var()` of contract names, one
+ * The alias sheet (ADR-0011 C2): old names as `var()` of contract names, one
  * minor release only. A typography target becomes a `font` shorthand. Every
  * target must be a contract token (never a reference path); an old name may
  * not shadow a contract name.

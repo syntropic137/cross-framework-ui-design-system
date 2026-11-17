@@ -1,0 +1,74 @@
+{
+  "$description": "Semantic layer, light theme: roles alias the reference palette.",
+  "color": {
+    "$type": "color",
+    "surface": {
+      "page": {
+        "$value": "{color.palette.white}"
+      },
+      "default": {
+        "$value": "{color.palette.grey-100}"
+      },
+      "raised": {
+        "$value": "{color.palette.white}"
+      }
+    },
+    "content": {
+      "primary": {
+        "$value": "{color.palette.grey-950}"
+      },
+      "secondary": {
+        "$value": "{color.palette.grey-600}"
+      },
+      "inverse": {
+        "$value": "{color.palette.white}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$value": "{color.palette.grey-200}"
+      },
+      "control": {
+        "$value": "{color.palette.grey-500}"
+      },
+      "selected": {
+        "$value": "{color.content.primary}"
+      }
+    },
+    "action": {
+      "fill": {
+        "$value": "{color.palette.blue-600}"
+      },
+      "content": {
+        "$value": "{color.palette.white}"
+      }
+    },
+    "focus": {
+      "ring": {
+        "$value": "{color.palette.blue-600}"
+      }
+    },
+    "status": {
+      "success": {
+        "$value": "{color.palette.green-700}"
+      },
+      "warning": {
+        "$value": "{color.palette.amber-700}"
+      },
+      "danger": {
+        "$value": "{color.palette.red-700}"
+      }
+    },
+    "overlay": {
+      "scrim": {
+        "$value": "{color.palette.scrim-light}"
+      }
+    }
+  },
+  "gradient": {
+    "$type": "gradient",
+    "accent": {
+      "$value": "{gradient.blue}"
+    }
+  }
+}

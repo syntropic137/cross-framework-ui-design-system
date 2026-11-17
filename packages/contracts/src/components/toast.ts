@@ -1,6 +1,6 @@
 /**
  * Toast: a short message about something that just happened (ARCH 2026-11-10,
- * the reference app internal-bead). Framework-neutral; one toast region per window (F6 reaches it).
+ * 0.3.0). Framework-neutral; one toast region per window (F6 reaches it).
  *
  * - `info`: polite status announcement; leaves after `duration` ms, never while
  *   hovered or focused.

@@ -71,7 +71,7 @@ export type TokenValue =
 export type ResolvedToken = TokenValue & {
   /** Dot path, e.g. `color.content.primary`. */
   path: string;
-  /** The alias the source gave, e.g. `{color.palette.ivory}`, when the value was one. */
+  /** The alias the source gave, e.g. `{color.palette.white}`, when the value was one. */
   aliasOf?: string;
   description?: string;
 };

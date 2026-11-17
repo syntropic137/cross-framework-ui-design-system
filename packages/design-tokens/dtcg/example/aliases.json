@@ -1,0 +1,10 @@
+{
+  "$description": "Old names to contract names, emitted as aliases.css (ADR-0011 C2). Placeholder entries that show the mechanism.",
+  "aliases": {
+    "legacy-fg": "color.content.primary",
+    "legacy-muted": "color.content.secondary",
+    "legacy-accent": "color.action.fill",
+    "legacy-radius": "radius.md",
+    "legacy-text-label": "typography.label"
+  }
+}

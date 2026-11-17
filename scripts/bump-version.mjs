@@ -46,7 +46,7 @@ const rootPkg = JSON.parse(readFileSync(rootFile, "utf8"));
 rootPkg.version = version;
 write(rootFile, rootPkg);
 
-// The Rust crate moves in lockstep too (example-v0-internal-bead C3; a design-tokens test enforces it).
+// The Rust crate moves in lockstep too (ADR-0011 C3; a design-tokens test enforces it).
 const crateFile = join(root, "packages", "design-tokens-rs", "Cargo.toml");
 if (existsSync(crateFile)) {
   const cargo = readFileSync(crateFile, "utf8");

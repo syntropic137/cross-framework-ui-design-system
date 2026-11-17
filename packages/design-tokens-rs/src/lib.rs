@@ -88,11 +88,11 @@ mod tests {
 
     #[test]
     fn semantic_colours_resolve_through_the_palette() {
-        assert_eq!(DARK.color_surface_page.hex, "#06090C");
-        assert_eq!(LIGHT.color_content_primary.hex, "#0B0D10");
+        assert_eq!(DARK.color_surface_page.hex, "#0F1115");
+        assert_eq!(LIGHT.color_content_primary.hex, "#0F1115");
         assert_eq!(LIGHT.component_button_primary_fill, LIGHT.color_action_fill);
-        assert_eq!(DARK.color_border_control.hex, "#5C6D73");
-        assert_eq!(DARK.typography_operational_numeric.font_features, &["tnum", "lnum"]);
+        assert_eq!(DARK.color_border_control.hex, "#7A828C");
+        assert_eq!(DARK.typography_numeric.font_features, &["tnum", "lnum"]);
         assert_eq!(LIGHT.color_border_selected, LIGHT.color_content_primary);
     }
 

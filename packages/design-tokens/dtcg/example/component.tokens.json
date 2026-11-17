@@ -1,0 +1,47 @@
+{
+  "$description": "Component layer: every value aliases a named token, no literals.",
+  "component": {
+    "button": {
+      "primary": {
+        "fill": {
+          "$value": "{color.action.fill}",
+          "$type": "color"
+        },
+        "content": {
+          "$value": "{color.action.content}",
+          "$type": "color"
+        }
+      },
+      "radius": {
+        "$value": "{radius.md}",
+        "$type": "dimension"
+      }
+    },
+    "control": {
+      "height": {
+        "$value": "{size.md}",
+        "$type": "dimension"
+      },
+      "height-touch": {
+        "$value": "{size.lg}",
+        "$type": "dimension"
+      }
+    },
+    "card": {
+      "surface": {
+        "$value": "{color.surface.raised}",
+        "$type": "color"
+      },
+      "radius": {
+        "$value": "{radius.lg}",
+        "$type": "dimension"
+      }
+    },
+    "badge": {
+      "label": {
+        "$value": "{typography.label}",
+        "$type": "typography"
+      }
+    }
+  }
+}

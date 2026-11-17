@@ -1,12 +1,12 @@
 # ADR-0011: One DTCG token source per design, generating CSS, resolved JSON and typed Rust
 
-- Status: Accepted 2026-11-10 (names and publish policy: the the reference app design contract, example-v0-internal-bead C1-C5)
+- Status: Accepted 2026-11-10 (names and publish policy: the design contract below, C1-C5)
 - Date: 2026-11-08
 - Related: ADR-0002 (token generation), ADR-0006 (runtime theming), ADR-0008 (npm distribution)
 
 ## Context
 
-the reference app needs one design base across a native wgpu renderer, web pages and
+A reference app needs one design base across a native wgpu renderer, web pages and
 in-world Screens. Its v1.0 kit had three token copies (kit `--ds-*`, this repo's
 `--ds-*`, an in-engine `--os-*` set) and the renderer parsed CSS strings
 (`linear-gradient(...)`, `rgba(...)`) to get colours. ADR-0002's generator emits
@@ -51,7 +51,7 @@ consumer cannot use it without a CSS parser.
 - Rust consumers depend on the crate by git tag (no crates.io pipeline yet).
 - Rust consumers pin the crate by the full sha of the release tag commit (`rev`), the tag only as a comment.
 
-## Contract (example-v0-internal-bead, an internal lane 2026-11-09)
+## Contract (2026-11-09)
 
 - C1 Contract surface: every semantic and component token plus the reference
   scales (space, radius, duration, easing, font, typography). One name, three

@@ -2,7 +2,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { componentContractStatus, requiredContractNames } from "../src/component-status.js";
 import type { ToastAction, ToastContract, ToastKind } from "../src/index.js";
 
-describe("toast contract (0.3.0, example-v0-internal-bead)", () => {
+describe("toast contract (0.3.0)", () => {
   it("is planned, not yet required of every design", () => {
     expect(componentContractStatus.toast).toBe("planned");
     expect(requiredContractNames).not.toContain("toast");

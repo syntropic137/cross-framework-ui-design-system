@@ -195,17 +195,17 @@ describe("CSS emitter", () => {
   });
 });
 
-describe("the the reference app design", () => {
+describe("the example design", () => {
   it("builds every output from one source, and its themes pass the contrast policy", async () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const outputs = buildDesign(config, documents);
     expect(outputs.themes.map((t) => t.name)).toEqual(["dark", "light"]);
     expect(outputs.css).not.toMatch(/var\(|NaN|undefined/);
-    expect(outputs.css).toContain("--ds-color-content-primary: #ECE6DB;");
+    expect(outputs.css).toContain("--ds-color-content-primary: #F5F6F8;");
     expect(outputs.json.themes.dark["color.surface.page"]).toMatchObject({
       type: "color",
-      aliasOf: "{color.palette.night}",
-      value: { hex: "#06090C", alpha: 1 },
+      aliasOf: "{color.palette.grey-950}",
+      value: { hex: "#0F1115", alpha: 1 },
     });
   });
 
@@ -221,9 +221,9 @@ describe("the the reference app design", () => {
   it("one source change reaches CSS, resolved JSON and Rust with no hand edits", async () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const reference = structuredClone(documents.get("reference.tokens.json")) as {
-      color: { palette: { ivory: { $value: unknown } } };
+      color: { palette: Record<string, { $value: unknown }> };
     };
-    reference.color.palette.ivory.$value = color("#FFFFFF");
+    reference.color.palette["grey-100"].$value = color("#FFFFFF");
     const swapped = buildDesign(
       config,
       new Map([...documents, ["reference.tokens.json", reference]]),
@@ -240,7 +240,7 @@ describe("the the reference app design", () => {
     const dark = structuredClone(documents.get("semantic/dark.tokens.json")) as {
       color: { content: { secondary: { $value: string } } };
     };
-    dark.color.content.secondary.$value = "{color.palette.night-rule}";
+    dark.color.content.secondary.$value = "{color.palette.grey-800}";
     expect(() =>
       buildDesign(config, new Map([...documents, ["semantic/dark.tokens.json", dark]])),
     ).toThrow(/dark: color.content.secondary on color.surface.page = 1\.\d\d:1, needs 4.5:1/);
@@ -465,19 +465,16 @@ describe("generated Rust compiles", () => {
   }, 120_000);
 });
 
-describe("DS v1.1 fixes (internal-bead)", () => {
-  it("judges text on a gradient against its weakest stop: no text colour may sit on brand tide", async () => {
+describe("example design policy", () => {
+  it("judges text on a gradient against its weakest stop", async () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const { themes } = buildDesign(config, documents);
-    for (const fg of ["color.palette.white", "color.palette.ink", "color.palette.ivory"]) {
-      const failures = checkContrast(themes, [{ fg, bg: "gradient.brand", min: 4.5 }]);
-      expect(failures.map((f) => f.theme).sort(), fg).toEqual(["dark", "light"]);
-    }
-    const white = checkContrast(themes, [
-      { fg: "color.palette.white", bg: "gradient.brand", min: 4.5 },
-    ]);
-    // White on jade, the brightest stop: the critique's 1.61:1.
-    expect(white[0].ratio).toBeCloseTo(1.61, 2);
+    const rule = { fg: "color.palette.white", bg: "gradient.accent", min: 4.5 };
+    const [failure] = checkContrast(themes, [rule]);
+    // White on the lighter stop (blue-400) is the weakest pair.
+    const blue400 = { components: [0x60 / 255, 0xa5 / 255, 0xfa / 255], alpha: 1, hex: "" };
+    const white = { components: [1, 1, 1], alpha: 1, hex: "" };
+    expect(failure.ratio).toBeCloseTo(contrastRatio(white as never, blue400 as never), 6);
   });
 
   it("splits borders: subtle is decorative, control and selected reach 3:1 on every surface", async () => {
@@ -494,14 +491,7 @@ describe("DS v1.1 fixes (internal-bead)", () => {
     expect(config.contrast.filter((r) => r.fg === "color.border.subtle")).toEqual([]);
   });
 
-  it("retires the kit's deep accent: light success is the 5.05:1 jade-ink", async () => {
-    const { config, documents } = await loadDesign(EXAMPLE);
-    const { themes, json } = buildDesign(config, documents);
-    expect(themes[0].tokens.some((t) => t.path === "color.palette.deep-jade")).toBe(false);
-    expect(json.themes.light["color.status.success"]).toMatchObject({ value: { hex: "#0A7559" } });
-  });
-
-  it("writes no literal in the component layer: every value aliases a named token (internal-bead)", async () => {
+  it("writes no literal in the component layer: every value aliases a named token", async () => {
     const doc = JSON.parse(await readFile(join(EXAMPLE, "component.tokens.json"), "utf8"));
     const values: unknown[] = [];
     const walk = (node: Record<string, unknown>) => {
@@ -516,32 +506,25 @@ describe("DS v1.1 fixes (internal-bead)", () => {
     for (const v of values) expect(v).toMatch(/^\{[a-z0-9.-]+\}$/);
   });
 
-  it("pins the 0.3.0 alpha values: heights, scrim and the badge label (operator 2026-11-11)", async () => {
+  it("resolves component aliases to the same value in every theme output", async () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const { json } = buildDesign(config, documents);
-    const px = (value: number) => ({ value: { value, unit: "px" } });
     for (const theme of ["dark", "light"] as const) {
       const t = json.themes[theme];
-      expect(t["component.control.height"]).toMatchObject(px(40));
-      expect(t["component.control.height-touch"]).toMatchObject(px(44));
-      expect(t["component.chip.height"]).toMatchObject(px(40));
+      expect(t["component.control.height"]).toMatchObject({ value: t["size.md"].value });
       expect(t["component.badge.label"]).toEqual({
-        ...t["typography.editorial.label"],
-        aliasOf: "{typography.editorial.label}",
+        ...t["typography.label"],
+        aliasOf: "{typography.label}",
       });
     }
     expect(json.themes.dark["color.overlay.scrim"]).toMatchObject({
-      value: { hex: "#06090C", alpha: 0.72 },
-      aliasOf: "{color.palette.night-scrim}",
-    });
-    expect(json.themes.light["color.overlay.scrim"]).toMatchObject({
-      value: { hex: "#0B0D10", alpha: 0.4 },
-      aliasOf: "{color.palette.ink-scrim}",
+      value: { alpha: 0.72 },
+      aliasOf: "{color.palette.scrim-dark}",
     });
   });
 });
 
-describe("gradient contrast gate (Codex internal-bead p1)", () => {
+describe("gradient contrast gate", () => {
   const grey = { colorSpace: "srgb", components: [0x75 / 255, 0x75 / 255, 0x75 / 255] };
   const theme = resolveTheme("t", [
     palette,
@@ -616,28 +599,7 @@ describe("gradient contrast gate (Codex internal-bead p1)", () => {
   });
 });
 
-describe("operational type (internal-bead)", () => {
-  it("defines table, terminal, shortcut and numeric styles beside the editorial scale, fit for sustained work", async () => {
-    const { config, documents } = await loadDesign(EXAMPLE);
-    const [dark] = buildDesign(config, documents).themes;
-    const operational = dark.tokens.filter((t) => t.path.startsWith("typography.operational."));
-    expect(operational.map((t) => t.path.split(".").pop())).toEqual(
-      expect.arrayContaining(["table", "terminal", "shortcut", "numeric"]),
-    );
-    for (const token of operational) {
-      if (token.type !== "typography") throw new Error(`${token.path} is not typography`);
-      const t = token.value;
-      expect(t.fontSize, token.path).toMatchObject({ unit: "px" });
-      expect(t.fontSize.value, token.path).toBeGreaterThanOrEqual(12);
-      expect(t.lineHeight, token.path).toBeGreaterThanOrEqual(1.2);
-      expect(t.letterSpacing.value, token.path).toBeGreaterThanOrEqual(0);
-    }
-    const numeric = tokenOf(dark, "typography.operational.numeric");
-    expect(numeric.type === "typography" && numeric.value.fontFeatures).toContain("tnum");
-    const terminal = tokenOf(dark, "typography.operational.terminal");
-    expect(terminal.type === "typography" && terminal.value.fontFamily[0]).toBe("Geist Mono");
-  });
-
+describe("OpenType features", () => {
   it("carries OpenType features to CSS and Rust, and validates the tags", () => {
     const body = (extensions?: object) => ({
       $value: {
@@ -664,7 +626,7 @@ describe("operational type (internal-bead)", () => {
   });
 });
 
-describe("typography features on an alias (Codex internal-bead p1)", () => {
+describe("typography features on an alias", () => {
   const body = {
     $value: {
       fontFamily: ["Geist"],
@@ -710,7 +672,7 @@ describe("typography features on an alias (Codex internal-bead p1)", () => {
   });
 });
 
-describe("design contract (internal-bead C1-C3)", () => {
+describe("design contract (ADR-0011 C1-C3)", () => {
   /** Token paths straight from the DTCG files (no resolver), minus the reference palette. */
   const sourceContractPaths = (
     documents: ReadonlyMap<string, unknown>,
@@ -748,7 +710,7 @@ describe("design contract (internal-bead C1-C3)", () => {
       [...config.layers, config.themes[0].semantic],
       config.reference ?? "",
     );
-    expect(expected.length).toBeGreaterThan(50);
+    expect(expected.length).toBeGreaterThan(40);
     expect(Object.keys(out.json.themes.dark).sort()).toEqual(expected);
     expect(Object.keys(out.json.themes.light).sort()).toEqual(expected);
     const struct = out.rust.slice(out.rust.indexOf("pub struct Theme"));
@@ -774,21 +736,21 @@ describe("design contract (internal-bead C1-C3)", () => {
   it("keeps the raw reference palette out of the contract: --ds-ref-* in CSS, absent from JSON and Rust", async () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const out = buildDesign(config, documents);
-    expect(out.css).toContain("--ds-ref-color-palette-night: #06090C;");
-    expect(out.css).toContain("--ds-ref-gradient-tide: linear-gradient(");
-    expect(out.css).not.toMatch(/--ds-color-palette-|--ds-gradient-tide/);
-    expect(out.css).toContain("--ds-gradient-brand: linear-gradient(");
+    expect(out.css).toContain("--ds-ref-color-palette-grey-950: #0F1115;");
+    expect(out.css).toContain("--ds-ref-gradient-blue: linear-gradient(");
+    expect(out.css).not.toMatch(/--ds-color-palette-|--ds-gradient-blue/);
+    expect(out.css).toContain("--ds-gradient-accent: linear-gradient(");
     const keys = Object.keys(out.json.themes.dark);
     expect(
-      keys.filter((k) => k.startsWith("color.palette") || k.startsWith("gradient.tide")),
+      keys.filter((k) => k.startsWith("color.palette") || k.startsWith("gradient.blue")),
     ).toEqual([]);
-    expect(out.rust).not.toMatch(/color_palette_|gradient_tide/);
+    expect(out.rust).not.toMatch(/color_palette_|gradient_blue/);
     expect(keys).toEqual(
       expect.arrayContaining([
         "space.1",
         "radius.sm",
         "duration.ui",
-        "easing.engineer",
+        "easing.standard",
         "font.family.sans",
       ]),
     );
@@ -801,14 +763,13 @@ describe("design contract (internal-bead C1-C3)", () => {
     expect(css.indexOf("--ds-design")).toBeLessThan(css.indexOf("}"));
   });
 
-  it("aliases the interface-kit --os-* names to contract names; the four v1.1 drifts take the contract value", async () => {
+  it("aliases old names to contract names; a typography target becomes a font shorthand", async () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const { aliasesCss } = buildDesign(config, documents);
-    expect(aliasesCss).toContain("--os-muted: var(--ds-color-content-secondary);");
-    expect(aliasesCss).toContain("--os-focus: var(--ds-color-focus-ring);");
-    expect(aliasesCss).toContain("--os-radius-sm: var(--ds-radius-sm);");
+    expect(aliasesCss).toContain("--legacy-muted: var(--ds-color-content-secondary);");
+    expect(aliasesCss).toContain("--legacy-radius: var(--ds-radius-md);");
     expect(aliasesCss).toContain(
-      "--os-text-label: var(--ds-typography-editorial-label-font-weight) var(--ds-typography-editorial-label-font-size)/var(--ds-typography-editorial-label-line-height) var(--ds-typography-editorial-label-font-family);",
+      "--legacy-text-label: var(--ds-typography-label-font-weight) var(--ds-typography-label-font-size)/var(--ds-typography-label-line-height) var(--ds-typography-label-font-family);",
     );
     expect(aliasesCss).not.toContain("--ds-ref-");
   });
@@ -817,8 +778,10 @@ describe("design contract (internal-bead C1-C3)", () => {
     const { config, documents } = await loadDesign(EXAMPLE);
     const withAliases = (aliases: Record<string, string>) =>
       buildDesign(config, new Map([...documents, ["aliases.json", { aliases }]]));
-    expect(() => withAliases({ "os-x": "color.palette.night" })).toThrow(/not a contract token/);
-    expect(() => withAliases({ "os-x": "color.nope" })).toThrow(/not a contract token/);
+    expect(() => withAliases({ "old-x": "color.palette.grey-950" })).toThrow(
+      /not a contract token/,
+    );
+    expect(() => withAliases({ "old-x": "color.nope" })).toThrow(/not a contract token/);
     expect(() => withAliases({ "ds-radius-sm": "radius.md" })).toThrow(/shadow a contract name/);
     expect(() => withAliases({ "ds-design": "radius.md" })).toThrow(/shadow a contract name/);
   });

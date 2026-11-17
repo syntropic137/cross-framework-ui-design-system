@@ -15,11 +15,11 @@ export type DesignConfig = {
   prefix: string;
   /**
    * The reference layer file (one of `layers`). Its `color.*` and `gradient.*`
-   * tokens are the raw palette: not contract (internal-bead C1), so CSS names them
+   * tokens are the raw palette: not contract (ADR-0011 C1), so CSS names them
    * `--<prefix>-ref-*` and resolved JSON and Rust leave them out.
    */
   reference?: string;
-  /** Old names to contract names, emitted as the alias sheet (internal-bead C2). */
+  /** Old names to contract names, emitted as the alias sheet (ADR-0011 C2). */
   aliases?: string;
   layers: string[];
   themes: {

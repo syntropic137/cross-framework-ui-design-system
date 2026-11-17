@@ -7,37 +7,33 @@ lockstep (see ADR-0009). Newest first.
 
 ## 0.3.0 - 2026-11-10
 
-the reference app alpha additions (example-v0-internal-bead, design pages internal-bead and internal-bead, ARCH 2026-11-10;
-approved by the operator 2026-11-11: K1-K6 and D3, badges on the kit look).
-No kit value changes.
+Contract additions for application shells (ADR-0011).
 
+- The example design (`dtcg/example`) is a neutral placeholder: greys, one blue
+  accent and system font stacks. Copy it to start a real design.
 - New role `color.overlay.scrim` (`--ds-color-overlay-scrim`, Rust `color_overlay_scrim`):
-  backdrop behind dialogs, sheets, modal menus and onboarding. Dark = kit night at 72%,
-  light = kit ink at 40% (reference `night-scrim`, `ink-scrim`; no new colour).
-- New component sizes: `component.control.height` 40px, `component.control.height-touch`
-  44px (coarse pointer), `component.chip.height` 40px.
-- New component token `component.badge.label` (typography, aliases `typography.editorial.label`):
-  status badges keep the kit v1.0 label look (operator ruling 2026-11-11, internal-bead). Badge
-  colours stay the status roles.
+  backdrop behind dialogs, sheets, modal menus and onboarding (a translucent
+  reference colour per theme).
+- New component sizes: `component.control.height` and `component.control.height-touch`
+  (coarse pointer).
+- New component token `component.badge.label` (typography, aliases `typography.label`).
+  Badge colours stay the status roles.
 - New contract `toast` (planned): kind `info` | `failed`, message, optional action.
-- The `--os-*` alias sheet stays through 0.3.x (0.2.0 never reached npm); deletion no
+- The alias sheet stays through 0.3.x (0.2.0 never reached npm); deletion no
   earlier than 0.4.0, when a count of its uses reads 0 (ADR-0011 C2 amended).
 
 ## 0.2.0 - 2026-11-10
 
-the reference app design contract (example-v0-internal-bead C1-C4, ADR-0011 Accepted).
+The design contract (ADR-0011 C1-C4, Accepted).
 
-- **Breaking (0.x minor):** the the reference app raw reference palette is no longer
-  contract. CSS names it `--ds-ref-<path>` (was `--ds-color-palette-*`,
-  `--ds-gradient-tide*`); resolved JSON and the Rust `Theme` drop it
-  (`color_palette_*`, `gradient_tide*`). Name roles instead
-  (`--ds-color-surface-page`, `--ds-gradient-brand`, ...).
+- **Breaking (0.x minor):** a design's raw reference palette is no longer
+  contract. CSS names it `--ds-ref-<path>`; resolved JSON and the Rust `Theme`
+  drop it. Name roles instead (`--ds-color-surface-page`, `--ds-gradient-accent`, ...).
 - `generated/example/tokens.css` sets `--ds-design: "example"`, so a consumer
   can prove a page loads exactly one tokens sheet.
-- New export `@syntropic137/design-tokens/example.aliases.css`: interface-kit v1.1
-  `--os-*` names as `var(--ds-*)`, for this minor only (deleted in 0.3.0). Where v1.1
-  drifted from v1.0 (muted, focus, radius steps, label) the alias takes the contract
-  value.
+- New export `@syntropic137/design-tokens/example.aliases.css`: old names as
+  `var(--ds-*)` (`design.json` `aliases`), kept for at least one minor that
+  reaches npm.
 - npm `design-tokens`, `design-contracts` and the Rust crate
   `syntropic137-design-tokens` share one version; a test enforces it.
 

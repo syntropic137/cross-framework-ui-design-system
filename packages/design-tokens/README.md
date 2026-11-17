@@ -66,12 +66,20 @@ Themes are declared in `themeDefinitions`. Each theme maps to a `data-theme` sel
 
 ## DTCG designs (CSS, resolved JSON, typed Rust)
 
-A design under `dtcg/<design>/` (today: `example`) is DTCG JSON in reference,
-semantic (one file per theme), component and spatial layers, plus `design.json`
-(themes, selectors, contrast policy). `pnpm tokens:build` writes the first two; `pnpm tokens:rust` also rewrites the third:
+A design under `dtcg/<design>/` is DTCG JSON in reference, semantic (one file per
+theme), component and spatial layers, plus `design.json` (themes, selectors,
+contrast policy) and an optional `aliases.json` (old names to contract names).
+
+The one design shipped, `example`, is a neutral placeholder: neutral greys, one blue
+accent and system font stacks, in `dark` (default) and `light` themes. Copy
+`dtcg/example/` to start a real design and add its name to `DTCG_DESIGNS` in
+`src/cli.ts`.
+
+`pnpm tokens:build` writes the CSS and JSON; `pnpm tokens:rust` also rewrites the Rust module:
 
 - `generated/<design>/tokens.css` (`@syntropic137/design-tokens/example.css`)
 - `generated/<design>/tokens.resolved.json` (`@syntropic137/design-tokens/example.json`)
+- `generated/<design>/aliases.css` (`@syntropic137/design-tokens/example.aliases.css`)
 - `../design-tokens-rs/src/<design>.rs`, the typed Rust module of the
   `syntropic137-design-tokens` crate (committed; a test catches drift)
 
